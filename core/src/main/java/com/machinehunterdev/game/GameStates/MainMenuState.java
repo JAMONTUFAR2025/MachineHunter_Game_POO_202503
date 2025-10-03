@@ -29,14 +29,22 @@ public class MainMenuState implements State<GameController>
     public void execute() 
     {
         // Codigo que se ejecuta en cada frame mientras estamos en el estado del menu principal
-        // Si se presiona la tecla ESC, salir del juego
-        if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ESCAPE)) 
+
+        // PRUEBAS DE MAQUINA DE ESTADOS
+        // Si se presiona la tecla ESPACIO, salir del juego
+        if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.SPACE)) 
         {
             com.badlogic.gdx.Gdx.app.exit();
         }
 
-        // Si se presiona la tecla ENTER, coloca un estado nuevo en la pila
-        if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ENTER)) 
+        // Si se presiona la tecla Q, quitar un estado de la pila
+        if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.Q)) 
+        {
+            owner.stateMachine.pop();
+        }
+
+        // Si se presiona la tecla E, coloca un estado nuevo en la pila
+        if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.E)) 
         {
             owner.stateMachine.push(MainMenuState.instance);
         }

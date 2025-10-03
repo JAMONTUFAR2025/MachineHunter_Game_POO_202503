@@ -49,8 +49,8 @@ public class GameController extends ApplicationAdapter
     private Table rootTable;
     
     // Define la resolución virtual/interna del juego
-    public static final int VIRTUAL_WIDTH = 700;
-    public static final int VIRTUAL_HEIGHT = 400;
+    public static final int VIRTUAL_WIDTH = 800;
+    public static final int VIRTUAL_HEIGHT = 600;
 
     @Override
     public void create() 
@@ -98,7 +98,7 @@ public class GameController extends ApplicationAdapter
         // Establecemos color blanco
         shapeRenderer.setColor(1, 1, 1, 1);
         // Dibujamos el rectángulo centrado
-        shapeRenderer.rect((VIRTUAL_WIDTH - 680) / 2, (VIRTUAL_HEIGHT - 380) / 2, 680, 380);
+        shapeRenderer.rect((VIRTUAL_WIDTH - 800) / 2, (VIRTUAL_HEIGHT - 600) / 2, 800, 600);
         // Finaliza el ShapeRenderer
         shapeRenderer.end();
 
@@ -107,8 +107,21 @@ public class GameController extends ApplicationAdapter
 
         // PRUEBAS DE MAQUINA DE ESTADOS
         showStateStack();
+
+        // MOSTRAR Y OCULTAR EL CURSOR DEL RATON
+        // Al presionar ESC, mostrar el cursor del raton
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ESCAPE))
+        {
+            Gdx.input.setCursorCatched(false);
+        }
+
+        // Al dar CLICK IZQUIERDO, ocultar el cursor del raton
+        if (Gdx.input.isButtonJustPressed(com.badlogic.gdx.Input.Buttons.LEFT))
+        {
+            Gdx.input.setCursorCatched(true);
+        }
     }
-    
+
     @Override
     public void resize(int width, int height) 
     {
@@ -141,19 +154,12 @@ public class GameController extends ApplicationAdapter
     // Para hacer pruebas, mostrar la pila de estados en la pantalla
     private void showStateStack() 
     {
-        // ----------------------------------------------------
         // 1. Limpiar el contenedor (Tabla) y prepararla para la esquina superior izquierda
         rootTable.clear(); // Elimina todas las etiquetas del frame anterior
-        // ----------------------------------------------------
 
-        // CAP-101 En la parte superior se mostrará el texto STATE STACK
         // Usamos una etiqueta para el título.
         Label titleLabel = new Label("STATE STACK", skin, "default-font", Color.RED); // Reemplaza "default-font" con el nombre de tu estilo
         rootTable.add(titleLabel).pad(5).row(); // Añade el título y pasa a la siguiente fila
-
-        // ----------------------------------------------------
-        // CAP-101 Recorre cada uno de los estados de la pila de estados
-        // ----------------------------------------------------
 
         // 1. Obtener una copia de la pila (es clave para no alterar la original)
         StateMachine<GameController> stateMachine = this.stateMachine;
