@@ -6,16 +6,19 @@ import com.machinehunterdev.game.GameController;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
         createApplication();
     }
 
-    private static Lwjgl3Application createApplication() {
+    private static Lwjgl3Application createApplication() 
+    {
         return new Lwjgl3Application(new GameController(), getDefaultConfiguration());
     }
 
-    private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
+    private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() 
+    {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
         configuration.setTitle("MachineHunter_Game");
         //// Vsync limits the frames per second to what your hardware can display, and helps eliminate
@@ -32,6 +35,10 @@ public class Lwjgl3Launcher {
         //// You can change these files; they are in lwjgl3/src/main/resources/ .
         //// They can also be loaded from the root of assets/ .
         configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
+
+        // Mostrar en pantalla completa
+        configuration.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
+
         return configuration;
     }
 }
