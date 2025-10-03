@@ -2,7 +2,8 @@ package com.machinehunterdev.game.Util;
 
 // ** Interfaz que representa un estado en la máquina de estados **
 // T es el tipo del objeto propietario que utiliza la máquina de estados
-public interface State<T> {
+public interface State<T>
+{
 
     // ** Estos métodos son públicos por defecto en una interfaz **
 
