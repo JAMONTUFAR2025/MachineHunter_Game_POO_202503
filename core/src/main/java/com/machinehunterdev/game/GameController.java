@@ -120,6 +120,9 @@ public class GameController extends ApplicationAdapter
         {
             Gdx.input.setCursorCatched(true);
         }
+
+        // LOGICA PARA HACER PRUEBAS
+        
     }
 
     @Override
