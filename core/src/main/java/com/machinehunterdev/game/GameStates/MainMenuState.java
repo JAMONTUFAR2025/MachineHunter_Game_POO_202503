@@ -46,24 +46,25 @@ public class MainMenuState implements State<GameController>{
         if (menuUI != null) {
             menuUI.drawMenu();
         }
-        // PRUEBAS DE MAQUINA DE ESTADOS
-        // Si se presiona la tecla ESPACIO, salir del juego
-        if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.SPACE)) 
-        {
-            com.badlogic.gdx.Gdx.app.exit();
-        }
+        
+        // // PRUEBAS DE MAQUINA DE ESTADOS
+        // // Si se presiona la tecla ESPACIO, salir del juego
+        // if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.SPACE)) 
+        // {
+        //     com.badlogic.gdx.Gdx.app.exit();
+        // }
 
-        // Si se presiona la tecla Q, quitar un estado de la pila
-        if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.Q)) 
-        {
-            owner.stateMachine.pop();
-        }
+        // // Si se presiona la tecla Q, quitar un estado de la pila
+        // if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.Q)) 
+        // {
+        //     owner.stateMachine.pop();
+        // }
 
-        // Si se presiona la tecla E, coloca un estado nuevo en la pila
-        if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.E)) 
-        {
-            owner.stateMachine.push(MainMenuState.instance);
-        }
+        // // Si se presiona la tecla E, coloca un estado nuevo en la pila
+        // if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.E)) 
+        // {
+        //     owner.stateMachine.push(MainMenuState.instance);
+        // }
     }
 
     @Override

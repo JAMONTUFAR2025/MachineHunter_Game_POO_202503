@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
 
+
+// ** CREADO POR ANNER ALESSANDRO TERUEL 2025-10-03 **
 public class MainMenuUI implements InputProcessor {
     
     // Opciones del menu
