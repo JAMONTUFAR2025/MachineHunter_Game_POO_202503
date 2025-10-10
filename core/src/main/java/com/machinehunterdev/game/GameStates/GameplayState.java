@@ -1,34 +1,35 @@
 package com.machinehunterdev.game.GameStates;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.Input;
-import com.machinehunterdev.game.GameController;
-import com.machinehunterdev.game.Character.PlayerController;
 import com.machinehunterdev.game.Character.Character;
 import com.machinehunterdev.game.Character.EnemyController;
+import com.machinehunterdev.game.Character.PlayerController;
 import com.machinehunterdev.game.Environment.SolidObject;
+import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
+import com.machinehunterdev.game.Dialog.Dialogue;
+import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Util.State;
 
-public class GameplayState implements State<GameController> {
+public class GameplayState implements State<GameController>
+{
     // SUELO SÓLIDO
     private ArrayList<SolidObject> solidObjects;
-
     // ** ATRIBUTOS DEL JUGADOR **
-    private Character playerCharacter;   // La instancia del personaje (ahora animado)
-    private PlayerController playerController; // El controlador de entrada
+    private Texture playerTexture;
+    private Character playerCharacter;
+    private PlayerController playerController;
 
     // -- ENEMIGO DE PRUEBA --
-    private Texture enemyTexture;       // La textura del enemigo (estático por ahora)
-    private Character enemyCharacter;   // La instancia del enemigo
-    private EnemyController enemyController; // El controlador del enemigo
+    private Texture enemyTexture;
+    private Character enemyCharacter;
+    private EnemyController enemyController;
 
     // - - SPRITEBATCH DEL GAMECONTROLLER - -
     private SpriteBatch gameBatch;
@@ -40,77 +41,106 @@ public class GameplayState implements State<GameController> {
     public static GameplayState instance = new GameplayState();
 
     // Constructor privado para evitar instanciación externa
-    private GameplayState() {
+    private GameplayState() 
+    {
         instance = this;
     }
 
     // Poseedor es el GameController
     private GameController owner;
 
+    // ✅ Atributos para diálogo
+    private DialogManager dialogManager;
+    private boolean isDialogActive = false;
+
     @Override
-    public void enter(GameController owner) {
+    public void enter(GameController owner) 
+    {
         this.owner = owner;
         this.gameBatch = owner.batch;
         this.camera = owner.camera;
 
+        // ✅ Inicializar DialogManager
+        dialogManager = new DialogManager();
+
         // - - INICIALIZAR SUELO SOLIDO - -
         solidObjects = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        for(int i = 0; i < 3; i++)
+        {
             solidObjects.add(new SolidObject(i * 480, 0, 480, 32, "suelo.png", true));
             solidObjects.add(new SolidObject(64 + i * 480, 64, 200, 16, "suelo.png", true));
         }
 
-        // --- INICIALIZAR JUGADOR ANIMADO ---
-        ArrayList<Sprite> playerFrames = new ArrayList<>();
-        for (int i = 1; i <= 4; i++) {
-            playerFrames.add(new Sprite(new Texture("Idle/roberto" + i + ".png")));
-        }
-        playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerFrames, gameBatch, 50, 100);
+        // --- INICIALIZAR JUGADOR Y CONTROLADOR ---
+        playerTexture = new Texture("roberto.png"); 
+        playerCharacter = new Character(100, playerTexture, 50, 100); 
         playerController = new PlayerController(playerCharacter);
 
-        // --- INICIALIZAR ENEMIGO DE PRUEBA (estático) ---
-        enemyTexture = new Texture("enemy.png");
-        enemyCharacter = new Character(50, enemyTexture, 300, 100);
+        // --- INICIALIZAR ENEMIGO DE PRUEBA Y CONTROLADOR ---
+        enemyTexture = new Texture("enemy.png"); 
+        enemyCharacter = new Character(50, enemyTexture, 300, 100); 
         enemyController = new EnemyController(enemyCharacter);
     }
 
     @Override
-    public void execute() {
-        // Actualización de lógica
-        float deltaTime = Gdx.graphics.getDeltaTime();
+    public void execute() 
+    {
+        if (isDialogActive) {
+        dialogManager.update(Gdx.graphics.getDeltaTime());
+        handleDialogInput();
+        // ❌ No dibujes el juego aquí
+        dialogManager.render();
+        return;
+    }
 
-        // Actualizar logica
-        playerController.update(deltaTime, solidObjects);
-        enemyController.update(deltaTime, solidObjects);
+        // --- LÓGICA DEL JUEGO ---
 
-        // ✅ Detectar colisión jugador-enemigo
-        checkPlayerEnemyCollision();
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.T)) {
+        Gdx.app.log("GameplayState", "Tecla T presionada");
+        Dialogue dialog = new Dialogue(Arrays.asList("¡Hola!", "Este es un diálogo.", "Presiona para continuar."));
+        dialogManager.showDialog(dialog);
+        isDialogActive = true;
+    }
 
-        playerController.centerCameraOnPlayer(camera);
-
-        // Cambio de estado para regresar o cuando el jugador muere
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Q) || !playerCharacter.isAlive()) {
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.Q)) {
             owner.stateMachine.changeState(MainMenuState.instance);
         }
 
+        // 1. Actualización del controlador y personaje
+        playerController.update(Gdx.graphics.getDeltaTime(), solidObjects);
+        enemyController.update(Gdx.graphics.getDeltaTime(), solidObjects);
+        playerController.centerCameraOnPlayer(camera);
+
         // --- DIBUJAR ---
         gameBatch.setProjectionMatrix(camera.combined);
+        
         gameBatch.begin();
 
-        // Fondo (⚠️ Mejora futura: cargar textura fuera del bucle)
-        for (int i = 0; i < 3; i++) {
+        // Dibuja múltiples fondos para crear un efecto de desplazamiento
+        for(int i = 0; i < 3; i++)
+        {
             gameBatch.draw(new Texture("FondoJuego.png"), i * GlobalSettings.VIRTUAL_WIDTH, 0);
         }
 
-        // Suelos sólidos
-        for (SolidObject floor : solidObjects) {
+        // Dibuja los suelos sólidos
+        for(SolidObject floor : solidObjects) {
             floor.render(gameBatch);
         }
 
-        // ✅ Dibuja el JUGADOR ANIMADO (incluye volteo y posición)
-        playerCharacter.draw();
+        // Dibuja el personaje del jugador
+        Texture texture = playerCharacter.getTexture();
+        float x = playerCharacter.getX();
+        float y = playerCharacter.getY();
+        float w = texture.getWidth();
+        float h = texture.getHeight();
 
-        // Dibuja el ENEMIGO (estático por ahora)
+        if (playerCharacter.isSeeingRight()) {
+            gameBatch.draw(texture, x, y);
+        } else {
+            gameBatch.draw(texture, x + w, y, -w, h);
+        }
+
+        // Dibuja el personaje enemigo
         Texture enemyTex = enemyCharacter.getTexture();
         float ex = enemyCharacter.getX();
         float ey = enemyCharacter.getY();
@@ -124,45 +154,46 @@ public class GameplayState implements State<GameController> {
         }
 
         gameBatch.end();
+
+        // ✅ Si hay diálogo activo, dibujar encima del juego
+        if (isDialogActive) {
+            dialogManager.render();
+        }
     }
 
+    public void resize(int width, int height) {
+        if (dialogManager != null) {
+            dialogManager.resize(width, height);
+        }
+    }
+
+    // ✅ Manejar input del diálogo
+    private void handleDialogInput() {
+    if (Gdx.input.justTouched()) {
+        if (dialogManager.isDialogActive()) {
+            dialogManager.nextLine();
+        } else {
+            isDialogActive = false;
+        }
+    }
+}
+
     @Override
-    public void exit() {
-        // Liberar recursos del suelo
+    public void exit() 
+    {
+        // --- LIBERAR RECURSOS DEL SUELO ---
         for (SolidObject object : solidObjects) {
             object.dispose();
         }
-
-        // Liberar textura del enemigo (el jugador ya gestiona sus texturas internamente)
-        if (enemyTexture != null) {
-            enemyTexture.dispose();
+        
+        // --- LIBERAR TEXTURA DEL JUGADOR ---
+        if (playerTexture != null) {
+            playerTexture.dispose();
         }
-    }
 
-    // Metodos para el GameplayState
-    // Verifica colisiones entre el jugador y el enemigo
-    private void checkPlayerEnemyCollision() {
-        // Obtenemos los bounds de ambos personajes
-        Rectangle playerBounds = playerCharacter.getBounds();
-        Rectangle enemyBounds = enemyCharacter.getBounds();
-
-        if (playerBounds.overlaps(enemyBounds)) {
-
-            // Solo aplicar empuje si NO está ya en empuje o invulnerable (evita "resetear" el empuje)
-            if (!playerCharacter.isKnockedBack() && !playerCharacter.isInvulnerable()) {
-                playerCharacter.isKnockedBack = true;
-                playerCharacter.forceJump(0.7f); // Empuje vertical
-                
-                // Aplicar daño (takeDamage ya maneja la invulnerabilidad internamente)
-                playerCharacter.takeDamage(10);
-
-                // Empuje horizontal
-                if (enemyCharacter.getX() < playerCharacter.getX()) {
-                    playerCharacter.velocity.x = 150f; // Empujar a la derecha
-                } else {
-                    playerCharacter.velocity.x = -150f; // Empujar a la izquierda
-                }
-            }
+        // ✅ Liberar recursos del diálogo
+        if (dialogManager != null) {
+            dialogManager.dispose();
         }
     }
 }

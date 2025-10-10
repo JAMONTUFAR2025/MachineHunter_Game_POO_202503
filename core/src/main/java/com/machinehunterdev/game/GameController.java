@@ -23,6 +23,10 @@ import com.machinehunterdev.game.Util.StateMachine;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class GameController extends ApplicationAdapter 
 {
+
+    // Instancia singleton del GameController
+    public boolean isDialogActive = false;
+
     // Maquina de estados para gestionar los diferentes estados del juego
     public StateMachine<GameController> stateMachine;
 
@@ -77,7 +81,7 @@ public class GameController extends ApplicationAdapter
     public void render() 
     {
         // 1. Limpiar la pantalla cada frame con fondo negro
-        ScreenUtils.clear(0f, 0f, 0f, 1f);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
 
         // 2. Actualiza la cámara y establece la matriz de proyección para el SpriteBatch
         camera.update();
