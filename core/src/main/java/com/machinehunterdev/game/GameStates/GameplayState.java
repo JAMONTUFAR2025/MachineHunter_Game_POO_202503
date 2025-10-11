@@ -17,7 +17,7 @@ import com.machinehunterdev.game.Character.Character;
 import com.machinehunterdev.game.Character.EnemyController;
 import com.machinehunterdev.game.Environment.SolidObject;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
-import com.machinehunterdev.game.Dialog.Dialogue;
+import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.Util.State;
@@ -116,7 +116,7 @@ public class GameplayState implements State<GameController> {
 
         // --- ACTIVAR DIÁLOGO CON TECLA T ---
         if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-            Dialogue dialog = new Dialogue(Arrays.asList("¡Hola!", "Este es un diálogo.", "Presiona para continuar."));
+            Dialog dialog = new Dialog(Arrays.asList("¡Hola!", "Este es un diálogo.", "Presiona para continuar."));
             dialogManager.showDialog(dialog);
             isDialogActive = true;
             return;

@@ -2,10 +2,10 @@ package com.machinehunterdev.game.Dialog;
 
 import java.util.List;
 
-public class Dialogue {
+public class Dialog {
     private List<String> lines;
 
-    public Dialogue(List<String> lines) {
+    public Dialog(List<String> lines) {
         this.lines = lines;
     }
 

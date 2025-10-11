@@ -1,15 +1,17 @@
-package com.machinehunterdev.game.Dialog;
+package com.machinehunterdev.game.GameStates;
 
 import com.badlogic.gdx.Gdx;
 import com.machinehunterdev.game.GameController;
+import com.machinehunterdev.game.Dialog.DialogManager;
+import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Util.State;
 
-public class DialogueState implements State<GameController> {
+public class DialogState implements State<GameController> {
     private DialogManager dialogManager;
-    private Dialogue currentDialog;
+    private Dialog currentDialog;
     private GameController owner;
 
-    public DialogueState(Dialogue dialog) {
+    public DialogState(Dialog dialog) {
         dialogManager = new DialogManager(); // Ya no necesita cámara
         currentDialog = dialog;
     }

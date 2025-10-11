@@ -12,7 +12,7 @@ public class DialogManager {
         private SpriteBatch batch;
     private BitmapFont font;
     private ShapeRenderer shapeRenderer;
-    private Dialogue currentDialog; // ✅ Aseguramos que usamos Dialog
+    private Dialog currentDialog; // ✅ Aseguramos que usamos Dialog
     private int currentLineIndex;
     private boolean dialogActive;
 
@@ -49,7 +49,7 @@ public class DialogManager {
         dialogBoxY = Gdx.graphics.getHeight() - dialogBoxHeight - 20;
     }
 
-    public void showDialog(Dialogue dialog) {
+    public void showDialog(Dialog dialog) {
         currentDialog = dialog;
         currentLineIndex = 0;
         dialogActive = true;
