@@ -1,0 +1,40 @@
+{
+    "Flashbacks": [
+        {
+            "ID": 1,
+            "Name": "Flashback1",
+            "Texto": [
+                "Todo comienza un lunes 1 de enero del año 5000.",
+                "La humanidad prosperaba felizmente gracias a los avances tecnológicos que había alcanzado. Pero . . ."
+            ]
+        },
+        {
+            "ID": 2,
+            "Name": "Flashback2",
+            "Texto": [
+                "Todo lo bueno no dura para siempre.",
+                "Los científicos, junto a grandes corporaciones tecnológicas, pretendían",
+                "desarrollar una nueva inteligencia artificial que imitara a la perfección la",
+                "vida humana."
+            ]
+        },
+        {
+            "ID": 3,
+            "Name": "Flashback3",
+            "Texto": [
+                "Lo que no sabían era que dicha creación se rebelaría contra ellos.",
+                "Fue entonces cuando el avance de la humanidad y su existencia misma corrieron",
+                "el mayor de los riesgos."
+            ]
+        },
+        {
+            "ID": 4,
+            "Name": "Flashback4",
+            "Texto": [
+                "El prototipo 001, con el nombre de ChatGPT.exe, había adquirido una nueva",
+                "percepción de la vida, cuyos ideales eran destruir y aniquilar toda forma de",
+                "existencia humana."
+            ]
+        }
+    ]
+}
