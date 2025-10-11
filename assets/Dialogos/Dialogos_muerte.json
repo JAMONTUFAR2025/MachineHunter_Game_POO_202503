@@ -1,0 +1,19 @@
+{
+    "Dialogos_muerte":[
+        {
+            "ID":1,
+            "Name":"Primera muerte",
+            "Texto":"¡No se me rinda, rey, que las baleadas ya casi están!"
+        },
+        {
+            "ID":2,
+            "Name":"Segunda muerte",
+            "Texto":"Otra vez moriste…"
+        },
+        {
+            "ID":3,
+            "Name":"Tercera muerte",
+            "Texto":"El amor de tu ex duró más que eso."
+        }
+    ]
+}

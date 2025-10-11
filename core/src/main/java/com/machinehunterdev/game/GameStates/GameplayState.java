@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Character.PlayerController;
 import com.machinehunterdev.game.Character.Character;
@@ -116,7 +118,18 @@ public class GameplayState implements State<GameController> {
 
         // --- ACTIVAR DIÁLOGO CON TECLA T ---
         if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-            Dialog dialog = new Dialog(Arrays.asList("¡Hola!", "Este es un diálogo.", "Presiona para continuar."));
+            JsonReader jsonReader = new JsonReader();
+            JsonValue base = jsonReader.parse(Gdx.files.internal("Dialogos/Diagolos_flahsbacks.json"));
+            JsonValue flashbacks = base.get("Flashbacks");
+            JsonValue flashback1 = flashbacks.get(0);
+            JsonValue texto = flashback1.get("Texto");
+            
+            List<String> lines = new ArrayList<>();
+            for (JsonValue line : texto) {
+                lines.add(line.asString());
+            }
+
+            Dialog dialog = new Dialog(lines);
             dialogManager.showDialog(dialog);
             isDialogActive = true;
             return;
@@ -160,7 +173,7 @@ public class GameplayState implements State<GameController> {
 
     // ✅ Manejo de input para diálogo
     private void handleDialogInput() {
-        if (Gdx.input.justTouched()) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
             if (dialogManager.isDialogActive()) {
                 dialogManager.nextLine();
             } else {
