@@ -2,6 +2,7 @@ package com.machinehunterdev.game.GameStates;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -18,6 +19,7 @@ import com.machinehunterdev.game.Environment.SolidObject;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.Dialog.Dialogue;
 import com.machinehunterdev.game.Dialog.DialogManager;
+import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.Util.State;
 
 public class GameplayState implements State<GameController> {
@@ -25,12 +27,11 @@ public class GameplayState implements State<GameController> {
     private ArrayList<SolidObject> solidObjects;
 
     // ** ATRIBUTOS DEL JUGADOR **
-    private Character playerCharacter;   // Jugador animado
+    private Character playerCharacter;   // Jugador con CharacterAnimator
     private PlayerController playerController;
 
     // -- ENEMIGO DE PRUEBA --
-    private Texture enemyTexture;
-    private Character enemyCharacter;
+    private Character enemyCharacter;   // Enemigo también con CharacterAnimator
     private EnemyController enemyController;
 
     // - - SPRITEBATCH DEL GAMECONTROLLER - -
@@ -68,17 +69,36 @@ public class GameplayState implements State<GameController> {
             solidObjects.add(new SolidObject(64 + i * 480, 64, 200, 16, "suelo.png", true));
         }
 
-        // --- INICIALIZAR JUGADOR ANIMADO ---
-        ArrayList<Sprite> playerFrames = new ArrayList<>();
-        for (int i = 1; i <= 4; i++) {
-            playerFrames.add(new Sprite(new Texture("Idle/roberto" + i + ".png")));
-        }
-        playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerFrames, gameBatch, 50, 100);
+        // --- INICIALIZAR JUGADOR CON CHARACTERANIMATOR ---
+        List<Sprite> playerIdleFrames = loadSpriteFrames("Player/Idle/PlayerIdle", 4);
+        List<Sprite> playerRunFrames = loadSpriteFrames("Player/Run/PlayerRun", 8); // Ajusta según tus assets
+        //List<Sprite> playerDeadFrames = loadSpriteFrames("Player/Dead", 3);
+        //List<Sprite> playerJumpFrames = loadSpriteFrames("Player/Jump", 2);
+        //List<Sprite> playerFallFrames = loadSpriteFrames("Player/Fall", 2);
+        //List<Sprite> playerAttackFrames = loadSpriteFrames("Player/Attack", 5);
+
+        CharacterAnimator playerAnimator = new CharacterAnimator(
+            gameBatch,
+            playerIdleFrames, playerRunFrames, null, 
+            null, null, null // dead, jump, fall, attack no disponibles
+        );
+
+        playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, 50, 100);
         playerController = new PlayerController(playerCharacter);
 
-        // --- INICIALIZAR ENEMIGO DE PRUEBA ---
-        enemyTexture = new Texture("enemy.png");
-        enemyCharacter = new Character(50, enemyTexture, 300, 100);
+        // --- INICIALIZAR ENEMIGO CON CHARACTERANIMATOR ---
+        // Para el enemigo, usamos solo animaciones básicas
+        List<Sprite> enemyIdleFrames = loadSpriteFrames("Enemy/Idle/PlayerIdle", 4);
+        List<Sprite> enemyRunFrames = loadSpriteFrames("Enemy/Run/PlayerRun", 8);
+        //List<Sprite> enemyDeadFrames = loadSpriteFrames("Enemy/Dead/PlayerDead", 3);
+
+        CharacterAnimator enemyAnimator = new CharacterAnimator(
+            gameBatch,
+            enemyIdleFrames, enemyRunFrames, null,
+            null, null, null // dead, jump, fall, attack no disponibles
+        );
+
+        enemyCharacter = new Character(50, enemyAnimator, 300, 100);
         enemyController = new EnemyController(enemyCharacter);
     }
 
@@ -99,7 +119,7 @@ public class GameplayState implements State<GameController> {
             Dialogue dialog = new Dialogue(Arrays.asList("¡Hola!", "Este es un diálogo.", "Presiona para continuar."));
             dialogManager.showDialog(dialog);
             isDialogActive = true;
-            return; // Evita procesar lógica del juego en el mismo frame
+            return;
         }
 
         // --- LÓGICA DEL JUEGO ---
@@ -131,29 +151,11 @@ public class GameplayState implements State<GameController> {
             floor.render(gameBatch);
         }
 
-        // ✅ Dibuja el JUGADOR ANIMADO (ya maneja volteo internamente)
+        // ✅ Dibuja ambos personajes (el método draw() ya maneja animaciones y volteo)
         playerCharacter.draw();
-
-        // Dibuja el ENEMIGO
-        Texture enemyTex = enemyCharacter.getTexture();
-        float ex = enemyCharacter.getX();
-        float ey = enemyCharacter.getY();
-        float ew = enemyTex.getWidth();
-        float eh = enemyTex.getHeight();
-
-        if (enemyCharacter.isSeeingRight()) {
-            gameBatch.draw(enemyTex, ex, ey);
-        } else {
-            gameBatch.draw(enemyTex, ex + ew, ey, -ew, eh);
-        }
+        enemyCharacter.draw();
 
         gameBatch.end();
-
-        // ✅ Renderizar diálogo encima del juego (aunque no debería llegar aquí si isDialogActive == true)
-        // Pero por seguridad, lo dejamos como respaldo
-        if (isDialogActive) {
-            dialogManager.render();
-        }
     }
 
     // ✅ Manejo de input para diálogo
@@ -172,20 +174,30 @@ public class GameplayState implements State<GameController> {
         Rectangle playerBounds = playerCharacter.getBounds();
         Rectangle enemyBounds = enemyCharacter.getBounds();
 
-        if (playerBounds.overlaps(enemyBounds)) {
-            if (!playerCharacter.isKnockedBack() && !playerCharacter.isInvulnerable()) {
-                playerCharacter.isKnockedBack = true;
-                playerCharacter.forceJump(0.7f);
-                playerCharacter.takeDamage(10);
-
-                // Empuje horizontal
-                if (enemyCharacter.getX() < playerCharacter.getX()) {
-                    playerCharacter.velocity.x = 150f;
-                } else {
-                    playerCharacter.velocity.x = -150f;
-                }
+        if (playerBounds.overlaps(enemyBounds) && !playerCharacter.isInvulnerable()) {
+            // Aplicar daño
+            playerCharacter.takeDamage(10);
+            
+            // Aplicar empuje
+            playerCharacter.isKnockedBack = true;
+            playerCharacter.forceJump(0.7f);
+            
+            // Empuje horizontal
+            if (enemyCharacter.getX() < playerCharacter.getX()) {
+                playerCharacter.velocity.x = 150f;
+            } else {
+                playerCharacter.velocity.x = -150f;
             }
         }
+    }
+
+    // ✅ Método auxiliar para cargar frames de animación
+    private List<Sprite> loadSpriteFrames(String basePath, int frameCount) {
+        List<Sprite> frames = new ArrayList<>();
+        for (int i = 1; i <= frameCount; i++) {
+            frames.add(new Sprite(new Texture(basePath + i + ".png")));
+        }
+        return frames;
     }
 
     public void resize(int width, int height) {
@@ -201,17 +213,12 @@ public class GameplayState implements State<GameController> {
             object.dispose();
         }
 
-        // Liberar textura del enemigo
-        if (enemyTexture != null) {
-            enemyTexture.dispose();
-        }
-
         // ✅ Liberar diálogo
         if (dialogManager != null) {
             dialogManager.dispose();
         }
 
-        // Nota: el jugador animado ya gestiona sus propias texturas internamente,
-        // así que no necesitamos dispose() aquí (asumiendo que Character lo hace en su dispose())
+        // Nota: Los personajes con CharacterAnimator gestionan sus propias texturas
+        // Si más adelante implementas dispose() en Character, llámalo aquí
     }
 }

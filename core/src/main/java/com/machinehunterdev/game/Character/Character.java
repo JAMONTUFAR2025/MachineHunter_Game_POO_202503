@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.machinehunterdev.game.Util.SpriteAnimator;
-import java.util.List;
 
 // Clase base para todos los personajes del juego
 public class Character 
@@ -17,7 +16,7 @@ public class Character
     public int height = 32; // Alto por defecto
 
     // --- SISTEMA DE ANIMACIÓN ---
-    public SpriteAnimator animator; // Reemplaza a 'texture'
+    public CharacterAnimator characterAnimator; // Sistema de animación avanzado
     public Texture fallbackTexture; // Solo por compatibilidad (opcional)
 
     // ** ATRIBUTOS DE MOVIMIENTO/FISICA **
@@ -56,10 +55,9 @@ public class Character
     }
 
     // Constructor NUEVO para personajes animados
-    public Character(int health, List<Sprite> idleFrames, com.badlogic.gdx.graphics.g2d.SpriteBatch batch, float x, float y) {
+    public Character(int health, CharacterAnimator animator, float x, float y) {
         this.health = health;
-        this.animator = new SpriteAnimator(idleFrames, batch);
-        this.animator.start();
+        this.characterAnimator = animator;
         this.position = new Vector2(x, y);
         this.velocity = new Vector2(0, 0);
         initDefaults();
@@ -76,12 +74,44 @@ public class Character
 
     // === MÉTODO DE ACTUALIZACIÓN ===
     public void update(float delta) {
-        // --- 1.1. Actualizar animación ---
-        if (animator != null) {
-            animator.handleUpdate(delta);
+        // --- 1. Actualizar animación ---
+        if (characterAnimator != null) {
+            // Actualizar dirección de mirada
+            characterAnimator.setFacingRight(isSeeingRight);
+            
+            // Determinar estado de animación
+            CharacterAnimator.AnimationState newState = CharacterAnimator.AnimationState.IDLE;
+            
+            if (!isAlive) {
+                newState = CharacterAnimator.AnimationState.DEAD;
+            } else if (isAttacking && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.ATTACK)) {
+                newState = CharacterAnimator.AnimationState.ATTACK;
+            } else if (!onGround) {
+                // En el aire
+                if (velocity.y > 0) {
+                    // Subiendo (saltando)
+                    if (characterAnimator.hasAnimation(CharacterAnimator.AnimationState.JUMP)) {
+                        newState = CharacterAnimator.AnimationState.JUMP;
+                    } else {
+                        newState = CharacterAnimator.AnimationState.RUN; // fallback
+                    }
+                } else {
+                    // Cayendo
+                    if (characterAnimator.hasAnimation(CharacterAnimator.AnimationState.FALL)) {
+                        newState = CharacterAnimator.AnimationState.FALL;
+                    } else {
+                        newState = CharacterAnimator.AnimationState.RUN; // fallback
+                    }
+                }
+            } else if (isMoving) {
+                newState = CharacterAnimator.AnimationState.RUN;
+            }
+            
+            characterAnimator.setCurrentAnimation(newState);
+            characterAnimator.update(delta);
         }
 
-        // --- 1.2. Manejar invulnerabilidad ---
+        // --- 2. Manejar invulnerabilidad ---
         if (invulnerable) {
             invulnerabilityTimer -= delta;
             if (invulnerabilityTimer <= 0) {
@@ -90,23 +120,23 @@ public class Character
             }
         }
 
-        // --- 2. MANEJO DE EMPUJE POR DAÑO ---
+        // --- 3. MANEJO DE EMPUJE POR DAÑO ---
         if (isKnockedBack) {
             velocity.x = isSeeingRight ? -knockbackSpeed : knockbackSpeed;
             isMoving = true;
             onGround = false;
         }
 
-        // --- 3. APLICAR GRAVEDAD ---
+        // --- 4. APLICAR GRAVEDAD ---
         if (!onGround) {
             velocity.y += gravity * delta;
         }
 
-        // --- 4. ACTUALIZAR POSICIÓN ---
+        // --- 5. ACTUALIZAR POSICIÓN ---
         position.x += velocity.x * delta;
         position.y += velocity.y * delta;
 
-        // --- 5. LÓGICA DE MOVIMIENTO NORMAL ---
+        // --- 6. LÓGICA DE MOVIMIENTO NORMAL ---
         if (!isKnockedBack) {
             if (!isMoving) {
                 velocity.x = 0;
@@ -122,48 +152,44 @@ public class Character
 
     // === MÉTODO PARA DIBUJAR ===
     public void draw() {
-        if (animator != null) {
-            Sprite current = animator.getCurrentSprite();
-            if (current != null) {
-                // Guardar el color original
-                Color originalColor = new Color(current.getColor());
-                
-                // Calcular alpha
+        if (characterAnimator != null) {
+            Sprite currentSprite = characterAnimator.getCurrentSprite();
+            if (currentSprite != null) {
+                // Aplicar transparencia aquí
+                Color originalColor = new Color(currentSprite.getColor());
                 float alpha = 1.0f;
+                
                 if (invulnerable) {
-                    // Parpadeo: 0.5 segundos visible, 0.5 segundos invisible
                     float blinkTime = invulnerabilityTimer % 1.0f;
                     alpha = (blinkTime < 0.5f) ? 0.7f : 0.3f;
                 }
-
-                // Aplicar posición y dirección (esto debe hacerse SIEMPRE, no solo cuando es invulnerable)
-                current.setPosition(position.x, position.y);
+                
+                // Dibujar manualmente con transparencia
+                currentSprite.setPosition(position.x, position.y);
                 if (!isSeeingRight) {
-                    current.setScale(-1, 1);
-                    current.setPosition(position.x, position.y);
+                    currentSprite.setScale(-1, 1);
+                    currentSprite.setPosition(position.x, position.y);
                 } else {
-                    current.setScale(1, 1);
-                    current.setPosition(position.x, position.y);
+                    currentSprite.setScale(1, 1);
+                    currentSprite.setPosition(position.x, position.y);
                 }
-
-                // Aplicar transparencia y dibujar (esto debe hacerse SIEMPRE)
-                current.setColor(1, 1, 1, alpha);
-                current.draw(animator.getSpriteBatch());
-
-                // Restaurar color original
-                current.setColor(originalColor);
+                
+                currentSprite.setColor(1, 1, 1, alpha);
+                currentSprite.draw(characterAnimator.getSpriteBatch());
+                currentSprite.setColor(originalColor);
             }
         } else if (fallbackTexture != null) {
-            // Dibujo de respaldo para personajes estáticos
-            // Esto se manejará en GameplayState por ahora
+            // Dibujo estático
         }
     }
 
     // === MÉTODOS DE ACCIÓN ===
-    public void attack() { isAttacking = true; }
+    public void attack() { 
+        isAttacking = true; 
+        // La animación de ataque se manejará en update()
+    }
     
     public void takeDamage(int damage) {
-        // No recibir daño si está invulnerable
         if (invulnerable) return;
 
         health -= damage;
@@ -172,7 +198,7 @@ public class Character
             health = 0;
         }
 
-        // Activar invulnerabilidad temporal y empuje
+        // Activar invulnerabilidad temporal
         invulnerable = true;
         invulnerabilityTimer = INVULNERABILITY_DURATION;
     }
@@ -222,8 +248,9 @@ public class Character
     
     // Devuelve la textura actual (útil para enemigos estáticos o depuración)
     public Texture getTexture() {
-        if (animator != null && animator.getCurrentSprite() != null) {
-            return animator.getCurrentSprite().getTexture();
+        if (characterAnimator != null) {
+            Sprite currentSprite = characterAnimator.getCurrentSprite();
+            return currentSprite != null ? currentSprite.getTexture() : null;
         }
         return fallbackTexture;
     }
@@ -234,11 +261,15 @@ public class Character
     public boolean isAttacking() { return isAttacking; }
     public boolean isAlive() { return isAlive; }
     public boolean isKnockedBack() { return isKnockedBack; }
+    public boolean isInvulnerable() { return invulnerable; }
 
     // Devuelve el ancho basándose en la animación actual o en la textura de respaldo
     public float getWidth() { 
-        if (animator != null && animator.getCurrentSprite() != null) {
-            return animator.getCurrentSprite().getWidth();
+        if (characterAnimator != null) {
+            Sprite currentSprite = characterAnimator.getCurrentSprite();
+            if (currentSprite != null) {
+                return currentSprite.getWidth();
+            }
         } else if (fallbackTexture != null) {
             return fallbackTexture.getWidth();
         }
@@ -247,8 +278,11 @@ public class Character
 
     // Devuelve el alto basándose en la animación actual o en la textura de respaldo
     public float getHeight() { 
-        if (animator != null && animator.getCurrentSprite() != null) {
-            return animator.getCurrentSprite().getHeight();
+        if (characterAnimator != null) {
+            Sprite currentSprite = characterAnimator.getCurrentSprite();
+            if (currentSprite != null) {
+                return currentSprite.getHeight();
+            }
         } else if (fallbackTexture != null) {
             return fallbackTexture.getHeight();
         }
@@ -258,10 +292,5 @@ public class Character
     // Devuelve los límites del personaje para colisiones
     public Rectangle getBounds() {
         return new Rectangle(position.x, position.y, getWidth(), getHeight());
-    }
-
-    // Devuelve si el personaje es invulnerable
-    public boolean isInvulnerable() {
-        return invulnerable;
     }
 }
