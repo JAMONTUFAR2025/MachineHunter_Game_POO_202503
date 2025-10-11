@@ -3,6 +3,7 @@ package com.machinehunterdev.game.Character;
 import java.util.ArrayList;
 import com.badlogic.gdx.math.Rectangle;
 import com.machinehunterdev.game.Environment.SolidObject;
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 /**
  * Clase base abstracta para controladores de personajes.
@@ -27,39 +28,47 @@ public abstract class CharacterController {
      * @param solidObjects Lista de objetos sólidos en el nivel.
      */
     protected void checkCollisions(ArrayList<SolidObject> solidObjects) {
-        // Asumimos que no está en el suelo hasta que se demuestre lo contrario
         character.onGround = false;
 
-        // Obtener dimensiones y posición del personaje
         float charWidth = character.getWidth();
         float charHeight = character.getHeight();
         float charX = character.getX();
         float charY = character.getY();
 
-        // Recorrer todos los objetos sólidos
+        // Posición de los pies
+        float feetY = charY;
+        float feetLeft = charX;
+        float feetRight = charX + charWidth;
+
+        // Caer en el suelo, no en una plataforma
+        if(feetY <= GlobalSettings.GROUND_LEVEL) {
+            character.landOn(GlobalSettings.GROUND_LEVEL);
+            return;
+        }
+
         for (SolidObject obj : solidObjects) {
-            // Solo considerar objetos sobre los que se puede caminar
             if (obj.isWalkable()) {
                 Rectangle platform = obj.getBounds();
+                float platformTop = platform.y + platform.height;
 
-                // Solo verificar colisión si el personaje está cayendo (velocidad Y <= 0)
                 if (character.velocity.y <= 0) {
-                    float platformTop = platform.y + platform.height;
+                    // Verificar que los pies estén en la zona de aterrizaje
+                    if (feetY <= platformTop + 2f && feetY >= platformTop - 5f) {
+                        // Verificar superposición horizontal significativa
+                        float overlapLeft = Math.max(feetLeft, platform.x);
+                        float overlapRight = Math.min(feetRight, platform.x + platform.width);
+                        float overlapWidth = overlapRight - overlapLeft;
 
-                    // Margen de error para evitar "temblores" al aterrizar
-                    if (charY <= platformTop + 2f && 
-                        charY + charHeight > platform.y && // Superposición en eje Y
-                        charX + charWidth > platform.x &&  // Superposición en eje X
-                        charX < platform.x + platform.width) {
-
-                        // Hacer que el personaje aterrice en la plataforma
-                        character.landOn(platformTop);
-                        return; // Salir al encontrar la primera plataforma válida
+                        // Aterrizar solo si hay superposición significativa (al menos 1 píxel)
+                        if (overlapWidth > 0) {
+                            character.landOn(platformTop);
+                            return;
+                        }
                     }
                 }
             }
         }
-    }
+}
 
     /**
      * Método abstracto que debe implementar cada controlador específico.

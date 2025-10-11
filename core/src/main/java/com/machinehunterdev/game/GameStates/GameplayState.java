@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Character.PlayerController;
+import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.Character.Character;
 import com.machinehunterdev.game.Character.EnemyController;
 import com.machinehunterdev.game.Environment.SolidObject;
@@ -101,7 +102,13 @@ public class GameplayState implements State<GameController> {
         );
 
         enemyCharacter = new Character(50, enemyAnimator, 300, 100);
-        enemyController = new EnemyController(enemyCharacter);
+
+        // Crear puntos de patrullaje para el enemigo
+        ArrayList<Vector2> patrolPoints = new ArrayList<>();
+        patrolPoints.add(new Vector2(100, 100)); // Punto A
+        patrolPoints.add(new Vector2(500, 100)); // Punto B
+
+        enemyController = new EnemyController(enemyCharacter, patrolPoints, 1.0f, 3.0f); // Corre por 1s, espera 3s
     }
 
     @Override
