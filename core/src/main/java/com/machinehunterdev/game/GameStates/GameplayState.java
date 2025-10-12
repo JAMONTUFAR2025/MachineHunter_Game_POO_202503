@@ -20,6 +20,7 @@ import com.machinehunterdev.game.Character.Character;
 import com.machinehunterdev.game.Character.EnemyController;
 import com.machinehunterdev.game.Environment.SolidObject;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
+import com.machinehunterdev.game.UI.GameplayUI;
 import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Character.CharacterAnimator;
@@ -50,6 +51,8 @@ public class GameplayState implements State<GameController> {
     // Instancia singleton
     public static GameplayState instance = new GameplayState();
 
+    private GameplayUI gameplayUI;
+
     private GameplayState() {
         instance = this;
     }
@@ -64,6 +67,7 @@ public class GameplayState implements State<GameController> {
 
         // ✅ Inicializar diálogo
         dialogManager = new DialogManager();
+        gameplayUI = new GameplayUI();
 
         // - - INICIALIZAR SUELO SOLIDO - -
         solidObjects = new ArrayList<>();
@@ -176,6 +180,11 @@ public class GameplayState implements State<GameController> {
         enemyCharacter.draw();
 
         gameBatch.end();
+
+        // Draw Gameplay UI
+        if (gameplayUI != null) {
+            gameplayUI.draw(playerCharacter.getHealth());
+        }
     }
 
     // ✅ Manejo de input para diálogo
@@ -196,7 +205,7 @@ public class GameplayState implements State<GameController> {
 
         if (playerBounds.overlaps(enemyBounds) && !playerCharacter.isInvulnerable()) {
             // Aplicar daño
-            playerCharacter.takeDamage(10);
+            playerCharacter.takeDamage(1);
             
             // Aplicar empuje
             playerCharacter.isKnockedBack = true;
@@ -224,6 +233,9 @@ public class GameplayState implements State<GameController> {
         if (dialogManager != null) {
             dialogManager.resize(width, height);
         }
+        if (gameplayUI != null) {
+            gameplayUI.resize(width, height);
+        }
     }
 
     @Override
@@ -236,6 +248,10 @@ public class GameplayState implements State<GameController> {
         // ✅ Liberar diálogo
         if (dialogManager != null) {
             dialogManager.dispose();
+        }
+
+        if (gameplayUI != null) {
+            gameplayUI.dispose();
         }
 
         // Nota: Los personajes con CharacterAnimator gestionan sus propias texturas

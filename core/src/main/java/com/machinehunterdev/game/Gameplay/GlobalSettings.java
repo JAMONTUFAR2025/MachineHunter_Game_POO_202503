@@ -7,7 +7,7 @@ public class GlobalSettings
     public static final int VIRTUAL_HEIGHT = 270;
 
     // Salud inicial del jugador
-    public static final int PLAYER_HEALTH = 30;
+    public static final int PLAYER_HEALTH = 3;
 
     // Pixel del suelo
     public static final int GROUND_LEVEL = 32;
