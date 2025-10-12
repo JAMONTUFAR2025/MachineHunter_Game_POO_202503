@@ -153,7 +153,7 @@ public class GameplayState implements State<GameController> {
 
         // Cambio de estado si se presiona Q o el jugador muere
         if (Gdx.input.isKeyJustPressed(Input.Keys.Q) || !playerCharacter.isAlive()) {
-            owner.stateMachine.changeState(MainMenuState.instance);
+            owner.stateMachine.changeState(GameOverState.instance);
             return;
         }
 
