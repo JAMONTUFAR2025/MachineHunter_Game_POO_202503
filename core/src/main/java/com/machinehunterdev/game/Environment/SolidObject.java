@@ -18,15 +18,15 @@ public class SolidObject
      * @param y Posición Y inicial.
      * @param width Ancho del suelo.
      * @param height Alto del suelo.
-     * @param texturePath Ruta del archivo de imagen (ej: "suelo.png").
+     * @param texture La textura a usar para el objeto.
      * @param walkable Indica si es solo visual o un obstáculo sólido.
      */
-    public SolidObject(float x, float y, float width, float height, String texturePath, boolean walkable) {
+    public SolidObject(float x, float y, float width, float height, Texture texture, boolean walkable) {
         // Inicializa el rectángulo de colisión y posición
         this.bounds = new Rectangle(x, y, width, height); 
         
-        // Carga la textura (ASEGÚRATE de disponer de esta imagen en la carpeta 'assets')
-        this.texture = new Texture(texturePath); 
+        // Asigna la textura compartida
+        this.texture = texture;
         
         this.isWalkable = walkable;
     }
@@ -39,10 +39,7 @@ public class SolidObject
         batch.draw(texture, bounds.x, bounds.y, bounds.width, bounds.height);
     }
     
-    // Método para liberar recursos (IMPORTANTE en LibGDX)
-    public void dispose() {
-        texture.dispose();
-    }
+    // El método dispose() se elimina, ya que la textura es compartida y se gestionará externamente.
 
     // --- Métodos de Colisión y Estado ---
 

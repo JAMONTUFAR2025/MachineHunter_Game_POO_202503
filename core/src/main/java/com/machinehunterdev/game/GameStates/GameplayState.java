@@ -44,6 +44,9 @@ public class GameplayState implements State<GameController> {
     // CAMARA
     private OrthographicCamera camera;
 
+    private Texture backgroundTexture;
+    private Texture sueloTexture;
+
     // ✅ Diálogo
     private DialogManager dialogManager;
     private boolean isDialogActive = false;
@@ -53,11 +56,15 @@ public class GameplayState implements State<GameController> {
 
     private GameplayUI gameplayUI;
 
+
+
     private GameplayState() {
         instance = this;
     }
 
     private GameController owner;
+
+
 
     @Override
     public void enter(GameController owner) {
@@ -65,15 +72,18 @@ public class GameplayState implements State<GameController> {
         this.gameBatch = owner.batch;
         this.camera = owner.camera;
 
+        backgroundTexture = new Texture("FondoJuego.png");
+
         // ✅ Inicializar diálogo
-        dialogManager = new DialogManager();
+        dialogManager = new DialogManager(this.gameBatch);
         gameplayUI = new GameplayUI();
 
         // - - INICIALIZAR SUELO SOLIDO - -
+        sueloTexture = new Texture("suelo.png");
         solidObjects = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            solidObjects.add(new SolidObject(i * 480, 0, 480, 32, "suelo.png", true));
-            solidObjects.add(new SolidObject(64 + i * 480, 64, 200, 16, "suelo.png", true));
+            solidObjects.add(new SolidObject(i * 480, 0, 480, 32, sueloTexture, true));
+            solidObjects.add(new SolidObject(64 + i * 480, 64, 200, 16, sueloTexture, true));
         }
 
         // --- INICIALIZAR JUGADOR CON CHARACTERANIMATOR ---
@@ -117,13 +127,38 @@ public class GameplayState implements State<GameController> {
 
     @Override
     public void execute() {
+        // --- Update game logic ---
+        updateGameLogic();
+
+        // --- Draw game world ---
+        drawGameWorld();
+
+        // --- Draw dialog if active ---
+        if (isDialogActive) {
+            dialogManager.render();
+        }
+
+        // --- Draw Gameplay UI ---
+        if (gameplayUI != null) {
+            gameplayUI.draw(playerCharacter.getHealth());
+        }
+
+
+
+        // --- Handle death ---
+        if (!playerCharacter.isAlive()) {
+            owner.stateMachine.changeState(GameOverState.instance);
+            return;
+        }
+    }
+
+    private void updateGameLogic() {
         float deltaTime = Gdx.graphics.getDeltaTime();
 
         // ✅ Si hay diálogo activo, manejar solo eso
         if (isDialogActive) {
             dialogManager.update(deltaTime);
             handleDialogInput();
-            dialogManager.render();
             return;
         }
 
@@ -154,20 +189,16 @@ public class GameplayState implements State<GameController> {
         checkPlayerEnemyCollision();
 
         playerController.centerCameraOnPlayer(camera);
+    }
 
-        // Cambio de estado si se presiona Q o el jugador muere
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Q) || !playerCharacter.isAlive()) {
-            owner.stateMachine.changeState(GameOverState.instance);
-            return;
-        }
-
+    private void drawGameWorld() {
         // --- DIBUJAR ESCENA ---
         gameBatch.setProjectionMatrix(camera.combined);
         gameBatch.begin();
 
         // Fondo
         for (int i = 0; i < 3; i++) {
-            gameBatch.draw(new Texture("FondoJuego.png"), i * GlobalSettings.VIRTUAL_WIDTH, 0);
+            gameBatch.draw(backgroundTexture, i * GlobalSettings.VIRTUAL_WIDTH, 0);
         }
 
         // Suelos sólidos
@@ -181,10 +212,7 @@ public class GameplayState implements State<GameController> {
 
         gameBatch.end();
 
-        // Draw Gameplay UI
-        if (gameplayUI != null) {
-            gameplayUI.draw(playerCharacter.getHealth());
-        }
+        
     }
 
     // ✅ Manejo de input para diálogo
@@ -240,9 +268,8 @@ public class GameplayState implements State<GameController> {
 
     @Override
     public void exit() {
-        // Liberar suelos
-        for (SolidObject object : solidObjects) {
-            object.dispose();
+        if (sueloTexture != null) {
+            sueloTexture.dispose();
         }
 
         // ✅ Liberar diálogo
@@ -252,6 +279,11 @@ public class GameplayState implements State<GameController> {
 
         if (gameplayUI != null) {
             gameplayUI.dispose();
+        }
+
+
+        if (backgroundTexture != null) {
+            backgroundTexture.dispose();
         }
 
         // Nota: Los personajes con CharacterAnimator gestionan sus propias texturas

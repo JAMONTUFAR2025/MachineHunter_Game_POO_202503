@@ -1,6 +1,7 @@
 package com.machinehunterdev.game.GameStates;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Dialog.Dialog;
@@ -12,13 +13,15 @@ public class DialogState implements State<GameController> {
     private GameController owner;
 
     public DialogState(Dialog dialog) {
-        dialogManager = new DialogManager(); // Ya no necesita cámara
+        // dialogManager is not created here anymore
         currentDialog = dialog;
     }
 
     @Override
     public void enter(GameController owner) {
         this.owner = owner;
+        // Create the DialogManager here, with the SpriteBatch from the GameController
+        this.dialogManager = new DialogManager(owner.batch);
         dialogManager.showDialog(currentDialog);
     }
 

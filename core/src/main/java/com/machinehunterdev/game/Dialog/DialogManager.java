@@ -5,23 +5,21 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class DialogManager {
-        private SpriteBatch batch;
+    private SpriteBatch batch;
     private BitmapFont font;
-    private ShapeRenderer shapeRenderer;
-    private Dialog currentDialog; // ✅ Aseguramos que usamos Dialog
+    private Dialog currentDialog;
     private int currentLineIndex;
     private boolean dialogActive;
 
-    // ✅ Tamaño fijo del cuadro de diálogo
     private float dialogBoxWidth = 440;
     private float dialogBoxHeight = 100;
     private float dialogBoxX;
@@ -29,27 +27,42 @@ public class DialogManager {
 
     private ScreenViewport uiViewport;
 
-    // ✅ Variables para efecto de escritura
     private String currentVisibleText = "";
     private float textTimer = 0f;
     private float textSpeed = 0.05f;
     private boolean textFullyVisible = false;
     private float autoAdvanceTimer = 0f;
-    private float autoAdvanceDelay = 0.5f; // Delay in seconds before auto-advancing
+    private float autoAdvanceDelay = 0.5f;
 
     private List<String> pages;
     private int currentPage;
 
     private GlyphLayout glyphLayout;
 
-    public DialogManager() {
-        batch = new SpriteBatch();
+    private Texture backgroundTexture;
+    private Texture borderTexture;
+
+    public DialogManager(SpriteBatch batch) {
+        this.batch = batch;
         font = new BitmapFont(Gdx.files.internal("fonts/OrangeKid64.fnt"));
         font.getData().setScale(0.6f);
         font.setColor(Color.WHITE);
-        shapeRenderer = new ShapeRenderer();
         glyphLayout = new GlyphLayout();
         pages = new ArrayList<>();
+
+        // Create background texture
+        Pixmap bgPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        bgPixmap.setColor(0, 0, 0, 0.8f);
+        bgPixmap.fill();
+        backgroundTexture = new Texture(bgPixmap);
+        bgPixmap.dispose();
+
+        // Create border texture
+        Pixmap borderPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        borderPixmap.setColor(Color.WHITE);
+        borderPixmap.fill();
+        borderTexture = new Texture(borderPixmap);
+        borderPixmap.dispose();
 
         uiViewport = new ScreenViewport();
         uiViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
@@ -76,7 +89,6 @@ public class DialogManager {
         pages.clear();
         currentPage = 0;
 
-        // Split text into pages
         GlyphLayout layout = new GlyphLayout();
         float targetWidth = dialogBoxWidth - 20;
         float targetHeight = dialogBoxHeight - 20;
@@ -112,7 +124,7 @@ public class DialogManager {
         currentVisibleText = "";
         textTimer = 0f;
         textFullyVisible = false;
-        autoAdvanceTimer = 0f; // Reset auto-advance timer
+        autoAdvanceTimer = 0f;
     }
 
     public void nextLine() {
@@ -131,7 +143,7 @@ public class DialogManager {
         } else {
             currentVisibleText = pages.get(currentPage);
             textFullyVisible = true;
-            autoAdvanceTimer = 0f; // Reset timer when skipping
+            autoAdvanceTimer = 0f;
         }
     }
 
@@ -166,27 +178,24 @@ public class DialogManager {
         if (!dialogActive) return;
         
         uiViewport.apply(true);
-
-        shapeRenderer.setProjectionMatrix(uiViewport.getCamera().combined);
         batch.setProjectionMatrix(uiViewport.getCamera().combined);
 
-        // ✅ Dibujar fondo del cuadro de diálogo (negro semi-transparente)
-        shapeRenderer.begin(ShapeType.Filled);
-        shapeRenderer.setColor(new Color(0f, 0f, 0f, 0.8f));
-        shapeRenderer.rect(dialogBoxX, dialogBoxY, dialogBoxWidth, dialogBoxHeight);
-        shapeRenderer.end();
+        batch.begin();
 
-        // ✅ Dibujar borde del cuadro de diálogo
-        shapeRenderer.begin(ShapeType.Line);
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(dialogBoxX, dialogBoxY, dialogBoxWidth, dialogBoxHeight);
-        shapeRenderer.end();
+        // Draw dialog box background
+        batch.draw(backgroundTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, dialogBoxHeight);
+
+        // Draw dialog box border
+        batch.draw(borderTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, 1); // Top
+        batch.draw(borderTexture, dialogBoxX, dialogBoxY + dialogBoxHeight - 1, dialogBoxWidth, 1); // Bottom
+        batch.draw(borderTexture, dialogBoxX, dialogBoxY, 1, dialogBoxHeight); // Left
+        batch.draw(borderTexture, dialogBoxX + dialogBoxWidth - 1, dialogBoxY, 1, dialogBoxHeight); // Right
 
         glyphLayout.setText(font, currentVisibleText, Color.WHITE, dialogBoxWidth - 20, Align.left, true);
 
-        // ✅ Dibujar texto
-        batch.begin();
+        // Draw text
         font.draw(batch, glyphLayout, dialogBoxX + 10, dialogBoxY + dialogBoxHeight - 10);
+        
         batch.end();
     }
 
@@ -196,8 +205,8 @@ public class DialogManager {
     }
 
     public void dispose() {
-        batch.dispose();
         font.dispose();
-        shapeRenderer.dispose();
+        backgroundTexture.dispose();
+        borderTexture.dispose();
     }
 }
