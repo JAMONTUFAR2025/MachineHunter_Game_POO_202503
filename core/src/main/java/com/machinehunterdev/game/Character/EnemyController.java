@@ -15,19 +15,36 @@ public class EnemyController extends CharacterController {
     private float runTime;
     private float waitTime;
 
+    // Nuevo enum para los estados
+    private enum State { PATROLLING, WAITING }
+    private State currentState;
+
+    // Nuevo atributo para el objetivo actual
+    private Vector2 currentTarget;
+    private Vector2 leftPoint;
+    private Vector2 rightPoint;
+
     public EnemyController(Character enemyCharacter, ArrayList<Vector2> patrolPoints, float runTime, float waitTime) {
         super(enemyCharacter);
         this.patrolPoints = patrolPoints;
-        isWaiting = false;
-        runTimer = 0f;
-        waitTimer = 0f;
         this.runTime = runTime;
         this.waitTime = waitTime;
+        
+        // Inicialización de estados y objetivos
+        this.currentState = State.PATROLLING; // Empezar patrullando
+        this.waitTimer = 0f;
+        this.runTimer = 0f;
+
+        if (patrolPoints != null && !patrolPoints.isEmpty()) {
+            this.leftPoint = patrolPoints.get(0);
+            this.rightPoint = patrolPoints.get(patrolPoints.size() - 1);
+            // Empezar moviéndose hacia la derecha por defecto
+            this.currentTarget = this.rightPoint; 
+        }
     }
 
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects) {
-        // Actualizar física y animaciones del personaje
         character.update(delta);
         checkCollisions(solidObjects);
 
@@ -36,55 +53,54 @@ public class EnemyController extends CharacterController {
             return;
         }
 
-        // Obtener puntos extremos
-        Vector2 leftPoint = patrolPoints.get(0);
-        Vector2 rightPoint = patrolPoints.get(patrolPoints.size() - 1);
-        
-        if(isWaiting) {
-            waitTimer += delta;
-            character.stopMoving();
-            if (waitTimer >= waitTime) {
-                isWaiting = false;
-                waitTimer = 0f;
-            }
-
-            return; // Salir del método para no moverse mientras espera
+        // --- Máquina de Estados ---
+        switch (currentState) {
+            case PATROLLING:
+                handlePatrollingState(delta);
+                break;
+            case WAITING:
+                handleWaitingState(delta);
+                break;
         }
 
-        runTimer += delta;
-
-        if (runTimer >= runTime) { // Cada 3 segundos, esperar
-            isWaiting = true;
-            runTimer = 0f;
-            character.stopMoving();
-        }
-
-        // Determinar dirección basada en posición actual
-        if (character.position.x <= leftPoint.x + 5f) {
-            // En el punto izquierdo, mover a la derecha
-            character.moveRight();
-            if (character.position.x >= rightPoint.x - 5f) {
-                character.stopMoving();
-            }
-        } else if (character.position.x >= rightPoint.x - 5f) {
-            // En el punto derecho, mover a la izquierda
-            character.moveLeft();
-            if (character.position.x <= leftPoint.x + 5f) {
-                character.stopMoving();
-            }
-        } else {
-            // Entre puntos, continuar en la dirección actual
-            if (character.isSeeingRight) {
-                character.moveRight();
-            } else {
-                character.moveLeft();
-            }
-        }
-        
-        // Límites del mapa
+        // Límites del mapa (sin cambios)
         float enemyWidth = character.getWidth();
         if (character.position.x < 0) character.position.x = 0;
         else if (character.position.x > 1440 - enemyWidth) character.position.x = 1440 - enemyWidth;
+    }
+
+    private void handlePatrollingState(float delta) {
+        runTimer += delta;
+        if (runTimer >= runTime) {
+            currentState = State.WAITING;
+            runTimer = 0f;
+            character.stopMoving();
+            return;
+        }
+
+        // Lógica de movimiento basada en el objetivo
+        if (currentTarget == rightPoint) {
+            character.moveRight();
+            // Si llega o pasa el objetivo, cambiar de objetivo
+            if (character.position.x >= rightPoint.x) {
+                currentTarget = leftPoint;
+            }
+        } else { // El objetivo es leftPoint
+            character.moveLeft();
+            // Si llega o pasa el objetivo, cambiar de objetivo
+            if (character.position.x <= leftPoint.x) {
+                currentTarget = rightPoint;
+            }
+        }
+    }
+
+    private void handleWaitingState(float delta) {
+        waitTimer += delta;
+        character.stopMoving();
+        if (waitTimer >= waitTime) {
+            currentState = State.PATROLLING;
+            waitTimer = 0f;
+        }
     }
 
     // Metodo para que el enemigo dañe al jugador
