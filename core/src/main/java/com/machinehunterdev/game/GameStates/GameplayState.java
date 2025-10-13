@@ -24,6 +24,7 @@ import com.machinehunterdev.game.UI.GameplayUI;
 import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Character.CharacterAnimator;
+import com.machinehunterdev.game.UI.PauseUI;
 import com.machinehunterdev.game.Util.State;
 
 public class GameplayState implements State<GameController> {
@@ -56,7 +57,9 @@ public class GameplayState implements State<GameController> {
 
     private GameplayUI gameplayUI;
 
-
+    // Pause Menu
+    private boolean isPaused = false;
+    private PauseUI pauseUI;
 
     private GameplayState() {
         instance = this;
@@ -64,10 +67,20 @@ public class GameplayState implements State<GameController> {
 
     private GameController owner;
 
+    public void resumeGame() {
+        isPaused = false;
+        Gdx.input.setInputProcessor(null); // Assuming gameplay uses polling
+    }
+
+    public void exitToMainMenu() {
+        owner.stateMachine.changeState(MainMenuState.instance);
+    }
+
 
 
     @Override
     public void enter(GameController owner) {
+        isPaused = false;
         this.owner = owner;
         this.gameBatch = owner.batch;
         this.camera = owner.camera;
@@ -77,6 +90,8 @@ public class GameplayState implements State<GameController> {
         // ✅ Inicializar diálogo
         dialogManager = new DialogManager(this.gameBatch);
         gameplayUI = new GameplayUI();
+
+        pauseUI = new PauseUI(this, this.gameBatch);
 
         // - - INICIALIZAR SUELO SOLIDO - -
         sueloTexture = new Texture("suelo.png");
@@ -127,28 +142,42 @@ public class GameplayState implements State<GameController> {
 
     @Override
     public void execute() {
-        // --- Update game logic ---
-        updateGameLogic();
-
-        // --- Draw game world ---
-        drawGameWorld();
-
-        // --- Draw dialog if active ---
-        if (isDialogActive) {
-            dialogManager.render();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            isPaused = !isPaused;
+            if (isPaused) {
+                Gdx.input.setInputProcessor(pauseUI);
+            } else {
+                Gdx.input.setInputProcessor(null);
+            }
         }
 
-        // --- Draw Gameplay UI ---
-        if (gameplayUI != null) {
-            gameplayUI.draw(playerCharacter.getHealth());
-        }
+        if (isPaused) {
+            // Draw the game world (as a static background)
+            drawGameWorld();
+            // Then draw the pause UI on top
+            pauseUI.draw();
+        } else {
+            // --- Update game logic ---
+            updateGameLogic();
 
+            // --- Draw game world ---
+            drawGameWorld();
 
+            // --- Draw dialog if active ---
+            if (isDialogActive) {
+                dialogManager.render();
+            }
 
-        // --- Handle death ---
-        if (!playerCharacter.isAlive()) {
-            owner.stateMachine.changeState(GameOverState.instance);
-            return;
+            // --- Draw Gameplay UI ---
+            if (gameplayUI != null) {
+                gameplayUI.draw(playerCharacter.getHealth());
+            }
+
+            // --- Handle death ---
+            if (!playerCharacter.isAlive()) {
+                owner.stateMachine.changeState(GameOverState.instance);
+                return;
+            }
         }
     }
 
@@ -279,6 +308,10 @@ public class GameplayState implements State<GameController> {
 
         if (gameplayUI != null) {
             gameplayUI.dispose();
+        }
+
+        if (pauseUI != null) {
+            pauseUI.dispose();
         }
 
 
