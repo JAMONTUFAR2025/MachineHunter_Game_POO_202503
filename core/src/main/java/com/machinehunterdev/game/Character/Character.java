@@ -31,17 +31,24 @@ public class Character
     public boolean isKnockedBack = false;
     public float knockbackSpeed = 250f;
 
+    public float distanceToGround = Float.MAX_VALUE; // Distancia al suelo
+
     // Estados del personaje
     public boolean isMoving;
     public boolean isSeeingRight;
     public boolean isAttacking;
     public boolean isAlive;
     public boolean onGround;
+    public boolean isOverlappingEnemy = false; // Para evitar daño continuo
 
     // Atributos de invulnerabilidad
     private boolean invulnerable = false;
     private float invulnerabilityTimer = 0f;
     private static final float INVULNERABILITY_DURATION = 5.0F; // Duración en 5 segundos
+
+    // Atributos para el parpadeo rojo al recibir daño
+    private boolean flashRed = false;
+    private float redFlashTimer = 0f;
 
     // === Constructores ===
 
@@ -80,43 +87,72 @@ public class Character
             characterAnimator.setFacingRight(isSeeingRight);
             
             // Determinar estado de animación
-            CharacterAnimator.AnimationState newState = CharacterAnimator.AnimationState.IDLE;
-            
+            CharacterAnimator.AnimationState currentState = characterAnimator.getCurrentState();
+            CharacterAnimator.AnimationState newState = currentState;
+            SpriteAnimator currentAnimator = characterAnimator.getAnimator(currentState);
+
             if (!isAlive) {
                 newState = CharacterAnimator.AnimationState.DEAD;
+            } else if (isKnockedBack && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
+                newState = CharacterAnimator.AnimationState.HURT;
             } else if (isAttacking && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.ATTACK)) {
                 newState = CharacterAnimator.AnimationState.ATTACK;
             } else if (!onGround) {
-                // En el aire
+                // En el aire: JUMP si sube, FALL si baja
                 if (velocity.y > 0) {
-                    // Subiendo (saltando)
-                    if (characterAnimator.hasAnimation(CharacterAnimator.AnimationState.JUMP)) {
-                        newState = CharacterAnimator.AnimationState.JUMP;
-                    } else {
-                        newState = CharacterAnimator.AnimationState.RUN; // fallback
-                    }
-                } else {
-                    // Cayendo
-                    if (characterAnimator.hasAnimation(CharacterAnimator.AnimationState.FALL)) {
-                        newState = CharacterAnimator.AnimationState.FALL;
-                    } else {
-                        newState = CharacterAnimator.AnimationState.RUN; // fallback
+                    newState = CharacterAnimator.AnimationState.JUMP;
+                } else if (velocity.y < 0) {
+                    newState = CharacterAnimator.AnimationState.FALL;
+
+                    // Si está a punto de aterrizar, forzar el último frame de la animación de caída
+                    if (distanceToGround <= 5f) {
+                        SpriteAnimator fallAnimator = characterAnimator.getAnimator(CharacterAnimator.AnimationState.FALL);
+                        if (fallAnimator != null) {
+                            fallAnimator.setCurrentFrame(fallAnimator.getFrames().size() - 1);
+                        }
                     }
                 }
-            } else if (isMoving) {
-                newState = CharacterAnimator.AnimationState.RUN;
+                // Si velocity.y es 0, mantenemos el estado actual (JUMP o FALL)
+                
+            } else {
+                // En el suelo: RUN si se mueve, IDLE si está quieto
+                if (isMoving) {
+                    newState = CharacterAnimator.AnimationState.RUN;
+                } else {
+                    newState = CharacterAnimator.AnimationState.IDLE;
+                }
+            }
+
+            // Fallback para animaciones que no existen
+            if (!characterAnimator.hasAnimation(newState)) {
+                if (newState == CharacterAnimator.AnimationState.JUMP || newState == CharacterAnimator.AnimationState.FALL) {
+                    newState = CharacterAnimator.AnimationState.RUN; // Usar RUN como alternativa
+                } else {
+                    newState = CharacterAnimator.AnimationState.IDLE; // Default a IDLE
+                }
             }
             
             characterAnimator.setCurrentAnimation(newState);
             characterAnimator.update(delta);
         }
 
+        // --- Manejar temporizador de parpadeo rojo ---
+        if (flashRed) {
+            redFlashTimer -= delta;
+            if (redFlashTimer <= 0) {
+                flashRed = false;
+            }
+        }
+
         // --- 2. Manejar invulnerabilidad ---
         if (invulnerable) {
             invulnerabilityTimer -= delta;
             if (invulnerabilityTimer <= 0) {
-                invulnerable = false;
-                invulnerabilityTimer = 0;
+                // Solo desactivar invulnerabilidad si no está superpuesto con un enemigo
+                if (!isOverlappingEnemy) {
+                    invulnerable = false;
+                    invulnerabilityTimer = 0;
+                }
             }
         }
 
@@ -155,27 +191,33 @@ public class Character
         if (characterAnimator != null) {
             Sprite currentSprite = characterAnimator.getCurrentSprite();
             if (currentSprite != null) {
-                // Aplicar transparencia aquí
+                // Guardar color original para restaurarlo después
                 Color originalColor = new Color(currentSprite.getColor());
-                float alpha = 1.0f;
-                
-                if (invulnerable) {
+
+                // Lógica de color: parpadeo rojo o parpadeo de invulnerabilidad
+                if (flashRed) {
+                    // 1. Prioridad: Parpadeo rojo al recibir daño
+                    currentSprite.setColor(Color.RED);
+                } else if (invulnerable) {
+                    // 2. Si no hay parpadeo rojo, aplicar parpadeo de invulnerabilidad
                     float blinkTime = invulnerabilityTimer % 1.0f;
-                    alpha = (blinkTime < 0.5f) ? 0.7f : 0.3f;
+                    float alpha = (blinkTime < 0.5f) ? 0.7f : 0.3f;
+                    currentSprite.setColor(1, 1, 1, alpha);
+                } else {
+                    // 3. Sin efectos, color normal
+                    currentSprite.setColor(1, 1, 1, 1);
                 }
-                
-                // Dibujar manualmente con transparencia
+
+                // Dibujar el sprite con la posición y escala correctas
                 currentSprite.setPosition(position.x, position.y);
                 if (!isSeeingRight) {
                     currentSprite.setScale(-1, 1);
-                    currentSprite.setPosition(position.x, position.y);
                 } else {
                     currentSprite.setScale(1, 1);
-                    currentSprite.setPosition(position.x, position.y);
                 }
-                
-                currentSprite.setColor(1, 1, 1, alpha);
                 currentSprite.draw(characterAnimator.getSpriteBatch());
+
+                // Restaurar el color original del sprite
                 currentSprite.setColor(originalColor);
             }
         } else if (fallbackTexture != null) {
@@ -198,15 +240,22 @@ public class Character
             health = 0;
         }
 
-        // Activar invulnerabilidad temporal
-        invulnerable = true;
-        invulnerabilityTimer = INVULNERABILITY_DURATION;
+        // Activar parpadeo rojo en lugar de invulnerabilidad inmediata
+        flashRed = true;
+        redFlashTimer = 0.1f;
     }
     
     public void landOn(float groundY) {
         position.y = groundY;
         velocity.y = 0;
         onGround = true;
+
+        // Si el personaje estaba en retroceso (knockback), ahora se vuelve invulnerable
+        if (isKnockedBack) {
+            invulnerable = true;
+            invulnerabilityTimer = INVULNERABILITY_DURATION;
+        }
+
         isKnockedBack = false;
     }
 
@@ -240,6 +289,10 @@ public class Character
     public void forceJump(float forceMultiplier) {
         velocity.y = jumpForce * forceMultiplier;
         onGround = false;
+    }
+
+    public void setDistanceToGround(float distance) {
+        this.distanceToGround = distance;
     }
 
     // === GETTERS ===

@@ -29,6 +29,9 @@ public class PlayerController extends CharacterController {
      */
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects) {
+        // Calcular distancia al suelo
+        checkDistanceToGround(solidObjects);
+
         // Procesar entrada del teclado (movimiento y salto)
         handleInput();
 
@@ -61,10 +64,51 @@ public class PlayerController extends CharacterController {
             character.stopMoving(); // Detener si no se presiona ninguna tecla de movimiento
         }
 
-        // Salto (solo si se presiona ESPACIO y está en el suelo)
-        if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
+        // Salto (solo si se presiona W y está en el suelo)
+        if (Gdx.input.isKeyJustPressed(Keys.W)) {
             character.jump();
         }
+    }
+
+    /**
+     * Calcula la distancia vertical desde el jugador hasta el suelo o plataforma más cercana debajo.
+     * @param solidObjects Lista de objetos sólidos para comprobar.
+     */
+    private void checkDistanceToGround(ArrayList<SolidObject> solidObjects) {
+        float playerX = character.getX();
+        float playerY = character.getY();
+        float playerWidth = character.getWidth();
+
+        float distanceToGround = Float.MAX_VALUE;
+
+        // 1. Distancia al suelo principal
+        if (playerY >= GlobalSettings.GROUND_LEVEL) {
+            distanceToGround = playerY - GlobalSettings.GROUND_LEVEL;
+        }
+
+        // 2. Distancia a las plataformas
+        for (SolidObject obj : solidObjects) {
+            if (obj.isWalkable()) {
+                com.badlogic.gdx.math.Rectangle platform = obj.getBounds();
+                float platformTop = platform.y + platform.height;
+
+                // Asegurarse de que la plataforma esté debajo del jugador
+                if (playerY > platformTop) {
+                    // Comprobar si hay superposición horizontal
+                    float overlapLeft = Math.max(playerX, platform.x);
+                    float overlapRight = Math.min(playerX + playerWidth, platform.x + platform.width);
+
+                    if (overlapRight > overlapLeft) {
+                        float distance = playerY - platformTop;
+                        if (distance < distanceToGround) {
+                            distanceToGround = distance;
+                        }
+                    }
+                }
+            }
+        }
+
+        character.setDistanceToGround(distanceToGround);
     }
 
     /**

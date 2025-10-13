@@ -102,17 +102,19 @@ public class GameplayState implements State<GameController> {
         }
 
         // --- INICIALIZAR JUGADOR CON CHARACTERANIMATOR ---
-        List<Sprite> playerIdleFrames = loadSpriteFrames("Player/Idle/PlayerIdle", 4);
-        List<Sprite> playerRunFrames = loadSpriteFrames("Player/Run/PlayerRun", 8); // Ajusta según tus assets
+        List<Sprite> playerIdleFrames = loadSpriteFrames("Player/PlayerIdle", 4);
+        List<Sprite> playerRunFrames = loadSpriteFrames("Player/PlayerRun", 8); // Ajusta según tus assets
+        List<Sprite> playerHurtFrames = loadSpriteFrames("Player/PlayerHurt", 2);
         //List<Sprite> playerDeadFrames = loadSpriteFrames("Player/Dead", 3);
-        //List<Sprite> playerJumpFrames = loadSpriteFrames("Player/Jump", 2);
-        //List<Sprite> playerFallFrames = loadSpriteFrames("Player/Fall", 2);
+        List<Sprite> playerJumpFrames = loadSpriteFrames("Player/PlayerJump", 2);
+        List<Sprite> playerFallFrames = loadSpriteFrames("Player/PlayerFall", 2);
         //List<Sprite> playerAttackFrames = loadSpriteFrames("Player/Attack", 5);
 
         CharacterAnimator playerAnimator = new CharacterAnimator(
             gameBatch,
-            playerIdleFrames, playerRunFrames, null, 
-            null, null, null // dead, jump, fall, attack no disponibles
+            playerIdleFrames, playerRunFrames, null,
+            playerJumpFrames, playerFallFrames, null, // attackFrames
+            playerHurtFrames
         );
 
         playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, 50, 100);
@@ -120,14 +122,18 @@ public class GameplayState implements State<GameController> {
 
         // --- INICIALIZAR ENEMIGO CON CHARACTERANIMATOR ---
         // Para el enemigo, usamos solo animaciones básicas
-        List<Sprite> enemyIdleFrames = loadSpriteFrames("Enemy/Idle/PlayerIdle", 4);
-        List<Sprite> enemyRunFrames = loadSpriteFrames("Enemy/Run/PlayerRun", 8);
+        List<Sprite> enemyIdleFrames = loadSpriteFrames("Enemy/PlayerIdle", 4);
+        List<Sprite> enemyRunFrames = loadSpriteFrames("Enemy/PlayerRun", 8);
+        //List<Sprite> enemyDeadFrames = loadSpriteFrames("Enemy/PlayerDead", 3);
+        List<Sprite> enemyJumpFrames = loadSpriteFrames("Enemy/PlayerJump", 2);
+        List<Sprite> enemyFallFrames = loadSpriteFrames("Enemy/PlayerFall", 2);
         //List<Sprite> enemyDeadFrames = loadSpriteFrames("Enemy/Dead/PlayerDead", 3);
 
         CharacterAnimator enemyAnimator = new CharacterAnimator(
             gameBatch,
             enemyIdleFrames, enemyRunFrames, null,
-            null, null, null // dead, jump, fall, attack no disponibles
+            enemyJumpFrames, enemyFallFrames, null,
+            null // dead, jump, fall, attack, hurt no disponibles
         );
 
         enemyCharacter = new Character(50, enemyAnimator, 300, 100);
@@ -260,20 +266,31 @@ public class GameplayState implements State<GameController> {
         Rectangle playerBounds = playerCharacter.getBounds();
         Rectangle enemyBounds = enemyCharacter.getBounds();
 
-        if (playerBounds.overlaps(enemyBounds) && !playerCharacter.isInvulnerable()) {
-            // Aplicar daño
-            playerCharacter.takeDamage(1);
-            
-            // Aplicar empuje
-            playerCharacter.isKnockedBack = true;
-            playerCharacter.forceJump(0.7f);
-            
-            // Empuje horizontal
-            if (enemyCharacter.getX() < playerCharacter.getX()) {
-                playerCharacter.velocity.x = 150f;
-            } else {
-                playerCharacter.velocity.x = -150f;
+        if (playerBounds.overlaps(enemyBounds)) {
+            playerCharacter.isOverlappingEnemy = true;
+            if (!playerCharacter.isInvulnerable()) {
+                // --- Resolución de colisión (empujar al jugador) ---
+                float overlapX = Math.min(playerBounds.x + playerBounds.width, enemyBounds.x + enemyBounds.width) - Math.max(playerBounds.x, enemyBounds.x);
+                if (playerCharacter.getX() < enemyCharacter.getX()) {
+                    playerCharacter.position.x -= overlapX; // Empujar a la izquierda
+                } else {
+                    playerCharacter.position.x += overlapX; // Empujar a la derecha
+                }
+
+                // --- Aplicar daño y empuje (knockback) ---
+                playerCharacter.takeDamage(1);
+                playerCharacter.isKnockedBack = true;
+                playerCharacter.forceJump(0.7f);
+                
+                // Empuje horizontal
+                if (enemyCharacter.getX() < playerCharacter.getX()) {
+                    playerCharacter.velocity.x = 150f;
+                } else {
+                    playerCharacter.velocity.x = -150f;
+                }
             }
+        } else {
+            playerCharacter.isOverlappingEnemy = false;
         }
     }
 

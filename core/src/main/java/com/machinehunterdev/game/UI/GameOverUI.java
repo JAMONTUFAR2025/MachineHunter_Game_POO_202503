@@ -40,7 +40,7 @@ public class GameOverUI implements InputProcessor {
     public GameOverUI(SpriteBatch batch, GameController gameController) {
         this.batch = batch;
         this.gameController = gameController;
-        this.placeholderTexture = new Texture("Player/Idle/PlayerIdle1.png");//Textura del Personaje en el Game Over
+        this.placeholderTexture = new Texture("Player/PlayerIdle1.png");//Textura del Personaje en el Game Over
         loadCustomBitmapFont();
         loadDeathMessages();
         // Select a random message at creation

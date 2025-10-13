@@ -16,7 +16,7 @@ import java.util.Map;
 public class CharacterAnimator {
     // Enum para los estados de animación
     public enum AnimationState {
-        IDLE, RUN, DEAD, JUMP, FALL, ATTACK
+        IDLE, RUN, DEAD, JUMP, FALL, ATTACK, HURT
     }
 
     // Mapa de animaciones
@@ -49,7 +49,8 @@ public class CharacterAnimator {
         List<Sprite> deadFrames,
         List<Sprite> jumpFrames,
         List<Sprite> fallFrames,
-        List<Sprite> attackFrames
+        List<Sprite> attackFrames,
+        List<Sprite> hurtFrames
     ) {
         this.spriteBatch = spriteBatch;
         this.animators = new HashMap<>();
@@ -63,13 +64,16 @@ public class CharacterAnimator {
             this.animators.put(AnimationState.DEAD, new SpriteAnimator(deadFrames, spriteBatch));
         }
         if (jumpFrames != null && !jumpFrames.isEmpty()) {
-            this.animators.put(AnimationState.JUMP, new SpriteAnimator(jumpFrames, spriteBatch));
+            this.animators.put(AnimationState.JUMP, new SpriteAnimator(jumpFrames, spriteBatch, 0.16f, false, false));
         }
         if (fallFrames != null && !fallFrames.isEmpty()) {
-            this.animators.put(AnimationState.FALL, new SpriteAnimator(fallFrames, spriteBatch));
+            this.animators.put(AnimationState.FALL, new SpriteAnimator(fallFrames, spriteBatch, 0.16f, false, true));
         }
         if (attackFrames != null && !attackFrames.isEmpty()) {
             this.animators.put(AnimationState.ATTACK, new SpriteAnimator(attackFrames, spriteBatch));
+        }
+        if (hurtFrames != null && !hurtFrames.isEmpty()) {
+            this.animators.put(AnimationState.HURT, new SpriteAnimator(hurtFrames, spriteBatch, 0.1f, false));
         }
         
         // Iniciar animación por defecto
@@ -136,6 +140,15 @@ public class CharacterAnimator {
     }
 
     /**
+     * Obtiene el SpriteAnimator para un estado específico.
+     * @param state Estado de animación
+     * @return SpriteAnimator correspondiente o null si no existe
+     */
+    public SpriteAnimator getAnimator(AnimationState state) {
+        return animators.get(state);
+    }
+
+    /**
      * Obtiene el estado de animación actual.
      */
     public AnimationState getCurrentState() {
@@ -149,7 +162,10 @@ public class CharacterAnimator {
     public void setFacingRight(boolean facingRight) {
         this.facingRight = facingRight;
     }
-
+    /**
+     * Verifica si el personaje está mirando a la derecha.
+     * @return true si mira a la derecha
+     */
     public boolean isFacingRight() {
         return facingRight;
     }
