@@ -30,9 +30,9 @@ public class GameplayUI {
                 shapeRenderer.setColor(Color.WHITE);
             }
 
-            // Draw from right to left
-            float x = uiCamera.viewportWidth - padding - squareSize - (i * (squareSize + padding));
-            float y = uiCamera.viewportHeight - squareSize - padding;
+            // Draw from left to right
+            float x = padding + (i * (squareSize + padding));
+            float y = padding;
             shapeRenderer.rect(x, y, squareSize, squareSize);
         }
 
