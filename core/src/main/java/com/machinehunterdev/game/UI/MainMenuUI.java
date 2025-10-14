@@ -10,17 +10,18 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.GameStates.GameplayState;
+import com.machinehunterdev.game.GameStates.LeaderboardState;
 
 // ** CREADO POR ANNER ALESSANDRO TERUEL 2025-10-03 **
 public class MainMenuUI implements InputProcessor {
     
-    private String[] options = {"Iniciar partida", "Estadisticas", "Salir"};
+    private String[] options = {"Iniciar partida", "Clasificacion", "Salir"};
     private int selected = 0;
     private BitmapFont font;
     private SpriteBatch batch;
     private GameController gameController;
     private Texture texture;
-    private boolean showingStats = false;
+
 
     /**
      * Constructor de la clase MainMenuUI
@@ -57,54 +58,21 @@ public class MainMenuUI implements InputProcessor {
         batch.draw(texture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         GlyphLayout layout = new GlyphLayout();
 
-        if (showingStats) {
-            // Menu de estadisticass
-            int screenWidth = Gdx.graphics.getWidth();
-            int screenHeight = Gdx.graphics.getHeight();
+        // Menu de opciones
+        int screenWidth = Gdx.graphics.getWidth();
+        int screenHeight = Gdx.graphics.getHeight();
 
-            String[] statsTexts = {
-                "=== ESTADISTICAS ===",
-                "Partidas jugadas: 5",
-                "Puntuacion maxima: 10000",
-                "Tiempo total jugado: 3h 45m",
-                "Niveles completados: 3/5",
-                "Monedas recolectadas: 150",
-                "Presiona Q o E para volver"
-            };
+        float startY = screenHeight * 0.6f;
+        float lineHeight = 110f;
 
-            float startY = screenHeight * 0.7f;
-            float lineHeight = 90f; // Separador de filas, Ajusta según el tamaño de tu fuente
+        for (int i = 0; i < options.length; i++) {
+            String text = (i == selected ? "> " : "  ") + options[i];
+            layout.setText(font, text);
+            float x = (screenWidth - layout.width) / 2f;
+            float y = startY - i * lineHeight;
 
-            for (int i = 0; i < statsTexts.length; i++) {
-                String text = statsTexts[i];
-                layout.setText(font, text);
-                float x = (screenWidth - layout.width) / 2f;
-                float y = startY - i * lineHeight;
-
-                if (i == 0) {
-                    font.setColor(Color.YELLOW);
-                } else {
-                    font.setColor(Color.WHITE);
-                }
-                font.draw(batch, text, x, y);
-            }
-        } else {
-            // Menu de opciones
-            int screenWidth = Gdx.graphics.getWidth();
-            int screenHeight = Gdx.graphics.getHeight();
-
-            float startY = screenHeight * 0.6f;
-            float lineHeight = 110f;
-
-            for (int i = 0; i < options.length; i++) {
-                String text = (i == selected ? "> " : "  ") + options[i];
-                layout.setText(font, text);
-                float x = (screenWidth - layout.width) / 2f;
-                float y = startY - i * lineHeight;
-
-                font.setColor(i == selected ? Color.RED : Color.WHITE);
-                font.draw(batch, text, x, y);
-            }
+            font.setColor(i == selected ? Color.RED : Color.WHITE);
+            font.draw(batch, text, x, y);
         }
         batch.end();
     }
@@ -116,13 +84,6 @@ public class MainMenuUI implements InputProcessor {
     }
 
     public void manejarEntrada(int keycode) {
-        if (showingStats) {
-            if (keycode == Input.Keys.Q || keycode == Input.Keys.E) {
-                showingStats = false;
-            }
-            return;
-        }
-
         if (keycode == Input.Keys.W || keycode == Input.Keys.UP) {
             selected = (selected - 1 + options.length) % options.length;
         } else if (keycode == Input.Keys.S || keycode == Input.Keys.DOWN) {
@@ -131,7 +92,7 @@ public class MainMenuUI implements InputProcessor {
             if (selected == 0) {
                 starGame();
             } else if (selected == 1) {
-                showingStats = true;
+                gameController.stateMachine.changeState(LeaderboardState.instance);
             } else if (selected == 2) {
                 exitGame();
             }

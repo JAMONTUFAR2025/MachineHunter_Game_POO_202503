@@ -1,76 +1,52 @@
 package com.machinehunterdev.game.GameStates;
+
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.Input;
+import com.machinehunterdev.game.GameController;
+import com.machinehunterdev.game.Leaderboard.LeaderboardManager;
+import com.machinehunterdev.game.UI.LeaderboardUI;
+import com.machinehunterdev.game.Util.State;
 
-import java.util.Comparator;
+public class LeaderboardState implements State<GameController> {
 
-public class LeaderboardState {
-    private static final String PREFS_NAME = "leaderboard_prefs";
-    private static final String KEY_SCORES = "scores";
-    private static final int MAX_ENTRIES = 10;
+    public static LeaderboardState instance = new LeaderboardState();
 
-    private Preferences prefs;
-    private Array<ScoreEntry> scores;
+    private LeaderboardUI leaderboardUI;
+    private GameController owner;
+    private LeaderboardManager leaderboardManager;
 
-    public LeaderboardState() {
-        prefs = Gdx.app.getPreferences(PREFS_NAME);
-        loadScores();
+    private LeaderboardState() {}
+
+    @Override
+    public void enter(GameController owner) {
+        this.owner = owner;
+        this.leaderboardManager = new LeaderboardManager(); // Create a new manager each time
+        this.leaderboardUI = new LeaderboardUI(leaderboardManager, this);
+        Gdx.input.setInputProcessor(leaderboardUI.getStage());
     }
 
-    public void addScore(String playerName, int score) {
-        scores.add(new ScoreEntry(playerName, score));
-        // Ordenar de mayor a menor
-        scores.sort(new Comparator<ScoreEntry>() {
-            @Override
-            public int compare(ScoreEntry o1, ScoreEntry o2) {
-                return Integer.compare(o2.score, o1.score);
-            }
-        });
-
-        // Mantener solo los primeros MAX_ENTRIES
-        while (scores.size > MAX_ENTRIES) {
-            scores.removeIndex(scores.size - 1);
-        }
-
-        saveScores();
-    }
-
-    private void loadScores() {
-        scores = new Array<ScoreEntry>();
-        String json = prefs.getString(KEY_SCORES, null);
-        if (json != null && !json.isEmpty()) {
-            Json jsonParser = new Json();
-            ScoreEntry[] loaded = jsonParser.fromJson(ScoreEntry[].class, json);
-            if (loaded != null) {
-                for (ScoreEntry entry : loaded) {
-                    scores.add(entry);
-                }
-            }
+    @Override
+    public void execute() {
+        leaderboardUI.render(Gdx.graphics.getDeltaTime());
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Q) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            exitToMainMenu();
         }
     }
 
-    private void saveScores() {
-        Json json = new Json();
-        String jsonString = json.toJson(scores.toArray(ScoreEntry.class));
-        prefs.putString(KEY_SCORES, jsonString);
-        prefs.flush();
-    }
-
-    public Array<ScoreEntry> getTopScores() {
-        return new Array<ScoreEntry>(scores); // copia
-    }
-
-    public static class ScoreEntry {
-        public String name;
-        public int score;
-
-        public ScoreEntry() {} // Necesario para Json
-
-        public ScoreEntry(String name, int score) {
-            this.name = name;
-            this.score = score;
+    @Override
+    public void exit() {
+        if (leaderboardUI != null) {
+            leaderboardUI.dispose();
         }
+    }
+
+    public void resize(int width, int height) {
+        if (leaderboardUI != null) {
+            leaderboardUI.resize(width, height);
+        }
+    }
+
+    public void exitToMainMenu() {
+        owner.stateMachine.changeState(MainMenuState.instance);
     }
 }

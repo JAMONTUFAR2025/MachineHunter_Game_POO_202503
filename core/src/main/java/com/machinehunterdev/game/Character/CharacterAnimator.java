@@ -73,7 +73,7 @@ public class CharacterAnimator {
             this.animators.put(AnimationState.ATTACK, new SpriteAnimator(attackFrames, spriteBatch));
         }
         if (hurtFrames != null && !hurtFrames.isEmpty()) {
-            this.animators.put(AnimationState.HURT, new SpriteAnimator(hurtFrames, spriteBatch, 0.1f, false));
+            this.animators.put(AnimationState.HURT, new SpriteAnimator(hurtFrames, spriteBatch, 0.1f, false, true));
         }
         
         // Iniciar animación por defecto
