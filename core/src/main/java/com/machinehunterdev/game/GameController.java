@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.machinehunterdev.game.GameStates.MainMenuState;
+import com.machinehunterdev.game.GameStates.NameInputState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.Util.State;
 import com.machinehunterdev.game.Util.StateMachine;

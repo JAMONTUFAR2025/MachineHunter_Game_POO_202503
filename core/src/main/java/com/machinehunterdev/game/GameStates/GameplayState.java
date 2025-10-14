@@ -89,7 +89,7 @@ public class GameplayState implements State<GameController> {
 
         // ✅ Inicializar diálogo
         dialogManager = new DialogManager(this.gameBatch);
-        gameplayUI = new GameplayUI();
+        gameplayUI = new GameplayUI(this.gameBatch);
 
         pauseUI = new PauseUI(this, this.gameBatch);
 
@@ -111,7 +111,6 @@ public class GameplayState implements State<GameController> {
         //List<Sprite> playerAttackFrames = loadSpriteFrames("Player/Attack", 5);
 
         CharacterAnimator playerAnimator = new CharacterAnimator(
-            gameBatch,
             playerIdleFrames, playerRunFrames, null,
             playerJumpFrames, playerFallFrames, null, // attackFrames
             playerHurtFrames
@@ -130,7 +129,6 @@ public class GameplayState implements State<GameController> {
         //List<Sprite> enemyDeadFrames = loadSpriteFrames("Enemy/Dead/PlayerDead", 3);
 
         CharacterAnimator enemyAnimator = new CharacterAnimator(
-            gameBatch,
             enemyIdleFrames, enemyRunFrames, null,
             enemyJumpFrames, enemyFallFrames, null,
             null // dead, jump, fall, attack, hurt no disponibles
@@ -242,8 +240,8 @@ public class GameplayState implements State<GameController> {
         }
 
         // ✅ Dibuja ambos personajes (el método draw() ya maneja animaciones y volteo)
-        playerCharacter.draw();
-        enemyCharacter.draw();
+        playerCharacter.draw(gameBatch);
+        enemyCharacter.draw(gameBatch);
 
         gameBatch.end();
 

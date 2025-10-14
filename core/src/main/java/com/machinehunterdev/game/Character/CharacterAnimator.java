@@ -26,15 +26,11 @@ public class CharacterAnimator {
     private AnimationState currentState = AnimationState.IDLE;
     private AnimationState previousState = AnimationState.IDLE;
     
-    // SpriteBatch para dibujar
-    private SpriteBatch spriteBatch;
-    
     // Dirección de mirada
     private boolean facingRight = true;
 
     /**
      * Constructor principal
-     * @param spriteBatch SpriteBatch para renderizar
      * @param idleFrames Frames para animación idle (obligatorio)
      * @param runFrames Frames para animación run (obligatorio)
      * @param deadFrames Frames para animación dead (obligatorio)
@@ -43,7 +39,6 @@ public class CharacterAnimator {
      * @param attackFrames Frames para animación attack (opcional, puede ser null)
      */
     public CharacterAnimator(
-        SpriteBatch spriteBatch,
         List<Sprite> idleFrames,
         List<Sprite> runFrames,
         List<Sprite> deadFrames,
@@ -52,28 +47,31 @@ public class CharacterAnimator {
         List<Sprite> attackFrames,
         List<Sprite> hurtFrames
     ) {
-        this.spriteBatch = spriteBatch;
         this.animators = new HashMap<>();
         
         // Animaciones obligatorias
-        this.animators.put(AnimationState.IDLE, new SpriteAnimator(idleFrames, spriteBatch));
-        this.animators.put(AnimationState.RUN, new SpriteAnimator(runFrames, spriteBatch));
+        if (idleFrames != null && !idleFrames.isEmpty()) {
+            this.animators.put(AnimationState.IDLE, new SpriteAnimator(idleFrames));
+        }
+        if (runFrames != null && !runFrames.isEmpty()) {
+            this.animators.put(AnimationState.RUN, new SpriteAnimator(runFrames));
+        }
         
         // Animaciones opcionales
         if (deadFrames != null && !deadFrames.isEmpty()) {
-            this.animators.put(AnimationState.DEAD, new SpriteAnimator(deadFrames, spriteBatch));
+            this.animators.put(AnimationState.DEAD, new SpriteAnimator(deadFrames));
         }
         if (jumpFrames != null && !jumpFrames.isEmpty()) {
-            this.animators.put(AnimationState.JUMP, new SpriteAnimator(jumpFrames, spriteBatch, 0.16f, false, false));
+            this.animators.put(AnimationState.JUMP, new SpriteAnimator(jumpFrames, 0.16f, false, false));
         }
         if (fallFrames != null && !fallFrames.isEmpty()) {
-            this.animators.put(AnimationState.FALL, new SpriteAnimator(fallFrames, spriteBatch, 0.16f, false, true));
+            this.animators.put(AnimationState.FALL, new SpriteAnimator(fallFrames, 0.16f, false, true));
         }
         if (attackFrames != null && !attackFrames.isEmpty()) {
-            this.animators.put(AnimationState.ATTACK, new SpriteAnimator(attackFrames, spriteBatch));
+            this.animators.put(AnimationState.ATTACK, new SpriteAnimator(attackFrames));
         }
         if (hurtFrames != null && !hurtFrames.isEmpty()) {
-            this.animators.put(AnimationState.HURT, new SpriteAnimator(hurtFrames, spriteBatch, 0.1f, false));
+            this.animators.put(AnimationState.HURT, new SpriteAnimator(hurtFrames, 0.1f, false));
         }
         
         // Iniciar animación por defecto
@@ -96,7 +94,7 @@ public class CharacterAnimator {
      * @param x Posición X
      * @param y Posición Y
      */
-    public void draw(float x, float y) {
+    public void draw(float x, float y, SpriteBatch spriteBatch) {
         SpriteAnimator currentAnimator = animators.get(currentState);
         if (currentAnimator != null) {
             Sprite currentSprite = currentAnimator.getCurrentSprite();
@@ -112,7 +110,7 @@ public class CharacterAnimator {
                     currentSprite.setPosition(x, y);
                 }
                 
-                currentSprite.draw(spriteBatch);
+                currentAnimator.draw(spriteBatch);
             }
         }
     }
@@ -176,10 +174,5 @@ public class CharacterAnimator {
     public Sprite getCurrentSprite() {
         SpriteAnimator currentAnimator = animators.get(currentState);
         return currentAnimator != null ? currentAnimator.getCurrentSprite() : null;
-    }
-
-    // Obtener SpriteBash
-    public SpriteBatch getSpriteBatch() {
-        return spriteBatch;
     }
 }

@@ -7,7 +7,6 @@ import java.util.List;
 // -- CLASE PARA ANIMAR SPRITES (FOTOGRAMAS) --
 public class SpriteAnimator
 {
-    private SpriteBatch spriteBatch; // En libGDX usamos SpriteBatch para renderizar
     private List<Sprite> frames;     // Lista de fotogramas
     private float frameRate;         // Tiempo entre frames (en segundos)
     private boolean loop;            // Si la animación debe repetirse
@@ -18,27 +17,26 @@ public class SpriteAnimator
     private boolean finished;        // Si la animación ha terminado (para animaciones no loopeadas)
 
     // Constructor principal
-    public SpriteAnimator(List<Sprite> frames, SpriteBatch spriteBatch, float frameRate, boolean loop, boolean excludeLastFrame) {
+    public SpriteAnimator(List<Sprite> frames, float frameRate, boolean loop, boolean excludeLastFrame) {
         this.frames = frames;
-        this.spriteBatch = spriteBatch;
         this.frameRate = frameRate;
         this.loop = loop;
         this.excludeLastFrame = excludeLastFrame;
     }
 
     // Constructor sin excludeLastFrame (por defecto false)
-    public SpriteAnimator(List<Sprite> frames, SpriteBatch spriteBatch, float frameRate, boolean loop) {
-        this(frames, spriteBatch, frameRate, loop, false);
+    public SpriteAnimator(List<Sprite> frames, float frameRate, boolean loop) {
+        this(frames, frameRate, loop, false);
     }
 
     // Constructor con valor por defecto para frameRate y loop
-    public SpriteAnimator(List<Sprite> frames, SpriteBatch spriteBatch, float frameRate) {
-        this(frames, spriteBatch, frameRate, true, false);
+    public SpriteAnimator(List<Sprite> frames, float frameRate) {
+        this(frames, frameRate, true, false);
     }
 
     // Constructor con valor por defecto para frameRate
-    public SpriteAnimator(List<Sprite> frames, SpriteBatch spriteBatch) {
-        this(frames, spriteBatch, 0.16f, true, false);
+    public SpriteAnimator(List<Sprite> frames) {
+        this(frames, 0.16f, true, false);
     }
 
     // Inicializa las variables al iniciar
@@ -72,7 +70,7 @@ public class SpriteAnimator
     }
 
     // Método para dibujar el sprite actual
-    public void draw() {
+    public void draw(SpriteBatch spriteBatch) {
         if (!frames.isEmpty()) {
             frames.get(currentFrame).draw(spriteBatch);
         }
@@ -93,11 +91,6 @@ public class SpriteAnimator
     public Sprite getCurrentSprite() {
         if (frames.isEmpty()) return null;
         return frames.get(currentFrame);
-    }
-
-    // Getter para el SpriteBatch (útil si se necesita en otra clase)
-    public SpriteBatch getSpriteBatch() {
-        return spriteBatch;
     }
 
     // Para saber si una animación no loopeada ha terminado

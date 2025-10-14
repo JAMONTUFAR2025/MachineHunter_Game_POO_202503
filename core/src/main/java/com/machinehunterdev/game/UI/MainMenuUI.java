@@ -141,7 +141,7 @@ public class MainMenuUI implements InputProcessor {
     private void starGame() {
         System.out.println("Juego iniciado");
         Gdx.input.setInputProcessor(null);
-        gameController.stateMachine.changeState(GameplayState.instance);
+        gameController.stateMachine.changeState(com.machinehunterdev.game.GameStates.NameInputState.instance);
     }
 
     private void exitGame() {
