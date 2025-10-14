@@ -15,6 +15,8 @@ public class GlobalSettings
     // Instancia singleton del GlobalSettings
     public static GlobalSettings instance = new GlobalSettings();
 
+    public static String playerName;
+
     // Constructor privado para evitar instanciación externa
     private GlobalSettings()
     {

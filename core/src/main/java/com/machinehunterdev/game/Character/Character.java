@@ -2,10 +2,10 @@ package com.machinehunterdev.game.Character;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.machinehunterdev.game.Util.SpriteAnimator;
 
 // Clase base para todos los personajes del juego
 public class Character 
@@ -89,7 +89,7 @@ public class Character
             // Determinar estado de animación
             CharacterAnimator.AnimationState currentState = characterAnimator.getCurrentState();
             CharacterAnimator.AnimationState newState = currentState;
-            SpriteAnimator currentAnimator = characterAnimator.getAnimator(currentState);
+            com.machinehunterdev.game.Util.SpriteAnimator currentAnimator = characterAnimator.getAnimator(currentState);
 
             if (!isAlive) {
                 newState = CharacterAnimator.AnimationState.DEAD;
@@ -106,7 +106,7 @@ public class Character
 
                     // Si está a punto de aterrizar, forzar el último frame de la animación de caída
                     if (distanceToGround <= 5f) {
-                        SpriteAnimator fallAnimator = characterAnimator.getAnimator(CharacterAnimator.AnimationState.FALL);
+                        com.machinehunterdev.game.Util.SpriteAnimator fallAnimator = characterAnimator.getAnimator(CharacterAnimator.AnimationState.FALL);
                         if (fallAnimator != null) {
                             fallAnimator.setCurrentFrame(fallAnimator.getFrames().size() - 1);
                         }
@@ -187,7 +187,7 @@ public class Character
     }
 
     // === MÉTODO PARA DIBUJAR ===
-    public void draw() {
+    public void draw(SpriteBatch spriteBatch) {
         if (characterAnimator != null) {
             Sprite currentSprite = characterAnimator.getCurrentSprite();
             if (currentSprite != null) {
@@ -209,13 +209,7 @@ public class Character
                 }
 
                 // Dibujar el sprite con la posición y escala correctas
-                currentSprite.setPosition(position.x, position.y);
-                if (!isSeeingRight) {
-                    currentSprite.setScale(-1, 1);
-                } else {
-                    currentSprite.setScale(1, 1);
-                }
-                currentSprite.draw(characterAnimator.getSpriteBatch());
+                characterAnimator.draw(position.x, position.y, spriteBatch);
 
                 // Restaurar el color original del sprite
                 currentSprite.setColor(originalColor);
