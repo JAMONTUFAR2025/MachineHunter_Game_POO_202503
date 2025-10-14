@@ -40,6 +40,7 @@ public class Character
     public boolean isAlive;
     public boolean onGround;
     public boolean isOverlappingEnemy = false; // Para evitar daño continuo
+    public boolean isCrouching = false;
 
     // Atributos de invulnerabilidad
     private boolean invulnerable = false;
@@ -95,6 +96,8 @@ public class Character
                 newState = CharacterAnimator.AnimationState.DEAD;
             } else if (isKnockedBack && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
                 newState = CharacterAnimator.AnimationState.HURT;
+            } else if (isCrouching && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.CROUCH)) {
+                newState = CharacterAnimator.AnimationState.CROUCH;
             } else if (isAttacking && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.ATTACK)) {
                 newState = CharacterAnimator.AnimationState.ATTACK;
             } else if (!onGround) {
@@ -253,15 +256,19 @@ public class Character
         isKnockedBack = false;
     }
 
+    public void setCrouching(boolean crouching) {
+        isCrouching = crouching;
+    }
+
     public void moveLeft() {
-        if (!isKnockedBack) {
+        if (!isKnockedBack && !isCrouching) {
             velocity.x = -speed;
             isMoving = true;
         }
     }
 
     public void moveRight() {
-        if (!isKnockedBack) {
+        if (!isKnockedBack && !isCrouching) {
             velocity.x = speed;
             isMoving = true;
         }
@@ -274,7 +281,7 @@ public class Character
     }
 
     public void jump() {
-        if (onGround) {
+        if (onGround && !isCrouching) {
             velocity.y = jumpForce;
             onGround = false;
         }

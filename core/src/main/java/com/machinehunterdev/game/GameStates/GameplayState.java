@@ -109,11 +109,12 @@ public class GameplayState implements State<GameController> {
         List<Sprite> playerJumpFrames = loadSpriteFrames("Player/PlayerJump", 2);
         List<Sprite> playerFallFrames = loadSpriteFrames("Player/PlayerFall", 2);
         //List<Sprite> playerAttackFrames = loadSpriteFrames("Player/Attack", 5);
+        List<Sprite> playerCrouchFrames = loadSpriteFrames("Player/PlayerCrouch", 4);
 
         CharacterAnimator playerAnimator = new CharacterAnimator(
             playerIdleFrames, playerRunFrames, null,
             playerJumpFrames, playerFallFrames, null, // attackFrames
-            playerHurtFrames
+            playerHurtFrames, playerCrouchFrames
         );
 
         playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, 50, 100);
@@ -131,7 +132,7 @@ public class GameplayState implements State<GameController> {
         CharacterAnimator enemyAnimator = new CharacterAnimator(
             enemyIdleFrames, enemyRunFrames, null,
             enemyJumpFrames, enemyFallFrames, null,
-            null // dead, jump, fall, attack, hurt no disponibles
+            null, null // dead, jump, fall, attack, hurt, crouch no disponibles
         );
 
         enemyCharacter = new Character(50, enemyAnimator, 300, 100);

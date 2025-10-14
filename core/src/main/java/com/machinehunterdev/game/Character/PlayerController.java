@@ -56,12 +56,18 @@ public class PlayerController extends CharacterController {
      * Usa teclas A/D para moverse y ESPACIO para saltar.
      */
     private void handleInput() {
-        if (Gdx.input.isKeyPressed(Keys.A)) {
-            character.moveLeft();
-        } else if (Gdx.input.isKeyPressed(Keys.D)) {
-            character.moveRight();
+        if (Gdx.input.isKeyPressed(Keys.S) && character.onGround) {
+            character.setCrouching(true);
+            character.stopMoving();
         } else {
-            character.stopMoving(); // Detener si no se presiona ninguna tecla de movimiento
+            character.setCrouching(false);
+            if (Gdx.input.isKeyPressed(Keys.A)) {
+                character.moveLeft();
+            } else if (Gdx.input.isKeyPressed(Keys.D)) {
+                character.moveRight();
+            } else {
+                character.stopMoving(); // Detener si no se presiona ninguna tecla de movimiento
+            }
         }
 
         // Salto (solo si se presiona W y está en el suelo)

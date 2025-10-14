@@ -16,7 +16,7 @@ import java.util.Map;
 public class CharacterAnimator {
     // Enum para los estados de animación
     public enum AnimationState {
-        IDLE, RUN, DEAD, JUMP, FALL, ATTACK, HURT
+        IDLE, RUN, DEAD, JUMP, FALL, ATTACK, HURT, CROUCH
     }
 
     // Mapa de animaciones
@@ -45,7 +45,8 @@ public class CharacterAnimator {
         List<Sprite> jumpFrames,
         List<Sprite> fallFrames,
         List<Sprite> attackFrames,
-        List<Sprite> hurtFrames
+        List<Sprite> hurtFrames,
+        List<Sprite> crouchFrames
     ) {
         this.animators = new HashMap<>();
         
@@ -59,7 +60,7 @@ public class CharacterAnimator {
         
         // Animaciones opcionales
         if (deadFrames != null && !deadFrames.isEmpty()) {
-            this.animators.put(AnimationState.DEAD, new SpriteAnimator(deadFrames));
+            this.animators.put(AnimationState.DEAD, new SpriteAnimator(deadFrames, 0.1f, false, false));
         }
         if (jumpFrames != null && !jumpFrames.isEmpty()) {
             this.animators.put(AnimationState.JUMP, new SpriteAnimator(jumpFrames, 0.16f, false, false));
@@ -73,7 +74,10 @@ public class CharacterAnimator {
         if (hurtFrames != null && !hurtFrames.isEmpty()) {
             this.animators.put(AnimationState.HURT, new SpriteAnimator(hurtFrames, 0.1f, false, true));
         }
-        
+        if (crouchFrames != null && !crouchFrames.isEmpty()) {
+            this.animators.put(AnimationState.CROUCH, new SpriteAnimator(crouchFrames));
+        }  
+
         // Iniciar animación por defecto
         setCurrentAnimation(AnimationState.IDLE);
     }
