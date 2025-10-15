@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -21,6 +22,7 @@ public class MainMenuUI implements InputProcessor {
     private SpriteBatch batch;
     private GameController gameController;
     private Texture texture;
+    private Texture backgroundTexture;
 
 
     /**
@@ -34,6 +36,13 @@ public class MainMenuUI implements InputProcessor {
         this.gameController = gameController;
         this.texture = texture;
         loadCustomBitmapFont();
+
+        // Create a 1x1 white texture programmatically
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+        this.backgroundTexture = new Texture(pixmap);
+        pixmap.dispose();
     }
 
     /**
@@ -74,7 +83,34 @@ public class MainMenuUI implements InputProcessor {
             font.setColor(i == selected ? Color.RED : Color.WHITE);
             font.draw(batch, text, x, y);
         }
+
+        drawControls();
+
         batch.end();
+    }
+
+    private void drawControls() {
+        String controlsText = "E-Seleccionar | W/S-Moverse";
+        GlyphLayout layout = new GlyphLayout(font, controlsText);
+
+        float boxWidth = layout.width + 40;
+        float boxHeight = layout.height + 40;
+        float boxX = (Gdx.graphics.getWidth() - boxWidth) / 2f;
+        float boxY = 10;
+
+        batch.setColor(0, 0, 0, 0.7f);
+        batch.draw(backgroundTexture, boxX, boxY, boxWidth, boxHeight);
+        batch.setColor(Color.WHITE);
+
+        // Set the font scale for the controls text
+        font.setColor(Color.WHITE);
+
+        // Calculate the position of the text
+        float textX = (Gdx.graphics.getWidth() - layout.width) / 2f;
+        float textY = boxY + boxHeight / 2 + layout.height / 2;
+
+        // Draw the text
+        font.draw(batch, controlsText, textX, textY);
     }
 
     @Override

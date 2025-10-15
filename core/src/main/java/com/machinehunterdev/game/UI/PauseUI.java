@@ -28,10 +28,10 @@ public class PauseUI implements InputProcessor {
     public PauseUI(GameplayState gameplayState, SpriteBatch batch) {
         this.gameplayState = gameplayState;
         this.batch = batch;
-        
-        // Create a 1x1 semi-transparent black texture programmatically
+
+        // Create a 1x1 white texture programmatically
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(0, 0, 0, 0.5f); // Black with 50% alpha
+        pixmap.setColor(Color.WHITE);
         pixmap.fill();
         this.backgroundTexture = new Texture(pixmap);
         pixmap.dispose();
@@ -52,36 +52,59 @@ public class PauseUI implements InputProcessor {
         
         batch.begin();
         
-        // Draw semi-transparent background
+        // Draw a semi-transparent background over the whole screen
+        batch.setColor(0, 0, 0, 0.7f);
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.setColor(Color.WHITE);
 
         // Draw menu text
-        font.getData().setScale(1.5f);
+        font.getData().setScale(1.0f);
 
         if (currentState == MenuState.MAIN) {
-            drawMenu(mainOptions, Gdx.graphics.getHeight() / 2f + 100);
+            drawMenu(mainOptions, Gdx.graphics.getHeight() / 2f + 80);
         } else if (currentState == MenuState.CONFIRM_EXIT) {
             drawConfirmationMenu();
         }
-
+        drawControls();
         batch.end();
     }
+    private void drawControls() {
+        String controlsText = "Q-Retroceder | E-Seleccionar | W/S-Moverse";
+        GlyphLayout layout = new GlyphLayout(font, controlsText);
+
+        // Set the font scale for the controls text
+        font.setColor(Color.WHITE);
+
+        // Calculate the position of the text
+        float textX = (Gdx.graphics.getWidth() - layout.width) / 2f;
+        float textY = 10 + layout.height + 20;
+
+        // Draw the text
+        font.draw(batch, controlsText, textX, textY);
+    }
+
 
     private void drawMenu(String[] options, float startY) {
         for (int i = 0; i < options.length; i++) {
-            drawText(options[i], startY - (i * 100), i == selectedOption);
+            drawText(options[i], startY - (i * 80), i == selectedOption);
         }
     }
 
     private void drawConfirmationMenu() {
-        drawText("¿Está seguro?", Gdx.graphics.getHeight() / 2f + 100, false);
-        drawMenu(confirmOptions, Gdx.graphics.getHeight() / 2f);
+        float startY = Gdx.graphics.getHeight() / 2f + 80;
+
+        drawText("¿Esta seguro?", startY, false);
+        
+        for (int i = 0; i < confirmOptions.length; i++) {
+            float optionY = startY - ((i + 1) * 80);
+            drawText(confirmOptions[i], optionY, i == selectedOption);
+        }
     }
 
     private void drawText(String text, float y, boolean isSelected) {
         GlyphLayout layout = new GlyphLayout(font, text);
         float x = (Gdx.graphics.getWidth() - layout.width) / 2f;
-        font.setColor(isSelected ? Color.RED : Color.WHITE);
+        font.setColor(isSelected ? new Color(0.7f, 0, 0, 1) : Color.WHITE);
         font.draw(batch, text, x, y);
     }
 
@@ -107,6 +130,9 @@ public class PauseUI implements InputProcessor {
                 currentState = MenuState.CONFIRM_EXIT;
                 selectedOption = 0;
             }
+        }else if (keycode == Input.Keys.Q){
+            gameplayState.resumeGame();
+
         }
     }
 
@@ -122,6 +148,9 @@ public class PauseUI implements InputProcessor {
                 currentState = MenuState.MAIN;
                 selectedOption = 0;
             }
+        }else if (keycode == Input.Keys.Q){
+            currentState = MenuState.MAIN;
+            selectedOption = 0;
         }
     }
 
