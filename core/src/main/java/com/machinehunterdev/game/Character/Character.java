@@ -5,64 +5,122 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.machinehunterdev.game.DamageTriggers.Bullet;
+import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import java.util.ArrayList;
 
-// Clase base para todos los personajes del juego
+/**
+ * Clase base para todos los personajes del juego (jugador, enemigos, NPCs).
+ * Gestiona la lógica de movimiento, física, animaciones, daño e invulnerabilidad.
+ * 
+ * @author MachineHunterDev
+ */
 public class Character 
 {
-    // Atributos comunes para todos los personajes
+    // === ATRIBUTOS DE ESTADO ===
+    
+    /** Salud actual del personaje */
     public int health;
-    public int width = 32;  // Ancho por defecto
-    public int height = 32; // Alto por defecto
+    
+    /** Dimensiones por defecto del personaje */
+    public int width = 32;
+    public int height = 32;
 
-    // --- SISTEMA DE ANIMACIÓN ---
-    public CharacterAnimator characterAnimator; // Sistema de animación avanzado
-    public Texture fallbackTexture; // Solo por compatibilidad (opcional)
+    // === SISTEMA DE ANIMACIÓN ===
+    
+    /** Sistema avanzado de animación con múltiples estados */
+    public CharacterAnimator characterAnimator;
+    
+    /** Textura de respaldo para personajes estáticos (compatibilidad) */
+    public Texture fallbackTexture;
 
-    // ** ATRIBUTOS DE MOVIMIENTO/FISICA **
+    // === FÍSICA Y MOVIMIENTO ===
+    
+    /** Posición actual del personaje (x, y) */
     public Vector2 position;
+    
+    /** Velocidad actual del personaje (vx, vy) */
     public Vector2 velocity;
 
-    public float speed = 150.0f;
-    public float jumpForce = 400.0f;
-    public float gravity = -1200.0f;
+    /** Parámetros de movimiento */
+    public float speed = 150.0f;        // Velocidad horizontal normal
+    public float jumpForce = 400.0f;    // Fuerza de salto
+    public float gravity = -1200.0f;    // Gravedad aplicada
 
-    // --- Nuevos atributos para empuje por daño ---
+    // === SISTEMA DE EMPUJE POR DAÑO ===
+    
+    /** Indica si el personaje está en estado de empuje */
     public boolean isKnockedBack = false;
+    
+    /** Velocidad de empuje cuando recibe daño */
     public float knockbackSpeed = 250f;
+    
+    /** Distancia al suelo o plataforma más cercana */
+    public float distanceToGround = Float.MAX_VALUE;
 
-    public float distanceToGround = Float.MAX_VALUE; // Distancia al suelo
+    // === ESTADOS DEL PERSONAJE ===
+    
+    public boolean isMoving;            // Está en movimiento
+    public boolean isSeeingRight;       // Dirección de mirada (true = derecha)
+    public boolean isAttacking;         // Está atacando
+    public boolean isAlive;             // Está vivo
+    public boolean onGround;            // Está en contacto con el suelo
+    public boolean isOverlappingEnemy;  // Está superpuesto con un enemigo (para evitar daño continuo)
+    public boolean isCrouching;         // Está agachado
 
-    // Estados del personaje
-    public boolean isMoving;
-    public boolean isSeeingRight;
-    public boolean isAttacking;
-    public boolean isAlive;
-    public boolean onGround;
-    public boolean isOverlappingEnemy = false; // Para evitar daño continuo
-    public boolean isCrouching = false;
-
-    // Atributos de invulnerabilidad
+    // === SISTEMA DE INVULNERABILIDAD ===
+    
+    /** Indica si el personaje es invulnerable */
     private boolean invulnerable = false;
+    
+    /** Temporizador de invulnerabilidad */
     private float invulnerabilityTimer = 0f;
-    private static final float INVULNERABILITY_DURATION = 5.0F; // Duración en 5 segundos
+    
+    /** Duración de la invulnerabilidad en segundos */
+    private static final float INVULNERABILITY_DURATION = 5.0F;
 
-    // Atributos para el parpadeo rojo al recibir daño
+    // === EFECTOS VISUALES ===
+    
+    /** Indica si debe mostrar parpadeo rojo al recibir daño */
     private boolean flashRed = false;
+    
+    /** Temporizador del parpadeo rojo */
     private float redFlashTimer = 0f;
 
-    // === Constructores ===
+    // === SISTEMA DE ARMAS ===
+    private WeaponType currentWeapon = WeaponType.LASER;
+    private float laserCooldown = 0f;
+    private float ionCooldown = 0f;
+    private float railgunCooldown = 0f;
+    private static final float RIFLE_COOLDOWN_TIME = 0.3f;    // 0.3 segundos
+    private static final float SHOTGUN_COOLDOWN_TIME = 1.0f;  // 1 segundo
+    private static final float SNIPER_COOLDOWN_TIME = 2.0f;   // 2 segundos
 
-    // Constructor ANTIGUO (mantenido para compatibilidad con enemigos estáticos)
+    // === CONSTRUCTORES ===
+
+    /**
+     * Constructor para personajes estáticos (sin animaciones).
+     * @param health Salud inicial del personaje
+     * @param texture Textura del personaje
+     * @param x Posición inicial en X
+     * @param y Posición inicial en Y
+     */
     public Character(int health, Texture texture, float x, float y) {
         this.health = health;
-        this.fallbackTexture = texture; // Guardamos la textura
+        this.fallbackTexture = texture;
         this.position = new Vector2(x, y);
         this.velocity = new Vector2(0, 0);
         initDefaults();
     }
 
-    // Constructor NUEVO para personajes animados
+    /**
+     * Constructor para personajes animados.
+     * @param health Salud inicial del personaje
+     * @param animator Sistema de animación
+     * @param x Posición inicial en X
+     * @param y Posición inicial en Y
+     */
     public Character(int health, CharacterAnimator animator, float x, float y) {
         this.health = health;
         this.characterAnimator = animator;
@@ -71,7 +129,9 @@ public class Character
         initDefaults();
     }
 
-    // Inicializa los valores por defecto
+    /**
+     * Inicializa los valores por defecto de los estados del personaje.
+     */
     private void initDefaults() {
         this.isMoving = false;
         this.isSeeingRight = true;
@@ -80,17 +140,21 @@ public class Character
         this.onGround = false;
     }
 
-    // === MÉTODO DE ACTUALIZACIÓN ===
+    // === MÉTODO DE ACTUALIZACIÓN PRINCIPAL ===
+    
+    /**
+     * Actualiza la lógica del personaje cada frame.
+     * Gestiona animaciones, física, invulnerabilidad y empuje.
+     * @param delta Tiempo transcurrido desde el último frame
+     */
     public void update(float delta) {
-        // --- 1. Actualizar animación ---
+        // --- ACTUALIZACIÓN DE ANIMACIONES ---
         if (characterAnimator != null) {
-            // Actualizar dirección de mirada
             characterAnimator.setFacingRight(isSeeingRight);
             
-            // Determinar estado de animación
+            // Determinar el nuevo estado de animación
             CharacterAnimator.AnimationState currentState = characterAnimator.getCurrentState();
             CharacterAnimator.AnimationState newState = currentState;
-            com.machinehunterdev.game.Util.SpriteAnimator currentAnimator = characterAnimator.getAnimator(currentState);
 
             if (!isAlive) {
                 newState = CharacterAnimator.AnimationState.DEAD;
@@ -106,8 +170,7 @@ public class Character
                     newState = CharacterAnimator.AnimationState.JUMP;
                 } else if (velocity.y < 0) {
                     newState = CharacterAnimator.AnimationState.FALL;
-
-                    // Si está a punto de aterrizar, forzar el último frame de la animación de caída
+                    // Forzar último frame de caída si está a punto de aterrizar
                     if (distanceToGround <= 5f) {
                         com.machinehunterdev.game.Util.SpriteAnimator fallAnimator = characterAnimator.getAnimator(CharacterAnimator.AnimationState.FALL);
                         if (fallAnimator != null) {
@@ -115,8 +178,6 @@ public class Character
                         }
                     }
                 }
-                // Si velocity.y es 0, mantenemos el estado actual (JUMP o FALL)
-                
             } else {
                 // En el suelo: RUN si se mueve, IDLE si está quieto
                 if (isMoving) {
@@ -126,12 +187,12 @@ public class Character
                 }
             }
 
-            // Fallback para animaciones que no existen
+            // Fallback para animaciones no disponibles
             if (!characterAnimator.hasAnimation(newState)) {
                 if (newState == CharacterAnimator.AnimationState.JUMP || newState == CharacterAnimator.AnimationState.FALL) {
-                    newState = CharacterAnimator.AnimationState.RUN; // Usar RUN como alternativa
+                    newState = CharacterAnimator.AnimationState.RUN;
                 } else {
-                    newState = CharacterAnimator.AnimationState.IDLE; // Default a IDLE
+                    newState = CharacterAnimator.AnimationState.IDLE;
                 }
             }
             
@@ -139,7 +200,7 @@ public class Character
             characterAnimator.update(delta);
         }
 
-        // --- Manejar temporizador de parpadeo rojo ---
+        // --- MANEJO DE EFECTOS VISUALES ---
         if (flashRed) {
             redFlashTimer -= delta;
             if (redFlashTimer <= 0) {
@@ -147,11 +208,10 @@ public class Character
             }
         }
 
-        // --- 2. Manejar invulnerabilidad ---
+        // --- MANEJO DE INVULNERABILIDAD ---
         if (invulnerable) {
             invulnerabilityTimer -= delta;
             if (invulnerabilityTimer <= 0) {
-                // Solo desactivar invulnerabilidad si no está superpuesto con un enemigo
                 if (!isOverlappingEnemy) {
                     invulnerable = false;
                     invulnerabilityTimer = 0;
@@ -159,23 +219,23 @@ public class Character
             }
         }
 
-        // --- 3. MANEJO DE EMPUJE POR DAÑO ---
+        // --- MANEJO DE EMPUJE POR DAÑO ---
         if (isKnockedBack) {
             velocity.x = isSeeingRight ? -knockbackSpeed : knockbackSpeed;
             isMoving = true;
             onGround = false;
         }
 
-        // --- 4. APLICAR GRAVEDAD ---
+        // --- APLICACIÓN DE GRAVEDAD ---
         if (!onGround) {
             velocity.y += gravity * delta;
         }
 
-        // --- 5. ACTUALIZAR POSICIÓN ---
+        // --- ACTUALIZACIÓN DE POSICIÓN ---
         position.x += velocity.x * delta;
         position.y += velocity.y * delta;
 
-        // --- 6. LÓGICA DE MOVIMIENTO NORMAL ---
+        // --- LÓGICA DE MOVIMIENTO NORMAL ---
         if (!isKnockedBack) {
             if (!isMoving) {
                 velocity.x = 0;
@@ -187,47 +247,162 @@ public class Character
                 isSeeingRight = false;
             }
         }
+
+        // --- ACTUALIZACIÓN DE COOLDOWNS DE ARMAS ---
+        updateWeaponCooldowns(delta);
     }
 
-    // === MÉTODO PARA DIBUJAR ===
+    // === MÉTODO DE RENDERIZADO ===
+    
+    /**
+     * Dibuja el personaje con efectos visuales apropiados.
+     * @param spriteBatch SpriteBatch para renderizar
+     */
     public void draw(SpriteBatch spriteBatch) {
         if (characterAnimator != null) {
             Sprite currentSprite = characterAnimator.getCurrentSprite();
             if (currentSprite != null) {
-                // Guardar color original para restaurarlo después
                 Color originalColor = new Color(currentSprite.getColor());
 
-                // Lógica de color: parpadeo rojo o parpadeo de invulnerabilidad
+                // Aplicar efectos visuales: parpadeo rojo > invulnerabilidad > normal
                 if (flashRed) {
-                    // 1. Prioridad: Parpadeo rojo al recibir daño
                     currentSprite.setColor(Color.RED);
                 } else if (invulnerable) {
-                    // 2. Si no hay parpadeo rojo, aplicar parpadeo de invulnerabilidad
                     float blinkTime = invulnerabilityTimer % 1.0f;
                     float alpha = (blinkTime < 0.5f) ? 0.7f : 0.3f;
                     currentSprite.setColor(1, 1, 1, alpha);
                 } else {
-                    // 3. Sin efectos, color normal
                     currentSprite.setColor(1, 1, 1, 1);
                 }
 
-                // Dibujar el sprite con la posición y escala correctas
                 characterAnimator.draw(position.x, position.y, spriteBatch);
-
-                // Restaurar el color original del sprite
                 currentSprite.setColor(originalColor);
             }
-        } else if (fallbackTexture != null) {
-            // Dibujo estático
         }
     }
 
     // === MÉTODOS DE ACCIÓN ===
+    
+    /**
+     * Inicia la animación de ataque.
+     */
     public void attack() { 
         isAttacking = true; 
-        // La animación de ataque se manejará en update()
     }
-    
+
+    /**
+     * Cambia el arma actual del jugador.
+     * @param weaponType Nuevo tipo de arma
+     */
+    public void switchWeapon(WeaponType weaponType) {
+        this.currentWeapon = weaponType;
+    }
+
+    /**
+     * Obtiene el arma actual del jugador.
+     * @return Tipo de arma actual
+     */
+    public WeaponType getCurrentWeapon() {
+        return currentWeapon;
+    }
+
+    /**
+     * Verifica si el arma actual está lista para disparar.
+     * @return true si puede disparar
+     */
+    public boolean canShoot() {
+        switch (currentWeapon) {
+            case LASER:
+                return laserCooldown <= 0f;
+            case ION:
+                return ionCooldown <= 0f;
+            case RAILGUN:
+                return railgunCooldown <= 0f;
+            default:
+                return true;
+        }
+    }
+
+    /**
+     * Dispara con el arma actual.
+     * @param bullets Lista de balas activas
+     */
+    public void shoot(ArrayList<Bullet> bullets) {
+        if (!canShoot() || !onGround) return;
+        
+        isAttacking = true;
+        
+        switch (currentWeapon) {
+            case LASER:
+                shootRifle(bullets);
+                laserCooldown = RIFLE_COOLDOWN_TIME;
+                break;
+            case ION:
+                shootShotgun(bullets);
+                ionCooldown = SHOTGUN_COOLDOWN_TIME;
+                break;
+            case RAILGUN:
+                shootSniper(bullets);
+                railgunCooldown = SNIPER_COOLDOWN_TIME;
+                break;
+        }
+    }
+
+    /**
+     * Dispara con rifle (bala única a larga distancia).
+     * @param bullets Lista de balas activas
+     */
+    private void shootRifle(ArrayList<Bullet> bullets) {
+        float bulletX = position.x + (isSeeingRight ? getWidth() : 0);
+        float bulletY = position.y + getHeight() / 2;
+        bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.LASER));
+    }
+
+    /**
+     * Dispara con escopeta (múltiples balas a corta distancia).
+     * @param bullets Lista de balas activas
+     */
+    private void shootShotgun(ArrayList<Bullet> bullets) {
+        float bulletX = position.x + (isSeeingRight ? getWidth() : 0);
+        float bulletY = position.y + getHeight() / 2;
+        
+        // Disparar 3 balas con ligera variación en ángulo
+        for (int i = -1; i <= 1; i++) {
+            // Crear bala con posición ligeramente desplazada
+            float spreadY = bulletY + (i * 8f); // 8px de separación vertical
+            bullets.add(new Bullet(bulletX, spreadY, isSeeingRight, WeaponType.ION));
+        }
+    }
+
+    /**
+     * Dispara con rifle de francotirador (bala perforante).
+     * @param bullets Lista de balas activas
+     */
+    private void shootSniper(ArrayList<Bullet> bullets) {
+        float bulletX = position.x + (isSeeingRight ? getWidth() : 0);
+        float bulletY = position.y + getHeight() / 2;
+        bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.RAILGUN));
+    }
+
+    /**
+     * Actualiza los cooldowns de las armas.
+     * @param delta Tiempo transcurrido desde el último frame
+     */
+    public void updateWeaponCooldowns(float delta) {
+        if (laserCooldown > 0f) laserCooldown -= delta;
+        if (ionCooldown > 0f) ionCooldown -= delta;
+        if (railgunCooldown > 0f) railgunCooldown -= delta;
+        
+        // Asegurar que no sean negativos
+        if (laserCooldown < 0f) laserCooldown = 0f;
+        if (ionCooldown < 0f) ionCooldown = 0f;
+        if (railgunCooldown < 0f) railgunCooldown = 0f;
+    }
+
+    /**
+     * Aplica daño al personaje.
+     * @param damage Cantidad de daño a aplicar
+     */
     public void takeDamage(int damage) {
         if (invulnerable) return;
 
@@ -237,17 +412,21 @@ public class Character
             health = 0;
         }
 
-        // Activar parpadeo rojo en lugar de invulnerabilidad inmediata
+        // Activar parpadeo rojo visual
         flashRed = true;
         redFlashTimer = 0.1f;
     }
     
+    /**
+     * Hace que el personaje aterrice en una superficie.
+     * @param groundY Posición Y de la superficie
+     */
     public void landOn(float groundY) {
         position.y = groundY;
         velocity.y = 0;
         onGround = true;
 
-        // Si el personaje estaba en retroceso (knockback), ahora se vuelve invulnerable
+        // Activar invulnerabilidad al aterrizar después de empuje
         if (isKnockedBack) {
             invulnerable = true;
             invulnerabilityTimer = INVULNERABILITY_DURATION;
@@ -256,19 +435,25 @@ public class Character
         isKnockedBack = false;
     }
 
+    /**
+     * Establece el estado de agachado.
+     * @param crouching true para agacharse, false para levantarse
+     */
     public void setCrouching(boolean crouching) {
         isCrouching = crouching;
     }
 
+    // === MÉTODOS DE MOVIMIENTO ===
+    
     public void moveLeft() {
-        if (!isKnockedBack && !isCrouching) {
+        if (!isKnockedBack && !isCrouching && !isAttacking) {
             velocity.x = -speed;
             isMoving = true;
         }
     }
 
     public void moveRight() {
-        if (!isKnockedBack && !isCrouching) {
+        if (!isKnockedBack && !isCrouching && !isAttacking) {
             velocity.x = speed;
             isMoving = true;
         }
@@ -281,7 +466,7 @@ public class Character
     }
 
     public void jump() {
-        if (onGround && !isCrouching) {
+        if (onGround && !isCrouching && !isAttacking) {
             velocity.y = jumpForce;
             onGround = false;
         }
@@ -292,15 +477,22 @@ public class Character
         onGround = false;
     }
 
+    public void stopAttacking() {
+        isAttacking = false;
+    }
+
+    public void setSeeingRight(boolean seeingRight) {
+        this.isSeeingRight = seeingRight;
+    }
+
     public void setDistanceToGround(float distance) {
         this.distanceToGround = distance;
     }
 
     // === GETTERS ===
+    
     public float getX() { return position.x; }
     public float getY() { return position.y; }
-    
-    // Devuelve la textura actual (útil para enemigos estáticos o depuración)
     public Texture getTexture() {
         if (characterAnimator != null) {
             Sprite currentSprite = characterAnimator.getCurrentSprite();
@@ -317,7 +509,6 @@ public class Character
     public boolean isKnockedBack() { return isKnockedBack; }
     public boolean isInvulnerable() { return invulnerable; }
 
-    // Devuelve el ancho basándose en la animación actual o en la textura de respaldo
     public float getWidth() { 
         if (characterAnimator != null) {
             Sprite currentSprite = characterAnimator.getCurrentSprite();
@@ -330,7 +521,6 @@ public class Character
         return width; 
     }
 
-    // Devuelve el alto basándose en la animación actual o en la textura de respaldo
     public float getHeight() { 
         if (characterAnimator != null) {
             Sprite currentSprite = characterAnimator.getCurrentSprite();
@@ -343,7 +533,6 @@ public class Character
         return height; 
     }
 
-    // Devuelve los límites del personaje para colisiones
     public Rectangle getBounds() {
         return new Rectangle(position.x, position.y, getWidth(), getHeight());
     }

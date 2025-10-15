@@ -9,34 +9,41 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Sistema de animación para personajes con los siguientes estados:
- * - Obligatorios: IDLE, RUN, DEAD
- * - Opcionales: JUMP, FALL, ATTACK
+ * Sistema de animación para personajes con soporte para múltiples estados.
+ * Gestiona animaciones de idle, run, dead, jump, fall, attack, hurt y crouch.
+ * 
+ * @author MachineHunterDev
  */
 public class CharacterAnimator {
-    // Enum para los estados de animación
+    /**
+     * Enumeración de estados de animación soportados.
+     */
     public enum AnimationState {
         IDLE, RUN, DEAD, JUMP, FALL, ATTACK, HURT, CROUCH
     }
 
-    // Mapa de animaciones
+    /** Mapa que asocia estados de animación con sus respectivos animadores */
     private Map<AnimationState, SpriteAnimator> animators;
     
-    // Estado actual
+    /** Estado de animación actual */
     private AnimationState currentState = AnimationState.IDLE;
+    
+    /** Estado de animación anterior */
     private AnimationState previousState = AnimationState.IDLE;
     
-    // Dirección de mirada
+    /** Dirección de mirada del personaje */
     private boolean facingRight = true;
 
     /**
-     * Constructor principal
+     * Constructor principal del sistema de animación.
      * @param idleFrames Frames para animación idle (obligatorio)
      * @param runFrames Frames para animación run (obligatorio)
-     * @param deadFrames Frames para animación dead (obligatorio)
-     * @param jumpFrames Frames para animación jump (opcional, puede ser null)
-     * @param fallFrames Frames para animación fall (opcional, puede ser null)
-     * @param attackFrames Frames para animación attack (opcional, puede ser null)
+     * @param deadFrames Frames para animación dead (opcional)
+     * @param jumpFrames Frames para animación jump (opcional)
+     * @param fallFrames Frames para animación fall (opcional)
+     * @param attackFrames Frames para animación attack (opcional)
+     * @param hurtFrames Frames para animación hurt (opcional)
+     * @param crouchFrames Frames para animación crouch (opcional)
      */
     public CharacterAnimator(
         List<Sprite> idleFrames,
@@ -50,7 +57,7 @@ public class CharacterAnimator {
     ) {
         this.animators = new HashMap<>();
         
-        // Animaciones obligatorias
+        // Inicializar animaciones obligatorias
         if (idleFrames != null && !idleFrames.isEmpty()) {
             this.animators.put(AnimationState.IDLE, new SpriteAnimator(idleFrames));
         }
@@ -58,7 +65,7 @@ public class CharacterAnimator {
             this.animators.put(AnimationState.RUN, new SpriteAnimator(runFrames));
         }
         
-        // Animaciones opcionales
+        // Inicializar animaciones opcionales con configuraciones específicas
         if (deadFrames != null && !deadFrames.isEmpty()) {
             this.animators.put(AnimationState.DEAD, new SpriteAnimator(deadFrames, 0.1f, false, false));
         }
@@ -78,7 +85,6 @@ public class CharacterAnimator {
             this.animators.put(AnimationState.CROUCH, new SpriteAnimator(crouchFrames));
         }  
 
-        // Iniciar animación por defecto
         setCurrentAnimation(AnimationState.IDLE);
     }
 
@@ -97,6 +103,7 @@ public class CharacterAnimator {
      * Dibuja el sprite actual en la posición especificada.
      * @param x Posición X
      * @param y Posición Y
+     * @param spriteBatch SpriteBatch para renderizar
      */
     public void draw(float x, float y, SpriteBatch spriteBatch) {
         SpriteAnimator currentAnimator = animators.get(currentState);
@@ -105,7 +112,6 @@ public class CharacterAnimator {
             if (currentSprite != null) {
                 currentSprite.setPosition(x, y);
                 
-                // Aplicar volteo si es necesario
                 if (!facingRight) {
                     currentSprite.setScale(-1, 1);
                     currentSprite.setPosition(x, y);
@@ -124,7 +130,6 @@ public class CharacterAnimator {
      * @param newState Nuevo estado de animación
      */
     public void setCurrentAnimation(AnimationState newState) {
-        // Solo cambiar si el estado es diferente
         if (this.currentState != newState && animators.containsKey(newState)) {
             this.previousState = this.currentState;
             this.currentState = newState;
@@ -164,6 +169,7 @@ public class CharacterAnimator {
     public void setFacingRight(boolean facingRight) {
         this.facingRight = facingRight;
     }
+
     /**
      * Verifica si el personaje está mirando a la derecha.
      * @return true si mira a la derecha

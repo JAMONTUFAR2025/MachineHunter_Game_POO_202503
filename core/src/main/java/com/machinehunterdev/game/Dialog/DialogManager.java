@@ -13,35 +13,62 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+/**
+ * Gestor del sistema de diálogos del juego.
+ * Maneja la visualización, animación de texto y paginación de diálogos.
+ * 
+ * @author MachineHunterDev
+ */
 public class DialogManager {
+    /** SpriteBatch para renderizar los diálogos */
     private SpriteBatch batch;
+    
+    /** Fuente para el texto de los diálogos */
     private BitmapFont font;
+    
+    /** Diálogo actual que se está mostrando */
     private Dialog currentDialog;
+    
+    /** Índice de la línea actual del diálogo */
     private int currentLineIndex;
+    
+    /** Indica si hay un diálogo activo */
     private boolean dialogActive;
 
+    /** Dimensiones y posición del cuadro de diálogo */
     private float dialogBoxWidth = 440;
     private float dialogBoxHeight = 100;
     private float dialogBoxX;
     private float dialogBoxY;
 
+    /** Viewport para la interfaz de usuario */
     private ScreenViewport uiViewport;
 
+    /** Texto actualmente visible (para efecto de escritura) */
     private String currentVisibleText = "";
+    
+    /** Temporizadores para la animación de texto */
     private float textTimer = 0f;
     private float textSpeed = 0.05f;
     private boolean textFullyVisible = false;
     private float autoAdvanceTimer = 0f;
     private float autoAdvanceDelay = 0.5f;
 
+    /** Sistema de paginación para textos largos */
     private List<String> pages;
     private int currentPage;
 
+    /** Layout para medir y formatear texto */
     private GlyphLayout glyphLayout;
 
+    /** Texturas para el fondo y borde del cuadro de diálogo */
     private Texture backgroundTexture;
     private Texture borderTexture;
 
+    /**
+     * Constructor del gestor de diálogos.
+     * @param batch SpriteBatch para renderizado
+     */
     public DialogManager(SpriteBatch batch) {
         this.batch = batch;
         font = new BitmapFont(Gdx.files.internal("fonts/OrangeKid64.fnt"));
@@ -50,14 +77,14 @@ public class DialogManager {
         glyphLayout = new GlyphLayout();
         pages = new ArrayList<>();
 
-        // Create background texture
+        // Crear textura de fondo semi-transparente
         Pixmap bgPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         bgPixmap.setColor(0, 0, 0, 0.8f);
         bgPixmap.fill();
         backgroundTexture = new Texture(bgPixmap);
         bgPixmap.dispose();
 
-        // Create border texture
+        // Crear textura de borde blanco
         Pixmap borderPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         borderPixmap.setColor(Color.WHITE);
         borderPixmap.fill();
@@ -68,15 +95,21 @@ public class DialogManager {
         uiViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
         updateDialogPosition();
-
         dialogActive = false;
     }
 
+    /**
+     * Actualiza la posición del cuadro de diálogo según el tamaño de la pantalla.
+     */
     private void updateDialogPosition() {
         dialogBoxX = (Gdx.graphics.getWidth() - dialogBoxWidth) / 2f;
         dialogBoxY = Gdx.graphics.getHeight() - dialogBoxHeight - 20;
     }
 
+    /**
+     * Muestra un nuevo diálogo.
+     * @param dialog Diálogo a mostrar
+     */
     public void showDialog(Dialog dialog) {
         currentDialog = dialog;
         currentLineIndex = 0;
@@ -84,6 +117,9 @@ public class DialogManager {
         startNewLine();
     }
 
+    /**
+     * Inicia una nueva línea de diálogo con paginación automática.
+     */
     private void startNewLine() {
         String fullText = currentDialog.getLines().get(currentLineIndex);
         pages.clear();
@@ -120,6 +156,9 @@ public class DialogManager {
         startPage();
     }
 
+    /**
+     * Inicia una nueva página del diálogo actual.
+     */
     private void startPage() {
         currentVisibleText = "";
         textTimer = 0f;
@@ -127,6 +166,9 @@ public class DialogManager {
         autoAdvanceTimer = 0f;
     }
 
+    /**
+     * Avanza al siguiente elemento del diálogo (página, línea o cierra diálogo).
+     */
     public void nextLine() {
         if (textFullyVisible) {
             if (currentPage < pages.size() - 1) {
@@ -147,6 +189,10 @@ public class DialogManager {
         }
     }
 
+    /**
+     * Actualiza la animación de escritura del texto.
+     * @param dt Delta time desde el último frame
+     */
     public void update(float dt) {
         if (!dialogActive) return;
 
@@ -170,10 +216,17 @@ public class DialogManager {
         }
     }
 
+    /**
+     * Verifica si hay un diálogo activo.
+     * @return true si hay diálogo activo
+     */
     public boolean isDialogActive() {
         return dialogActive;
     }
 
+    /**
+     * Renderiza el cuadro de diálogo actual.
+     */
     public void render() {
         if (!dialogActive) return;
         
@@ -182,28 +235,36 @@ public class DialogManager {
 
         batch.begin();
 
-        // Draw dialog box background
+        // Dibujar fondo del cuadro de diálogo
         batch.draw(backgroundTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, dialogBoxHeight);
 
-        // Draw dialog box border
-        batch.draw(borderTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, 1); // Top
-        batch.draw(borderTexture, dialogBoxX, dialogBoxY + dialogBoxHeight - 1, dialogBoxWidth, 1); // Bottom
-        batch.draw(borderTexture, dialogBoxX, dialogBoxY, 1, dialogBoxHeight); // Left
-        batch.draw(borderTexture, dialogBoxX + dialogBoxWidth - 1, dialogBoxY, 1, dialogBoxHeight); // Right
+        // Dibujar borde del cuadro de diálogo
+        batch.draw(borderTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, 1); // Superior
+        batch.draw(borderTexture, dialogBoxX, dialogBoxY + dialogBoxHeight - 1, dialogBoxWidth, 1); // Inferior
+        batch.draw(borderTexture, dialogBoxX, dialogBoxY, 1, dialogBoxHeight); // Izquierdo
+        batch.draw(borderTexture, dialogBoxX + dialogBoxWidth - 1, dialogBoxY, 1, dialogBoxHeight); // Derecho
 
         glyphLayout.setText(font, currentVisibleText, Color.WHITE, dialogBoxWidth - 20, Align.left, true);
 
-        // Draw text
+        // Dibujar texto
         font.draw(batch, glyphLayout, dialogBoxX + 10, dialogBoxY + dialogBoxHeight - 10);
         
         batch.end();
     }
 
+    /**
+     * Maneja el redimensionamiento de la ventana.
+     * @param width Nuevo ancho de la ventana
+     * @param height Nuevo alto de la ventana
+     */
     public void resize(int width, int height) {
         uiViewport.update(width, height, true);
         updateDialogPosition();
     }
 
+    /**
+     * Libera los recursos utilizados por el gestor de diálogos.
+     */
     public void dispose() {
         font.dispose();
         backgroundTexture.dispose();

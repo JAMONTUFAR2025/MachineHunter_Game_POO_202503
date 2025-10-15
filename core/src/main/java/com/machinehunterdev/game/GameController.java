@@ -12,117 +12,131 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.machinehunterdev.game.GameStates.MainMenuState;
-import com.machinehunterdev.game.GameStates.NameInputState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.Util.State;
 import com.machinehunterdev.game.Util.StateMachine;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
+/**
+ * Controlador principal del juego que implementa ApplicationAdapter.
+ * Gestiona la máquina de estados, cámara, renderizado y entrada del usuario.
+ * 
+ * @author MachineHunterDev
+ */
 public class GameController extends ApplicationAdapter 
 {
-
-    // Instancia singleton del GameController
+    /** Indica si hay un diálogo activo (para gestión de entrada) */
     public boolean isDialogActive = false;
 
-    // Maquina de estados para gestionar los diferentes estados del juego
+    /** Máquina de estados para gestionar los diferentes estados del juego */
     public StateMachine<GameController> stateMachine;
 
-    // Instancia singleton del GameController
+    /** Instancia singleton del controlador del juego */
     public static GameController instance;
 
-    // Usado para dibujar texturas
+    /** SpriteBatch para dibujar texturas */
     public SpriteBatch batch;
 
+    /** Cámara ortográfica del juego */
     public OrthographicCamera camera;
+    
+    /** Viewport para manejar diferentes tamaños de pantalla */
     private Viewport viewport;
 
-    // PRUEBAS DE MAQUINA DE ESTADOS
-    // Stage para manejar la UI
+    // === Componentes para depuración de estados ===
+    
+    /** Stage para manejar la UI de depuración */
     private Stage stage;
-    // Skin para los estilos de UI
+    
+    /** Skin para los estilos de UI de depuración */
     private Skin skin;
-    // Tabla raíz para organizar los elementos de la UI
+    
+    /** Tabla raíz para organizar los elementos de la UI de depuración */
     private Table rootTable;
 
+    /**
+     * Método llamado al crear la aplicación.
+     * Inicializa todos los componentes del juego.
+     */
     @Override
     public void create() 
     {
-        // PRUEBAS DE MAQUINA DE ESTADOS
+        // Inicializar componentes de depuración
         initializeStateStackText();
 
-        // Inicializa la instancia singleton
+        // Inicializar instancia singleton
         instance = this;
         
-        // 1. Inicializa la cámara ortográfica
-        // Configura la cámara y el viewport para manejar diferentes tamaños de pantalla
+        // Inicializar cámara y viewport
         camera = new OrthographicCamera();
-        // Configura la cámara para que el eje Y apunte hacia arriba
         camera.setToOrtho(false, GlobalSettings.VIRTUAL_WIDTH, GlobalSettings.VIRTUAL_HEIGHT);
-        // Utiliza FitViewport para mantener la relación de aspecto
         viewport = new FitViewport(GlobalSettings.VIRTUAL_WIDTH, GlobalSettings.VIRTUAL_HEIGHT, camera);
 
-        // 2. Inicializa el SpriteBatch para dibujar texturas
+        // Inicializar SpriteBatch
         batch = new SpriteBatch();
 
-        // Inicializa la máquina de estados con el GameController como propietario
+        // Inicializar máquina de estados
         stateMachine = new StateMachine<GameController>(this);
 
-        // Coloca el estado inicial al menú principal
+        // Establecer estado inicial
         stateMachine.changeState(MainMenuState.instance);
 
         // Ocultar el cursor del ratón
         Gdx.input.setCursorCatched(true);
     }
 
+    /**
+     * Método llamado en cada frame para renderizar el juego.
+     */
     @Override
     public void render() 
     {
-        // 1. Limpiar la pantalla cada frame con fondo negro
+        // Limpiar la pantalla con fondo negro
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // 2. Actualiza la cámara y establece la matriz de proyección para el SpriteBatch
+        // Actualizar cámara
         camera.update();
 
-        // Ejecuta el estado actual de la máquina de estados
+        // Ejecutar el estado actual
         stateMachine.execute();
 
-        // PRUEBAS DE MAQUINA DE ESTADOS
+        // Mostrar depuración de estados
         showStateStack();
 
-        // MOSTRAR Y OCULTAR EL CURSOR DEL RATON
-        // Al presionar ESC, mostrar el cursor del raton
+        // Manejo del cursor del ratón
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ESCAPE))
         {
             Gdx.input.setCursorCatched(false);
         }
 
-        // Al dar CLICK IZQUIERDO, ocultar el cursor del raton
         if (Gdx.input.isButtonJustPressed(com.badlogic.gdx.Input.Buttons.LEFT))
         {
             Gdx.input.setCursorCatched(true);
         }
-
-        // LOGICA PARA HACER PRUEBAS
-        
     }
 
+    /**
+     * Método llamado cuando se redimensiona la ventana.
+     * @param width Nuevo ancho de la ventana
+     * @param height Nuevo alto de la ventana
+     */
     @Override
     public void resize(int width, int height) 
     {
-        // Actualiza el viewport para manejar el cambio de tamaño de la ventana
         viewport.update(width, height);
     }
 
+    /**
+     * Método llamado al cerrar la aplicación.
+     * Libera todos los recursos utilizados.
+     */
     @Override
     public void dispose() 
     {
-        // Libera recursos
         batch.dispose();
 
         if (stage != null) {
@@ -133,57 +147,44 @@ public class GameController extends ApplicationAdapter
         }
     }
 
+    /**
+     * Inicializa los componentes de la UI de depuración.
+     */
     private void initializeStateStackText()
     {
-        // 1. Inicializar el Stage (usa un Viewport, por ejemplo, ScreenViewport)
         stage = new Stage(new ScreenViewport());
-
-        // 2. Cargar un Skin (puedes usar uno prediseñado o crear uno propio)
         skin = new Skin(Gdx.files.internal("uiskin.json"));
-        // 3. Crear una Table para organizar los elementos de la UI
         rootTable = new Table();
-        rootTable.setFillParent(true); // La tabla ocupa toda la pantalla
-        rootTable.top().left(); // Alinea la tabla a la esquina superior izquierda
-
-        // 4. Añadir la tabla al Stage
+        rootTable.setFillParent(true);
+        rootTable.top().left();
         stage.addActor(rootTable);
     }
 
-    // Para hacer pruebas, mostrar la pila de estados en la pantalla
+    /**
+     * Muestra la pila de estados en la pantalla para depuración.
+     */
     private void showStateStack() 
     {
-        // 1. Limpiar el contenedor (Tabla) y prepararla para la esquina superior izquierda
-        rootTable.clear(); // Elimina todas las etiquetas del frame anterior
+        rootTable.clear();
 
-        // Usamos una etiqueta para el título.
-        Label titleLabel = new Label("STATE STACK", skin, "default-font", Color.RED); // Reemplaza "default-font" con el nombre de tu estilo
-        rootTable.add(titleLabel).pad(5).row(); // Añade el título y pasa a la siguiente fila
+        // Título de la depuración
+        Label titleLabel = new Label("STATE STACK", skin, "default-font", Color.RED);
+        rootTable.add(titleLabel).pad(5).row();
 
-        // 1. Obtener una copia de la pila (es clave para no alterar la original)
-        StateMachine<GameController> stateMachine = this.stateMachine;
+        // Mostrar todos los estados en la pila
         Stack<State<GameController>> stackCopy = (Stack<State<GameController>>) stateMachine.stateStack.clone();
 
-        // 2. Recorrer la pila (usando un bucle while o un for sobre un List temporal)
-        // Usamos el bucle while y pop para recorrer de arriba a abajo.
         while (!stackCopy.isEmpty()) {
-            State<?> state = stackCopy.pop(); // Saca el estado (de abajo hacia arriba)
-            
-            // CAP-101 Imprime un Label con el nombre de cada estado
-            // state_jm.GetType().ToString() es el equivalente a state.getClass().getSimpleName() en Java
+            State<?> state = stackCopy.pop();
             String stateName = state.getClass().getSimpleName();
-            
-            Label stateLabel = new Label(stateName, skin); // Crea una nueva Label con el estilo predeterminado del Skin
-            
-            // 3. Añadir la etiqueta a la Tabla, asegurando la alineación vertical
+            Label stateLabel = new Label(stateName, skin);
             rootTable.add(stateLabel)
-                    .left() // Alineación dentro de la celda (opcional, pero buena práctica)
-                    .padLeft(10) // Un poco de sangría para diferenciar del título
-                    .row(); // Mueve el cursor a la siguiente fila
+                    .left()
+                    .padLeft(10)
+                    .row();
         }
 
-        // ----------------------------------------------------
-        // 3. Dibujar la UI
-        // ----------------------------------------------------
+        // Renderizar la UI de depuración
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }

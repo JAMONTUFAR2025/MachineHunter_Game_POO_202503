@@ -7,23 +7,44 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
+/**
+ * Interfaz de usuario que se muestra durante el gameplay.
+ * Muestra la barra de salud del jugador y su nombre.
+ * 
+ * @author MachineHunterDev
+ */
 public class GameplayUI {
 
+    /** Renderizador de formas para la barra de salud */
     private ShapeRenderer shapeRenderer;
+    
+    /** Cámara dedicada para la interfaz de usuario */
     private OrthographicCamera uiCamera;
+    
+    /** Fuente para el texto de la interfaz */
     private BitmapFont font;
+    
+    /** SpriteBatch compartido para renderizado */
     private SpriteBatch batch;
 
+    /**
+     * Constructor de la interfaz de gameplay.
+     * @param batch SpriteBatch compartido del juego
+     */
     public GameplayUI(SpriteBatch batch) {
         this.batch = batch;
         this.shapeRenderer = new ShapeRenderer();
         this.uiCamera = new OrthographicCamera();
-        this.uiCamera.setToOrtho(false, 1280, 720); // Assuming a fixed resolution for the UI
+        this.uiCamera.setToOrtho(false, 1280, 720);
         loadCustomBitmapFont();
     }
 
+    /**
+     * Carga la fuente personalizada para la interfaz.
+     */
     private void loadCustomBitmapFont() {
         try {
             this.font = new BitmapFont(Gdx.files.internal("fonts/OrangeKid64.fnt"));
@@ -34,7 +55,12 @@ public class GameplayUI {
         }
     }
 
-    public void draw(int playerHealth) {
+    /**
+     * Renderiza la interfaz de gameplay.
+     * @param playerHealth Salud actual del jugador
+     * @param currentWeapon Arma actual del jugador
+     */
+    public void draw(int playerHealth, WeaponType currentWeapon) {
         shapeRenderer.setProjectionMatrix(uiCamera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
@@ -42,6 +68,7 @@ public class GameplayUI {
         int squareSize = 30;
         int padding = 10;
 
+        // Dibujar cuadrados de salud (rojos = vida, blancos = perdida)
         for (int i = 0; i < totalHealth; i++) {
             if (i < playerHealth) {
                 shapeRenderer.setColor(Color.RED);
@@ -49,7 +76,6 @@ public class GameplayUI {
                 shapeRenderer.setColor(Color.WHITE);
             }
 
-            // Draw from left to right
             float x = padding + (i * (squareSize + padding));
             float y = padding;
             shapeRenderer.rect(x, y, squareSize, squareSize);
@@ -57,10 +83,19 @@ public class GameplayUI {
 
         shapeRenderer.end();
 
+        // Dibujar nombre del jugador y arma actual
         batch.setProjectionMatrix(uiCamera.combined);
         batch.begin();
         GlyphLayout layout = new GlyphLayout();
-        String text = "Player: " + GlobalSettings.playerName;
+        
+        String weaponName = "";
+        switch (currentWeapon) {
+            case LASER: weaponName = "Laser"; break;
+            case ION: weaponName = "Ion"; break;
+            case RAILGUN: weaponName = "Riel"; break;
+        }
+        
+        String text = "Player: " + GlobalSettings.playerName + " | " + weaponName;
         layout.setText(font, text);
         float x = uiCamera.viewportWidth - layout.width - 10;
         float y = layout.height + 10;
@@ -68,12 +103,20 @@ public class GameplayUI {
         batch.end();
     }
 
+    /**
+     * Maneja el redimensionamiento de la ventana.
+     * @param width Nuevo ancho de la ventana
+     * @param height Nuevo alto de la ventana
+     */
     public void resize(int width, int height) {
         uiCamera.viewportWidth = width;
         uiCamera.viewportHeight = height;
         uiCamera.update();
     }
 
+    /**
+     * Libera los recursos utilizados por la interfaz.
+     */
     public void dispose() {
         shapeRenderer.dispose();
         font.dispose();

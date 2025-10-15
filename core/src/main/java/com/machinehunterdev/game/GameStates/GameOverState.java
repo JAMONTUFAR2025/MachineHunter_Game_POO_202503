@@ -6,26 +6,44 @@ import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.UI.GameOverUI;
 import com.machinehunterdev.game.Util.State;
 
+/**
+ * Estado del juego que se muestra cuando el jugador muere.
+ * Gestiona la secuencia de animación de fin de juego.
+ * 
+ * @author MachineHunterDev
+ */
 public class GameOverState implements State<GameController> {
 
+    /** Instancia singleton del estado */
     public static GameOverState instance = new GameOverState();
+    
+    /** Componentes del estado */
     private GameController owner;
     private SpriteBatch batch;
     private GameOverUI gameOverUI;
 
+    /** Temporizadores para la secuencia de fin de juego */
     private float deathAnimationTimer;
     private float gameOverTextTimer;
     private float dialogueTimer;
 
+    /** Estados de la secuencia */
     private boolean isDeathAnimationFinished;
     private boolean isGameOverTextFinished;
     private boolean isDialogueTypingFinished;
     private boolean isWaitingForInput;
 
+    /**
+     * Constructor privado para implementar el patrón Singleton.
+     */
     private GameOverState() {
         instance = this;
     }
 
+    /**
+     * Inicializa el estado al entrar.
+     * @param owner Controlador del juego propietario
+     */
     @Override
     public void enter(GameController owner) {
         this.owner = owner;
@@ -33,6 +51,7 @@ public class GameOverState implements State<GameController> {
         this.gameOverUI = new GameOverUI(batch, owner);
         Gdx.input.setInputProcessor(gameOverUI);
 
+        // Inicializar temporizadores y estados
         deathAnimationTimer = 3f;
         gameOverTextTimer = 0f;
         dialogueTimer = 0f;
@@ -42,13 +61,17 @@ public class GameOverState implements State<GameController> {
         isDialogueTypingFinished = false;
         isWaitingForInput = false;
 
-        gameOverUI.setShowDeathMessage(true); // Show message container from the start
+        gameOverUI.setShowDeathMessage(true);
     }
 
+    /**
+     * Ejecuta la lógica del estado cada frame.
+     */
     @Override
     public void execute() {
         float deltaTime = Gdx.graphics.getDeltaTime();
 
+        // Temporizador de animación de muerte
         if (deathAnimationTimer > 0) {
             deathAnimationTimer -= deltaTime;
         } else {
@@ -57,6 +80,7 @@ public class GameOverState implements State<GameController> {
 
         gameOverUI.setShowContent(isDeathAnimationFinished);
 
+        // Secuencia de fin de juego
         if (isDeathAnimationFinished) {
             updateGameOverSequence(deltaTime);
         }
@@ -64,17 +88,21 @@ public class GameOverState implements State<GameController> {
         gameOverUI.draw();
     }
 
+    /**
+     * Actualiza la secuencia de texto y diálogo de fin de juego.
+     * @param deltaTime Tiempo transcurrido desde el último frame
+     */
     private void updateGameOverSequence(float deltaTime) {
         if (!isGameOverTextFinished) {
             gameOverTextTimer += deltaTime;
             gameOverUI.setGameOverTextTimer(gameOverTextTimer);
-            if (gameOverTextTimer > 1.5f) { // 1.5 seconds for the animation
+            if (gameOverTextTimer > 1.5f) {
                 isGameOverTextFinished = true;
             }
         } else if (!isDialogueTypingFinished) {
             dialogueTimer += deltaTime;
             gameOverUI.setDialogueTimer(dialogueTimer);
-            if (dialogueTimer > 2.5f) { // 2.5 seconds for dialogue typing
+            if (dialogueTimer > 2.5f) {
                 isDialogueTypingFinished = true;
                 isWaitingForInput = true;
                 gameOverUI.setWaitingForInput(true);
@@ -82,10 +110,13 @@ public class GameOverState implements State<GameController> {
         }
     }
 
+    /**
+     * Limpia los recursos al salir del estado.
+     */
     @Override
     public void exit() {
         if (gameOverUI != null) {
-            gameOverUI.equals(this);
+            gameOverUI.equals(this); // Nota: Esto parece un error, debería ser dispose()
         }
         Gdx.input.setInputProcessor(null);
     }

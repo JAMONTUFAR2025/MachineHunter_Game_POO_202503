@@ -2,6 +2,7 @@ package com.machinehunterdev.game.Character;
 
 import java.util.ArrayList;
 import com.badlogic.gdx.math.Rectangle;
+import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.Environment.SolidObject;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
@@ -9,6 +10,8 @@ import com.machinehunterdev.game.Gameplay.GlobalSettings;
  * Clase base abstracta para controladores de personajes.
  * Define la lógica común de colisiones y actualización.
  * Se extiende para crear controladores específicos (jugador, enemigos, etc.).
+ * 
+ * @author MachineHunterDev
  */
 public abstract class CharacterController {
     /** Referencia al personaje que este controlador maneja */
@@ -24,7 +27,7 @@ public abstract class CharacterController {
 
     /**
      * Verifica colisiones del personaje con objetos sólidos del entorno.
-     * Solo detecta colisiones desde arriba (para aterrizar en plataformas).
+     * Detecta colisiones desde arriba para aterrizar en plataformas y suelo.
      * @param solidObjects Lista de objetos sólidos en el nivel.
      */
     protected void checkCollisions(ArrayList<SolidObject> solidObjects) {
@@ -35,31 +38,33 @@ public abstract class CharacterController {
         float charX = character.getX();
         float charY = character.getY();
 
-        // Posición de los pies
+        // Posición de los pies del personaje
         float feetY = charY;
         float feetLeft = charX;
         float feetRight = charX + charWidth;
 
-        // Caer en el suelo, no en una plataforma
+        // Verificar colisión con el suelo principal
         if(feetY <= GlobalSettings.GROUND_LEVEL) {
             character.landOn(GlobalSettings.GROUND_LEVEL);
             return;
         }
 
+        // Verificar colisión con plataformas
         for (SolidObject obj : solidObjects) {
             if (obj.isWalkable()) {
                 Rectangle platform = obj.getBounds();
                 float platformTop = platform.y + platform.height;
 
+                // Solo verificar si el personaje está cayendo
                 if (character.velocity.y <= 0) {
                     // Verificar que los pies estén en la zona de aterrizaje
                     if (feetY <= platformTop + 2f && feetY >= platformTop - 5f) {
-                        // Verificar superposición horizontal significativa
+                        // Calcular superposición horizontal
                         float overlapLeft = Math.max(feetLeft, platform.x);
                         float overlapRight = Math.min(feetRight, platform.x + platform.width);
                         float overlapWidth = overlapRight - overlapLeft;
 
-                        // Aterrizar solo si hay superposición significativa (al menos 1 píxel)
+                        // Aterrizar solo si hay superposición significativa
                         if (overlapWidth > 0) {
                             character.landOn(platformTop);
                             return;
@@ -68,13 +73,14 @@ public abstract class CharacterController {
                 }
             }
         }
-}
+    }
 
     /**
      * Método abstracto que debe implementar cada controlador específico.
      * Contiene la lógica de actualización por frame (entrada, IA, etc.).
      * @param delta Tiempo transcurrido desde el último frame.
      * @param solidObjects Lista de objetos sólidos para colisiones.
+     * @param bullets Lista de balas activas para colisiones.
      */
-    public abstract void update(float delta, ArrayList<SolidObject> solidObjects);
+    public abstract void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets);
 }

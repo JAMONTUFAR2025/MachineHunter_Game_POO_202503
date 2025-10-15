@@ -4,57 +4,68 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
-// Clase que representa un suelo sólido en el entorno del juego
+/**
+ * Clase que representa un objeto sólido en el entorno del juego.
+ * Versión optimizada que usa texturas compartidas para mayor eficiencia.
+ * 
+ * @author MachineHunterDev
+ */
 public class SolidObject 
 {
-    // Atributos de la entidad
-    private Rectangle bounds; // Representa la posición (x, y) y el tamaño (width, height)
-    private Texture texture; // La imagen que se usará para dibujar el suelo
-    private boolean isWalkable; // Puede que quieras diferentes tipos de suelos sólidos (e.g., pared, suelo)
+    /** Rectángulo de colisión y posición */
+    private Rectangle bounds;
+    
+    /** Textura compartida del objeto */
+    private Texture texture;
+    
+    /** Indica si se puede caminar sobre este objeto */
+    private boolean isWalkable;
 
     /**
-     * Constructor para el suelo sólido.
-     * @param x Posición X inicial.
-     * @param y Posición Y inicial.
-     * @param width Ancho del suelo.
-     * @param height Alto del suelo.
-     * @param texture La textura a usar para el objeto.
-     * @param walkable Indica si es solo visual o un obstáculo sólido.
+     * Constructor para el objeto sólido.
+     * @param x Posición X inicial
+     * @param y Posición Y inicial
+     * @param width Ancho del objeto
+     * @param height Alto del objeto
+     * @param texture Textura compartida a usar
+     * @param walkable Indica si se puede caminar sobre él
      */
     public SolidObject(float x, float y, float width, float height, Texture texture, boolean walkable) {
-        // Inicializa el rectángulo de colisión y posición
         this.bounds = new Rectangle(x, y, width, height); 
-        
-        // Asigna la textura compartida
         this.texture = texture;
-        
         this.isWalkable = walkable;
     }
 
-    // --- Métodos de Dibujo (Renderizado) ---
-    
-    // Método para dibujar el suelo en pantalla
+    /**
+     * Renderiza el objeto en pantalla.
+     * @param batch SpriteBatch para dibujar
+     */
     public void render(SpriteBatch batch) {
-        // Dibuja la textura usando la posición y tamaño del rectángulo
         batch.draw(texture, bounds.x, bounds.y, bounds.width, bounds.height);
     }
     
-    // El método dispose() se elimina, ya que la textura es compartida y se gestionará externamente.
+    // Nota: No tiene método dispose() porque la textura es compartida
 
-    // --- Métodos de Colisión y Estado ---
-
+    /**
+     * Verifica si el objeto es sólido (no se puede atravesar).
+     * @return true si es sólido
+     */
     public boolean isSolid() {
-        // Un suelo sólido es aquel que NO es 'walkable' (i.e., es un muro)
-        // O puedes cambiar la lógica para que 'isWalkable' sea si se PUEDE caminar sobre él.
-        // Asumiendo que quieres un obstáculo:
         return !isWalkable;
     }
 
+    /**
+     * Obtiene el rectángulo de colisión.
+     * @return Rectángulo de colisión
+     */
     public Rectangle getBounds() {
         return bounds;
     }
     
-    // Mantenemos tu método original por consistencia
+    /**
+     * Verifica si se puede caminar sobre este objeto.
+     * @return true si es caminable
+     */
     public boolean isWalkable() {
         return isWalkable;
     }

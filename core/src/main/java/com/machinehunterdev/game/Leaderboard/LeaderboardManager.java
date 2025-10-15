@@ -10,14 +10,20 @@ import java.util.Comparator;
  * Gestor de la tabla de clasificaciones (leaderboard).
  * Almacena los mejores puntajes usando Preferences de libGDX.
  * Implementa el patrón Singleton para asegurar una única instancia en todo el juego.
+ * 
+ * @author MachineHunterDev
  */
 public class LeaderboardManager {
-    // Constantes de configuración
-    private static final String PREFS_NAME = "leaderboard_prefs"; // Nombre del archivo de preferencias
-    private static final String KEY_SCORES = "scores";            // Clave para almacenar los puntajes
-    private static final int MAX_ENTRIES = 10;                    // Máximo número de entradas en la tabla
+    /** Nombre del archivo de preferencias donde se almacenan los puntajes */
+    private static final String PREFS_NAME = "leaderboard_prefs";
+    
+    /** Clave utilizada para almacenar los puntajes en las preferencias */
+    private static final String KEY_SCORES = "scores";
+    
+    /** Número máximo de entradas que se mantienen en la tabla de clasificaciones */
+    private static final int MAX_ENTRIES = 10;
 
-    // Instancia singleton
+    /** Instancia singleton del gestor */
     private static LeaderboardManager instance;
     
     /**
@@ -31,9 +37,11 @@ public class LeaderboardManager {
         return instance;
     }
 
-    // Datos internos
-    private Preferences prefs;                    // Sistema de preferencias de libGDX
-    private Array<ScoreEntry> scores;             // Lista de puntajes almacenados
+    /** Sistema de preferencias de libGDX para almacenamiento persistente */
+    private Preferences prefs;
+    
+    /** Lista de entradas de puntajes almacenados */
+    private Array<ScoreEntry> scores;
 
     /**
      * Constructor privado para implementar el patrón Singleton.
@@ -118,8 +126,11 @@ public class LeaderboardManager {
      * Debe tener constructor sin parámetros para la serialización JSON.
      */
     public static class ScoreEntry {
-        public String name;  // Nombre del jugador
-        public int score;    // Puntaje obtenido
+        /** Nombre del jugador */
+        public String name;
+        
+        /** Puntaje obtenido */
+        public int score;
 
         /**
          * Constructor sin parámetros (requerido para la deserialización JSON).

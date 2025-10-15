@@ -14,18 +14,34 @@ import com.machinehunterdev.game.Util.State;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Estado del juego para la entrada del nombre del jugador.
+ * Muestra un personaje animado mientras el jugador ingresa su nombre.
+ * 
+ * @author MachineHunterDev
+ */
 public class NameInputState implements State<GameController> {
 
+    /** Instancia singleton del estado */
     public static NameInputState instance = new NameInputState();
+    
+    /** Componentes del estado */
     private GameController owner;
     private NameInputUI nameInputUI;
     private SpriteBatch batch;
     private Character playerCharacter;
 
+    /**
+     * Constructor privado para implementar el patrón Singleton.
+     */
     private NameInputState() {
         instance = this;
     }
 
+    /**
+     * Inicializa el estado al entrar.
+     * @param owner Controlador del juego propietario
+     */
     @Override
     public void enter(GameController owner) {
         this.owner = owner;
@@ -33,6 +49,7 @@ public class NameInputState implements State<GameController> {
         this.nameInputUI = new NameInputUI(batch, owner);
         Gdx.input.setInputProcessor(nameInputUI);
 
+        // Cargar animación del personaje para la pantalla de nombre
         List<Sprite> playerIdleFrames = loadSpriteFrames("Player/PlayerIdle", 4);
         for (Sprite frame : playerIdleFrames) {
             frame.setSize(frame.getWidth() * 6, frame.getHeight() * 6);
@@ -47,6 +64,9 @@ public class NameInputState implements State<GameController> {
         playerCharacter = new Character(0, playerAnimator, charX, charY);
     }
 
+    /**
+     * Ejecuta la lógica del estado cada frame.
+     */
     @Override
     public void execute() {
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -57,12 +77,14 @@ public class NameInputState implements State<GameController> {
         playerCharacter.onGround = true;
         playerCharacter.velocity.y = 0;
 
-
         if (nameInputUI != null) {
             nameInputUI.draw(playerCharacter);
         }
     }
 
+    /**
+     * Limpia los recursos al salir del estado.
+     */
     @Override
     public void exit() {
         if (nameInputUI != null) {
@@ -71,6 +93,9 @@ public class NameInputState implements State<GameController> {
         Gdx.input.setInputProcessor(null);
     }
 
+    /**
+     * Carga frames de animación desde archivos numerados.
+     */
     private List<Sprite> loadSpriteFrames(String basePath, int frameCount) {
         List<Sprite> frames = new ArrayList<>();
         for (int i = 1; i <= frameCount; i++) {

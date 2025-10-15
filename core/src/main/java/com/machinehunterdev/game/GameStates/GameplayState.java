@@ -1,7 +1,6 @@
 package com.machinehunterdev.game.GameStates;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -15,6 +14,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Character.PlayerController;
+import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.Character.Character;
 import com.machinehunterdev.game.Character.EnemyController;
@@ -27,57 +27,88 @@ import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.UI.PauseUI;
 import com.machinehunterdev.game.Util.State;
 
+/**
+ * Estado principal del juego que contiene toda la lógica de gameplay.
+ * Gestiona personajes, enemigos, balas, colisiones, diálogos y pausa.
+ * 
+ * @author MachineHunterDev
+ */
 public class GameplayState implements State<GameController> {
-    // SUELO SÓLIDO
+    // === ENTIDADES DEL JUEGO ===
+    
+    /** Lista de objetos sólidos del entorno */
     private ArrayList<SolidObject> solidObjects;
 
-    // ** ATRIBUTOS DEL JUGADOR **
-    private Character playerCharacter;   // Jugador con CharacterAnimator
+    /** Jugador y su controlador */
+    private Character playerCharacter;
     private PlayerController playerController;
 
-    // -- ENEMIGO DE PRUEBA --
-    private Character enemyCharacter;   // Enemigo también con CharacterAnimator
+    /** Enemigo de prueba y su controlador */
+    private Character enemyCharacter;
     private EnemyController enemyController;
 
-    // - - SPRITEBATCH DEL GAMECONTROLLER - -
+    // === SISTEMAS DE RENDERIZADO ===
+    
+    /** SpriteBatch compartido del juego */
     private SpriteBatch gameBatch;
-
-    // CAMARA
+    
+    /** Cámara del juego */
     private OrthographicCamera camera;
-
+    
+    /** Texturas del fondo y suelo */
     private Texture backgroundTexture;
     private Texture sueloTexture;
 
-    // ✅ Diálogo
+    // === SISTEMAS DE INTERFAZ ===
+    
+    /** Gestor de diálogos */
     private DialogManager dialogManager;
     private boolean isDialogActive = false;
 
-    // Instancia singleton
-    public static GameplayState instance = new GameplayState();
-
+    /** Interfaz de usuario durante el gameplay */
     private GameplayUI gameplayUI;
 
-    // Pause Menu
+    // === SISTEMA DE PAUSA ===
+    
     private boolean isPaused = false;
     private PauseUI pauseUI;
 
+    // === SISTEMA DE COMBATE ===
+    
+    /** Lista de balas activas */
+    private ArrayList<Bullet> bullets;
+
+    // === INSTANCIA SINGLETON ===
+    
+    public static GameplayState instance = new GameplayState();
+    private GameController owner;
+
+    /**
+     * Constructor privado para implementar el patrón Singleton.
+     */
     private GameplayState() {
         instance = this;
     }
 
-    private GameController owner;
-
+    /**
+     * Reanuda el juego desde el estado de pausa.
+     */
     public void resumeGame() {
         isPaused = false;
-        Gdx.input.setInputProcessor(null); // Assuming gameplay uses polling
+        Gdx.input.setInputProcessor(null);
     }
 
+    /**
+     * Cambia al estado del menú principal.
+     */
     public void exitToMainMenu() {
         owner.stateMachine.changeState(MainMenuState.instance);
     }
 
-
-
+    /**
+     * Inicializa el estado al entrar.
+     * @param owner Controlador del juego propietario
+     */
     @Override
     public void enter(GameController owner) {
         isPaused = false;
@@ -86,14 +117,12 @@ public class GameplayState implements State<GameController> {
         this.camera = owner.camera;
 
         backgroundTexture = new Texture("FondoJuego.png");
-
-        // ✅ Inicializar diálogo
         dialogManager = new DialogManager(this.gameBatch);
         gameplayUI = new GameplayUI(this.gameBatch);
-
         pauseUI = new PauseUI(this, this.gameBatch);
+        bullets = new ArrayList<>();
 
-        // - - INICIALIZAR SUELO SOLIDO - -
+        // Inicializar suelo sólido con textura compartida
         sueloTexture = new Texture("suelo.png");
         solidObjects = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
@@ -101,52 +130,51 @@ public class GameplayState implements State<GameController> {
             solidObjects.add(new SolidObject(64 + i * 480, 64, 200, 16, sueloTexture, true));
         }
 
-        // --- INICIALIZAR JUGADOR CON CHARACTERANIMATOR ---
+        // Inicializar jugador con animaciones
         List<Sprite> playerIdleFrames = loadSpriteFrames("Player/PlayerIdle", 4);
-        List<Sprite> playerRunFrames = loadSpriteFrames("Player/PlayerRun", 8); // Ajusta según tus assets
+        List<Sprite> playerRunFrames = loadSpriteFrames("Player/PlayerRun", 8);
         List<Sprite> playerHurtFrames = loadSpriteFrames("Player/PlayerHurt", 2);
-        //List<Sprite> playerDeadFrames = loadSpriteFrames("Player/Dead", 3);
         List<Sprite> playerJumpFrames = loadSpriteFrames("Player/PlayerJump", 2);
         List<Sprite> playerFallFrames = loadSpriteFrames("Player/PlayerFall", 2);
-        //List<Sprite> playerAttackFrames = loadSpriteFrames("Player/Attack", 5);
         List<Sprite> playerCrouchFrames = loadSpriteFrames("Player/PlayerCrouch", 4);
 
         CharacterAnimator playerAnimator = new CharacterAnimator(
             playerIdleFrames, playerRunFrames, null,
-            playerJumpFrames, playerFallFrames, null, // attackFrames
+            playerJumpFrames, playerFallFrames, null,
             playerHurtFrames, playerCrouchFrames
         );
 
         playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, 50, 100);
         playerController = new PlayerController(playerCharacter);
 
-        // --- INICIALIZAR ENEMIGO CON CHARACTERANIMATOR ---
-        // Para el enemigo, usamos solo animaciones básicas
+        // Inicializar enemigo con animaciones
         List<Sprite> enemyIdleFrames = loadSpriteFrames("Enemy/PlayerIdle", 4);
         List<Sprite> enemyRunFrames = loadSpriteFrames("Enemy/PlayerRun", 8);
-        //List<Sprite> enemyDeadFrames = loadSpriteFrames("Enemy/PlayerDead", 3);
         List<Sprite> enemyJumpFrames = loadSpriteFrames("Enemy/PlayerJump", 2);
         List<Sprite> enemyFallFrames = loadSpriteFrames("Enemy/PlayerFall", 2);
-        //List<Sprite> enemyDeadFrames = loadSpriteFrames("Enemy/Dead/PlayerDead", 3);
 
         CharacterAnimator enemyAnimator = new CharacterAnimator(
             enemyIdleFrames, enemyRunFrames, null,
             enemyJumpFrames, enemyFallFrames, null,
-            null, null // dead, jump, fall, attack, hurt, crouch no disponibles
+            null, null
         );
 
         enemyCharacter = new Character(50, enemyAnimator, 300, 100);
 
-        // Crear puntos de patrullaje para el enemigo
+        // Configurar patrullaje del enemigo
         ArrayList<Vector2> patrolPoints = new ArrayList<>();
-        patrolPoints.add(new Vector2(100, 100)); // Punto A
-        patrolPoints.add(new Vector2(500, 100)); // Punto B
+        patrolPoints.add(new Vector2(100, 100));
+        patrolPoints.add(new Vector2(500, 100));
 
-        enemyController = new EnemyController(enemyCharacter, patrolPoints, 1.0f, 3.0f); // Corre por 1s, espera 3s
+        enemyController = new EnemyController(enemyCharacter, patrolPoints, 1.0f, 3.0f);
     }
 
+    /**
+     * Ejecuta la lógica del estado cada frame.
+     */
     @Override
     public void execute() {
+        // Manejo de pausa con tecla ESC
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             isPaused = !isPaused;
             if (isPaused) {
@@ -157,28 +185,21 @@ public class GameplayState implements State<GameController> {
         }
 
         if (isPaused) {
-            // Draw the game world (as a static background)
             drawGameWorld();
-            // Then draw the pause UI on top
             pauseUI.draw();
         } else {
-            // --- Update game logic ---
             updateGameLogic();
-
-            // --- Draw game world ---
             drawGameWorld();
 
-            // --- Draw dialog if active ---
             if (isDialogActive) {
                 dialogManager.render();
             }
 
-            // --- Draw Gameplay UI ---
             if (gameplayUI != null) {
-                gameplayUI.draw(playerCharacter.getHealth());
+                gameplayUI.draw(playerCharacter.getHealth(), playerCharacter.getCurrentWeapon());
             }
 
-            // --- Handle death ---
+            // Verificar muerte del jugador
             if (!playerCharacter.isAlive()) {
                 owner.stateMachine.changeState(GameOverState.instance);
                 return;
@@ -186,17 +207,19 @@ public class GameplayState implements State<GameController> {
         }
     }
 
+    /**
+     * Actualiza toda la lógica del juego.
+     */
     private void updateGameLogic() {
         float deltaTime = Gdx.graphics.getDeltaTime();
 
-        // ✅ Si hay diálogo activo, manejar solo eso
         if (isDialogActive) {
             dialogManager.update(deltaTime);
             handleDialogInput();
             return;
         }
 
-        // --- ACTIVAR DIÁLOGO CON TECLA T ---
+        // Activar diálogo con tecla T (cargado desde JSON)
         if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
             JsonReader jsonReader = new JsonReader();
             JsonValue base = jsonReader.parse(Gdx.files.internal("Dialogos/Diagolos_flahsbacks.json"));
@@ -215,41 +238,47 @@ public class GameplayState implements State<GameController> {
             return;
         }
 
-        // --- LÓGICA DEL JUEGO ---
-        playerController.update(deltaTime, solidObjects);
-        enemyController.update(deltaTime, solidObjects);
+        // Actualizar personajes y balas
+        playerController.update(deltaTime, solidObjects, bullets);
+        if (enemyCharacter.isAlive()) {
+            enemyController.update(deltaTime, solidObjects, bullets);
+        }
+        updateBullets(deltaTime);
 
-        // ✅ Colisión jugador-enemigo
         checkPlayerEnemyCollision();
-
         playerController.centerCameraOnPlayer(camera);
     }
 
+    /**
+     * Renderiza el mundo del juego.
+     */
     private void drawGameWorld() {
-        // --- DIBUJAR ESCENA ---
         gameBatch.setProjectionMatrix(camera.combined);
         gameBatch.begin();
 
-        // Fondo
+        // Dibujar fondo
         for (int i = 0; i < 3; i++) {
             gameBatch.draw(backgroundTexture, i * GlobalSettings.VIRTUAL_WIDTH, 0);
         }
 
-        // Suelos sólidos
+        // Dibujar objetos sólidos
         for (SolidObject floor : solidObjects) {
             floor.render(gameBatch);
         }
 
-        // ✅ Dibuja ambos personajes (el método draw() ya maneja animaciones y volteo)
+        // Dibujar personajes
         playerCharacter.draw(gameBatch);
-        enemyCharacter.draw(gameBatch);
+        if (enemyCharacter.isAlive()) {
+            enemyCharacter.draw(gameBatch);
+        }
+        drawBullets();
 
         gameBatch.end();
-
-        
     }
 
-    // ✅ Manejo de input para diálogo
+    /**
+     * Maneja la entrada para avanzar en diálogos.
+     */
     private void handleDialogInput() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
             if (dialogManager.isDialogActive()) {
@@ -260,28 +289,30 @@ public class GameplayState implements State<GameController> {
         }
     }
 
-    // ✅ Colisión jugador-enemigo con empuje y daño
+    /**
+     * Verifica colisiones entre jugador y enemigo.
+     */
     private void checkPlayerEnemyCollision() {
+        if (!enemyCharacter.isAlive()) return;
         Rectangle playerBounds = playerCharacter.getBounds();
         Rectangle enemyBounds = enemyCharacter.getBounds();
 
         if (playerBounds.overlaps(enemyBounds)) {
             playerCharacter.isOverlappingEnemy = true;
             if (!playerCharacter.isInvulnerable()) {
-                // --- Resolución de colisión (empujar al jugador) ---
+                // Resolver colisión (empujar al jugador)
                 float overlapX = Math.min(playerBounds.x + playerBounds.width, enemyBounds.x + enemyBounds.width) - Math.max(playerBounds.x, enemyBounds.x);
                 if (playerCharacter.getX() < enemyCharacter.getX()) {
-                    playerCharacter.position.x -= overlapX; // Empujar a la izquierda
+                    playerCharacter.position.x -= overlapX;
                 } else {
-                    playerCharacter.position.x += overlapX; // Empujar a la derecha
+                    playerCharacter.position.x += overlapX;
                 }
 
-                // --- Aplicar daño y empuje (knockback) ---
+                // Aplicar daño y empuje
                 playerCharacter.takeDamage(1);
                 playerCharacter.isKnockedBack = true;
                 playerCharacter.forceJump(0.7f);
                 
-                // Empuje horizontal
                 if (enemyCharacter.getX() < playerCharacter.getX()) {
                     playerCharacter.velocity.x = 150f;
                 } else {
@@ -293,7 +324,60 @@ public class GameplayState implements State<GameController> {
         }
     }
 
-    // ✅ Método auxiliar para cargar frames de animación
+    /**
+     * Actualiza las balas y verifica colisiones.
+     */
+    private void updateBullets(float deltaTime) {
+        for (int i = bullets.size() - 1; i >= 0; i--) {
+            Bullet bullet = bullets.get(i);
+            
+            // Si la bala ha alcanzado su distancia máxima, eliminarla
+            if (bullet.update(deltaTime)) {
+                bullets.remove(i);
+                bullet.dispose();
+            }
+            // También eliminar balas que salgan de los límites del mapa
+            else if (bullet.position.x < -100 || bullet.position.x > 1540) {
+                bullets.remove(i);
+                bullet.dispose();
+            }
+        }
+        checkBulletEnemyCollision();
+    }
+
+    /**
+     * Dibuja todas las balas activas.
+     */
+    private void drawBullets() {
+        for (Bullet bullet : bullets) {
+            bullet.draw(gameBatch);
+        }
+    }
+
+    /**
+     * Verifica colisiones entre balas y enemigos.
+     */
+    private void checkBulletEnemyCollision() {
+        if (!enemyCharacter.isAlive()) return;
+        
+        for (int i = bullets.size() - 1; i >= 0; i--) {
+            Bullet bullet = bullets.get(i);
+            if (bullet.getBounds().overlaps(enemyCharacter.getBounds())) {
+                enemyCharacter.takeDamage(10);
+                
+                // Si la bala NO es perforante, eliminarla
+                if (!bullet.isPiercing()) {
+                    bullets.remove(i);
+                    bullet.dispose();
+                }
+                // Si es perforante, continúa su trayectoria
+            }
+        }
+    }
+
+    /**
+     * Carga frames de animación desde archivos numerados.
+     */
     private List<Sprite> loadSpriteFrames(String basePath, int frameCount) {
         List<Sprite> frames = new ArrayList<>();
         for (int i = 1; i <= frameCount; i++) {
@@ -302,6 +386,9 @@ public class GameplayState implements State<GameController> {
         return frames;
     }
 
+    /**
+     * Maneja el redimensionamiento de la ventana.
+     */
     public void resize(int width, int height) {
         if (dialogManager != null) {
             dialogManager.resize(width, height);
@@ -311,13 +398,15 @@ public class GameplayState implements State<GameController> {
         }
     }
 
+    /**
+     * Libera todos los recursos al salir del estado.
+     */
     @Override
     public void exit() {
         if (sueloTexture != null) {
             sueloTexture.dispose();
         }
 
-        // ✅ Liberar diálogo
         if (dialogManager != null) {
             dialogManager.dispose();
         }
@@ -330,12 +419,12 @@ public class GameplayState implements State<GameController> {
             pauseUI.dispose();
         }
 
-
         if (backgroundTexture != null) {
             backgroundTexture.dispose();
         }
 
-        // Nota: Los personajes con CharacterAnimator gestionan sus propias texturas
-        // Si más adelante implementas dispose() en Character, llámalo aquí
+        for (Bullet bullet : bullets) {
+            bullet.dispose();
+        }
     }
 }

@@ -18,15 +18,34 @@ import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.GameStates.GameplayState;
 import com.machinehunterdev.game.GameStates.MainMenuState;
 
+/**
+ * Interfaz de usuario para la pantalla de fin de juego.
+ * Muestra animaciones de texto, mensajes de muerte aleatorios y opciones de reinicio.
+ * 
+ * @author MachineHunterDev
+ */
 public class GameOverUI implements InputProcessor {
 
+    /** Opciones disponibles en la pantalla de fin de juego */
     private String[] options = {"Reintentar", "Salir"};
+    
+    /** Índice de la opción seleccionada actualmente */
     private int selected = 0;
+    
+    /** Fuente para el texto de la interfaz */
     private BitmapFont font;
+    
+    /** SpriteBatch para renderizado */
     private SpriteBatch batch;
+    
+    /** Controlador del juego para cambiar estados */
     private GameController gameController;
+    
+    /** Textura del personaje para mostrar en la pantalla de fin de juego */
     private Texture placeholderTexture;
 
+    // === Temporizadores y estados ===
+    
     private float gameOverTextTimer = 0f;
     private float dialogueTimer = 0f;
     private boolean showDeathMessage = false;
@@ -34,21 +53,32 @@ public class GameOverUI implements InputProcessor {
     private boolean isWaitingForInput = false;
     private boolean showContent = false;
 
+    // === Mensajes de muerte ===
+    
     private List<String> deathMessages;
     private String randomDeathMessage;
 
+    /**
+     * Constructor de la interfaz de fin de juego.
+     * @param batch SpriteBatch para renderizado
+     * @param gameController Controlador del juego para gestión de estados
+     */
     public GameOverUI(SpriteBatch batch, GameController gameController) {
         this.batch = batch;
         this.gameController = gameController;
-        this.placeholderTexture = new Texture("Player/PlayerIdle1.png");//Textura del Personaje en el Game Over
+        this.placeholderTexture = new Texture("Player/PlayerIdle1.png");
         loadCustomBitmapFont();
         loadDeathMessages();
-        // Select a random message at creation
+        
+        // Seleccionar mensaje de muerte aleatorio al crear la interfaz
         if (deathMessages != null && !deathMessages.isEmpty()) {
             randomDeathMessage = deathMessages.get(new Random().nextInt(deathMessages.size()));
         }
     }
 
+    /**
+     * Carga la fuente personalizada para la interfaz.
+     */
     private void loadCustomBitmapFont() {
         try {
             this.font = new BitmapFont(Gdx.files.internal("fonts/OrangeKid64.fnt"));
@@ -59,6 +89,9 @@ public class GameOverUI implements InputProcessor {
         }
     }
 
+    /**
+     * Carga los mensajes de muerte desde un archivo JSON.
+     */
     private void loadDeathMessages() {
         deathMessages = new ArrayList<>();
         try {
@@ -74,6 +107,8 @@ public class GameOverUI implements InputProcessor {
         }
     }
 
+    // === Métodos setters para control de estados ===
+    
     public void setShowContent(boolean show) {
         this.showContent = show;
     }
@@ -94,17 +129,20 @@ public class GameOverUI implements InputProcessor {
         this.showDeathMessage = show;
     }
 
+    /**
+     * Renderiza la interfaz de fin de juego.
+     */
     public void draw() {
         batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.begin();
 
-        // Draw placeholder image immediately
+        // Dibujar imagen del personaje
         if (placeholderTexture != null) {
             float scale = 7.0f;
             float newWidth = placeholderTexture.getWidth() * scale;
             float newHeight = placeholderTexture.getHeight() * scale;
             float imgX = (Gdx.graphics.getWidth() - newWidth) / 2f;
-            float imgY = (Gdx.graphics.getHeight() - newHeight) / 2f; // Centered Y
+            float imgY = (Gdx.graphics.getHeight() - newHeight) / 2f;
             batch.draw(placeholderTexture, imgX, imgY, newWidth, newHeight);
         }
 
@@ -123,6 +161,9 @@ public class GameOverUI implements InputProcessor {
         batch.end();
     }
 
+    /**
+     * Libera los recursos utilizados por la interfaz.
+     */
     public void dispose() {
         if (font != null) {
             font.dispose();
@@ -132,24 +173,29 @@ public class GameOverUI implements InputProcessor {
         }
     }
 
+    /**
+     * Dibuja el texto "GAME OVER" con animación de escritura.
+     */
     private void drawGameOverText() {
         String gameOverText = "GAME OVER";
         float charsToShow = gameOverText.length() * (Math.min(gameOverTextTimer, 1.5f) / 1.5f);
         String visibleText = gameOverText.substring(0, Math.min((int) charsToShow, gameOverText.length()));
 
-        font.getData().setScale(2.0f); // Scale font to 128px
+        font.getData().setScale(2.0f);
 
         GlyphLayout layout = new GlyphLayout(font, visibleText);
         float x = (Gdx.graphics.getWidth() - layout.width) / 2f;
-        float y = Gdx.graphics.getHeight() * 0.9f; // Moved text higher
+        float y = Gdx.graphics.getHeight() * 0.9f;
 
         font.setColor(Color.RED);
         font.draw(batch, visibleText, x, y);
-        font.setColor(Color.WHITE); // Reset color
-
-        font.getData().setScale(1.0f); // Reset font scale
+        font.setColor(Color.WHITE);
+        font.getData().setScale(1.0f);
     }
 
+    /**
+     * Dibuja el mensaje de muerte con animación de escritura.
+     */
     private void drawDeathMessage() {
         if (randomDeathMessage == null) return;
 
@@ -158,12 +204,15 @@ public class GameOverUI implements InputProcessor {
 
         GlyphLayout layout = new GlyphLayout(font, visibleText);
         float x = (Gdx.graphics.getWidth() - layout.width) / 2f;
-        float y = Gdx.graphics.getHeight() * 0.25f; // Moved lower
+        float y = Gdx.graphics.getHeight() * 0.25f;
         font.draw(batch, visibleText, x, y);
     }
 
+    /**
+     * Dibuja las opciones de reinicio/salida con resaltado de selección.
+     */
     private void drawOptions() {
-        float startY = Gdx.graphics.getHeight() * 0.25f; // Moved lower
+        float startY = Gdx.graphics.getHeight() * 0.25f;
         float lineHeight = 110f;
 
         for (int i = 0; i < options.length; i++) {
@@ -177,6 +226,8 @@ public class GameOverUI implements InputProcessor {
         }
     }
 
+    // === Manejo de entrada ===
+    
     @Override
     public boolean keyDown(int keycode) {
         if (isWaitingForInput && (keycode == Input.Keys.E || keycode == Input.Keys.ENTER)) {
@@ -202,43 +253,14 @@ public class GameOverUI implements InputProcessor {
         return true;
     }
 
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(float amountX, float amountY) {
-        return false;
-    }
-
-    @Override
-    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
+    // === Métodos de InputProcessor no utilizados ===
+    
+    @Override public boolean keyUp(int keycode) { return false; }
+    @Override public boolean keyTyped(char character) { return false; }
+    @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) { return false; }
+    @Override public boolean touchUp(int screenX, int screenY, int pointer, int button) { return false; }
+    @Override public boolean touchDragged(int screenX, int screenY, int pointer) { return false; }
+    @Override public boolean mouseMoved(int screenX, int screenY) { return false; }
+    @Override public boolean scrolled(float amountX, float amountY) { return false; }
+    @Override public boolean touchCancelled(int screenX, int screenY, int pointer, int button) { return false; }
 }

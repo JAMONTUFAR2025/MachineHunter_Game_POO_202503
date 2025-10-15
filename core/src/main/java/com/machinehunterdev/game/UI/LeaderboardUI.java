@@ -17,14 +17,24 @@ import com.machinehunterdev.game.Leaderboard.LeaderboardManager;
 /**
  * Interfaz de usuario para la tabla de clasificaciones.
  * Maneja toda la visualización y la interacción del usuario.
+ * 
+ * @author MachineHunterDev
  */
 public class LeaderboardUI {
-    // Componentes de la UI
-    private Stage stage;                    // Escenario que contiene todos los actores
-    private Table table;                    // Tabla principal de la interfaz
-    private LeaderboardManager leaderboardManager; // Gestor de clasificaciones
-    private LeaderboardState leaderboardState;     // Estado del juego asociado
-    private Skin skin;                      // Estilo visual de los componentes
+    /** Escenario que contiene todos los actores de la interfaz */
+    private Stage stage;
+    
+    /** Tabla principal de la interfaz */
+    private Table table;
+    
+    /** Gestor de clasificaciones */
+    private LeaderboardManager leaderboardManager;
+    
+    /** Estado del juego asociado */
+    private LeaderboardState leaderboardState;
+    
+    /** Estilo visual de los componentes */
+    private Skin skin;
 
     /**
      * Constructor de la interfaz de clasificaciones.
@@ -56,7 +66,6 @@ public class LeaderboardUI {
         ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
         skin.add("default", scrollPaneStyle);
 
-        // Construir la interfaz
         buildUI();
     }
 
@@ -80,17 +89,15 @@ public class LeaderboardUI {
         // Obtener los mejores puntajes
         Array<LeaderboardManager.ScoreEntry> topScores = leaderboardManager.getTopScores();
         if (topScores.size == 0) {
-            // Mostrar mensaje si no hay puntajes
             scoresTable.add(new Label("No hay puntajes aún", skin)).row();
         } else {
-            // Mostrar cada puntaje con su posición
             for (int i = 0; i < topScores.size; i++) {
                 String text = (i + 1) + ". " + topScores.get(i).name + " - " + topScores.get(i).score;
                 scoresTable.add(new Label(text, skin)).row();
             }
         }
 
-        // Scroll pane para navegación en dispositivos con pocos puntajes visibles
+        // Scroll pane para navegación
         ScrollPane scrollPane = new ScrollPane(scoresTable, skin);
         table.add(scrollPane)
              .width(Gdx.graphics.getWidth() * 0.8f)

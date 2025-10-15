@@ -10,16 +10,18 @@ import com.machinehunterdev.game.Leaderboard.LeaderboardManager;
 /**
  * Estado del juego que muestra la tabla de clasificaciones.
  * Implementa el patrón Singleton para asegurar una única instancia.
+ * 
+ * @author MachineHunterDev
  */
 public class LeaderboardState implements State<GameController> {
 
-    // Instancia singleton del estado
+    /** Instancia singleton del estado */
     public static LeaderboardState instance = new LeaderboardState();
 
-    // Componentes del estado
-    private LeaderboardUI leaderboardUI;           // Interfaz de usuario
-    private GameController owner;                  // Controlador del juego propietario
-    private LeaderboardManager leaderboardManager; // Gestor de clasificaciones (singleton)
+    /** Componentes del estado */
+    private LeaderboardUI leaderboardUI;
+    private GameController owner;
+    private LeaderboardManager leaderboardManager;
 
     /**
      * Constructor privado para implementar el patrón Singleton.
@@ -27,36 +29,31 @@ public class LeaderboardState implements State<GameController> {
     private LeaderboardState() {}
 
     /**
-     * Método llamado al entrar en este estado.
-     * Inicializa la interfaz y configura el procesador de entrada.
-     * @param owner Controlador del juego que posee este estado
+     * Inicializa el estado al entrar.
+     * @param owner Controlador del juego propietario
      */
     @Override
     public void enter(GameController owner) {
         this.owner = owner;
-        // ✅ Usa la instancia singleton del gestor de clasificaciones
         this.leaderboardManager = LeaderboardManager.getInstance();
         this.leaderboardUI = new LeaderboardUI(leaderboardManager, this);
         Gdx.input.setInputProcessor(leaderboardUI.getStage());
     }
 
     /**
-     * Método llamado cada frame mientras se está en este estado.
-     * Renderiza la interfaz y maneja la entrada del usuario.
+     * Ejecuta la lógica del estado cada frame.
      */
     @Override
     public void execute() {
         leaderboardUI.render(Gdx.graphics.getDeltaTime());
         
-        // Permitir salir con teclas Q o ESC (como respaldo)
         if (Gdx.input.isKeyJustPressed(Input.Keys.Q) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             exitToMainMenu();
         }
     }
 
     /**
-     * Método llamado al salir de este estado.
-     * Libera los recursos utilizados.
+     * Limpia los recursos al salir del estado.
      */
     @Override
     public void exit() {
@@ -67,8 +64,6 @@ public class LeaderboardState implements State<GameController> {
 
     /**
      * Maneja el redimensionamiento de la ventana.
-     * @param width Nuevo ancho de la ventana
-     * @param height Nuevo alto de la ventana
      */
     public void resize(int width, int height) {
         if (leaderboardUI != null) {

@@ -13,15 +13,37 @@ import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.GameStates.GameplayState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
+/**
+ * Interfaz de usuario para la entrada del nombre del jugador.
+ * Muestra un cursor parpadeante y valida la entrada del usuario.
+ * 
+ * @author MachineHunterDev
+ */
 public class NameInputUI implements InputProcessor {
 
+    /** Fuente para el texto de la interfaz */
     private BitmapFont font;
+    
+    /** SpriteBatch para renderizado */
     private SpriteBatch batch;
+    
+    /** Renderizador de formas para el cursor */
     private ShapeRenderer shapeRenderer;
+    
+    /** Controlador del juego para gestión de estados */
     private GameController gameController;
+    
+    /** Nombre del jugador en construcción */
     private StringBuilder playerName;
+    
+    /** Temporizador para el parpadeo del cursor */
     private float elapsedTime = 0;
 
+    /**
+     * Constructor de la interfaz de entrada de nombre.
+     * @param batch SpriteBatch para renderizado
+     * @param gameController Controlador del juego para gestión de estados
+     */
     public NameInputUI(SpriteBatch batch, GameController gameController) {
         this.batch = batch;
         this.gameController = gameController;
@@ -30,6 +52,9 @@ public class NameInputUI implements InputProcessor {
         loadCustomBitmapFont();
     }
 
+    /**
+     * Carga la fuente personalizada para la interfaz.
+     */
     private void loadCustomBitmapFont() {
         try {
             this.font = new BitmapFont(Gdx.files.internal("fonts/OrangeKid64.fnt"));
@@ -40,10 +65,14 @@ public class NameInputUI implements InputProcessor {
         }
     }
 
+    /**
+     * Renderiza la interfaz de entrada de nombre.
+     * @param playerCharacter Personaje animado para mostrar en la pantalla
+     */
     public void draw(Character playerCharacter) {
         batch.begin();
 
-        // Draw the character
+        // Dibujar el personaje animado
         playerCharacter.draw(batch);
 
         GlyphLayout layout = new GlyphLayout();
@@ -63,6 +92,7 @@ public class NameInputUI implements InputProcessor {
 
         batch.end();
 
+        // Dibujar cursor parpadeante
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         elapsedTime += Gdx.graphics.getDeltaTime();
         if ((int)(elapsedTime * 2) % 2 == 0) {
@@ -72,6 +102,8 @@ public class NameInputUI implements InputProcessor {
         shapeRenderer.end();
     }
 
+    // === Manejo de entrada ===
+    
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ENTER) {
@@ -95,6 +127,9 @@ public class NameInputUI implements InputProcessor {
         return true;
     }
 
+    /**
+     * Libera los recursos utilizados por la interfaz.
+     */
     public void dispose() {
         if (font != null) {
             font.dispose();
@@ -102,7 +137,8 @@ public class NameInputUI implements InputProcessor {
         shapeRenderer.dispose();
     }
 
-    // Métodos de InputProcessor no usados
+    // === Métodos de InputProcessor no utilizados ===
+    
     @Override public boolean keyUp(int keycode) { return false; }
     @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) { return false; }
     @Override public boolean touchUp(int screenX, int screenY, int pointer, int button) { return false; }
