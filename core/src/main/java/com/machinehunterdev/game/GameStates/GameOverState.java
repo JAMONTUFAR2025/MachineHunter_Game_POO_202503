@@ -31,7 +31,6 @@ public class GameOverState implements State<GameController> {
     private boolean isDeathAnimationFinished;
     private boolean isGameOverTextFinished;
     private boolean isDialogueTypingFinished;
-    private boolean isWaitingForInput;
 
     /**
      * Constructor privado para implementar el patrón Singleton.
@@ -59,7 +58,6 @@ public class GameOverState implements State<GameController> {
         isDeathAnimationFinished = false;
         isGameOverTextFinished = false;
         isDialogueTypingFinished = false;
-        isWaitingForInput = false;
 
         gameOverUI.setShowDeathMessage(true);
     }
@@ -104,8 +102,6 @@ public class GameOverState implements State<GameController> {
             gameOverUI.setDialogueTimer(dialogueTimer);
             if (dialogueTimer > 2.5f) {
                 isDialogueTypingFinished = true;
-                isWaitingForInput = true;
-                gameOverUI.setWaitingForInput(true);
             }
         }
     }

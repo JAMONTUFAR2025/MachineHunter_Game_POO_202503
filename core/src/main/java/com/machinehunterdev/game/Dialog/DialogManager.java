@@ -36,7 +36,7 @@ public class DialogManager {
     private boolean dialogActive;
 
     /** Dimensiones y posición del cuadro de diálogo */
-    private float dialogBoxWidth = 440;
+    private float dialogBoxWidth;
     private float dialogBoxHeight = 100;
     private float dialogBoxX;
     private float dialogBoxY;
@@ -102,6 +102,7 @@ public class DialogManager {
      * Actualiza la posición del cuadro de diálogo según el tamaño de la pantalla.
      */
     private void updateDialogPosition() {
+        dialogBoxWidth = Gdx.graphics.getWidth() - 40;
         dialogBoxX = (Gdx.graphics.getWidth() - dialogBoxWidth) / 2f;
         dialogBoxY = Gdx.graphics.getHeight() - dialogBoxHeight - 20;
     }
@@ -197,10 +198,6 @@ public class DialogManager {
         if (!dialogActive) return;
 
         if (textFullyVisible) {
-            autoAdvanceTimer += dt;
-            if (autoAdvanceTimer >= autoAdvanceDelay) {
-                nextLine();
-            }
             return;
         }
 

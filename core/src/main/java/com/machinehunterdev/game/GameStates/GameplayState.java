@@ -215,6 +215,9 @@ public class GameplayState implements State<GameController> {
 
         if (isDialogActive) {
             dialogManager.update(deltaTime);
+            if (!dialogManager.isDialogActive()) {
+                isDialogActive = false;
+            }
             handleDialogInput();
             return;
         }
@@ -283,8 +286,6 @@ public class GameplayState implements State<GameController> {
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
             if (dialogManager.isDialogActive()) {
                 dialogManager.nextLine();
-            } else {
-                isDialogActive = false;
             }
         }
     }

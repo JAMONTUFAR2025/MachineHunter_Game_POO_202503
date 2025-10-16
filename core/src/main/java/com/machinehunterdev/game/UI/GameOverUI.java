@@ -48,9 +48,11 @@ public class GameOverUI implements InputProcessor {
     
     private float gameOverTextTimer = 0f;
     private float dialogueTimer = 0f;
+    private float optionsTimer = 0f;
+    private boolean deathMessageFinished = false;
     private boolean showDeathMessage = false;
     private boolean showOptions = false;
-    private boolean isWaitingForInput = false;
+
     private boolean showContent = false;
 
     // === Mensajes de muerte ===
@@ -121,9 +123,6 @@ public class GameOverUI implements InputProcessor {
         this.dialogueTimer = timer;
     }
 
-    public void setWaitingForInput(boolean waiting) {
-        this.isWaitingForInput = waiting;
-    }
 
     public void setShowDeathMessage(boolean show) {
         this.showDeathMessage = show;
@@ -148,6 +147,14 @@ public class GameOverUI implements InputProcessor {
 
         if (showContent) {
             drawGameOverText();
+
+            if (deathMessageFinished) {
+                optionsTimer += Gdx.graphics.getDeltaTime();
+                if (optionsTimer > 2f) {
+                    showDeathMessage = false;
+                    showOptions = true;
+                }
+            }
 
             if (showDeathMessage) {
                 drawDeathMessage();
@@ -202,6 +209,10 @@ public class GameOverUI implements InputProcessor {
         float charsToShow = randomDeathMessage.length() * (Math.min(dialogueTimer, 2.5f) / 2.5f);
         String visibleText = randomDeathMessage.substring(0, Math.min((int) charsToShow, randomDeathMessage.length()));
 
+        if ((int) charsToShow >= randomDeathMessage.length()) {
+            deathMessageFinished = true;
+        }
+
         GlyphLayout layout = new GlyphLayout(font, visibleText);
         float x = (Gdx.graphics.getWidth() - layout.width) / 2f;
         float y = Gdx.graphics.getHeight() * 0.25f;
@@ -230,13 +241,6 @@ public class GameOverUI implements InputProcessor {
     
     @Override
     public boolean keyDown(int keycode) {
-        if (isWaitingForInput && (keycode == Input.Keys.E || keycode == Input.Keys.ENTER)) {
-            isWaitingForInput = false;
-            showDeathMessage = false;
-            showOptions = true;
-            return true;
-        }
-
         if (showOptions) {
             if (keycode == Input.Keys.W || keycode == Input.Keys.UP) {
                 selected = (selected - 1 + options.length) % options.length;
