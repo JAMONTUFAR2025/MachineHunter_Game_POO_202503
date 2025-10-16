@@ -50,20 +50,20 @@ public class Bullet
 
         switch (weaponType) {
             case LASER:
-                speed = 400f;
+                speed = 200f;
                 maxDistance = 400f; // Larga distancia
-                texturePath = "plasma.png";
+                texturePath = "Bullets/laser1.png";
                 break;
             case ION:
-                speed = 300f;
+                speed = 150f;
                 maxDistance = 100f; // Corta distancia
-                texturePath = "plasma.png";
+                texturePath = "Bullets/ion1.png";
                 break;
             case RAILGUN:
-                speed = 500f;
+                speed = 250f;
                 maxDistance = 600f; // Muy larga distancia
                 piercing = true; // Puede atravesar enemigos
-                texturePath = "plasma.png";
+                texturePath = "Bullets/railgun1.png";
                 break;
         }
 
