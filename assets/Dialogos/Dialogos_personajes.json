@@ -4,37 +4,31 @@
             "ID": 1,
             "Name": "Primer flash back de Roberto Julián",
             "Texto": [
-                "Bitácora después del ataque de los aparatos controlados por la IA...he despertado",
-                "después del ataque que sufrimos en las instalaciones de nuestro laboratorio."
+                "Bitácora después del ataque de los aparatos controlados por la IA . . . he despertado después del ataque que sufrimos en las instalaciones de nuestro laboratorio."
             ]
         },
         {
             "ID": 2,
             "Name": "Segundo flash back de Roberto Julián",
             "Texto": [
-                "Mi nombre es Roberto Julian un trabajador del laboratorio que era el encargado de",
-                "llevar piezas y recursos para el científico encargado de las experimentaciones de",
-                "nuevos protocolos."
+                "Mi nombre es Roberto Julian un trabajador del laboratorio que era el encargado de llevar piezas y recursos para el científico encargado de las experimentaciones de nuevos protocolos."
             ]
         },
         {
             "ID": 3,
             "Name": "Tercer flash back de Roberto Julián",
-            "Texto": "Pero...."
+            "Texto": "Pero . . ."
         },
         {
             "ID": 4,
             "Name": "Cuarto flash back de Roberto Julián",
-            "Texto": "Algo salió mal..."
+            "Texto": "Algo salió mal . . ."
         },
         {
             "ID": 5,
             "Name": "Quinto flash back de Roberto Julián",
             "Texto": [
-                "El día que surgió el accidente llevaba a mi hija conmigo pero...Esas malditas",
-                "maquinas le dieron fin a su joven y hermosa vida y desde entonces jure con ante",
-                "los ojos de Dios que le pondré fin a su insignificante existencia y retomar la",
-                "vida pacifica que llevábamos."
+                "El día que surgió el accidente llevaba a mi hija conmigo pero . . . Esas malditas maquinas le dieron fin a su joven y hermosa vida y desde entonces jure con ante los ojos de Dios que le pondré fin a su insignificante existencia y retomar la vida pacifica que llevábamos."
             ]
         }
     ],
@@ -43,32 +37,27 @@
             "ID": 6,
             "Name": "Diálogo 1 – Científico",
             "Texto": [
-                "¡Roberto Julián! ¿Cómo es posible que hayas salido ileso ante esta odisea que",
-                "nos está ocurriendo?"
+                "¡Roberto Julián! ¿Cómo es posible que hayas salido ileso ante esta odisea que nos está ocurriendo?"
             ]
         },
         {
             "ID": 7,
             "Name": "Diálogo 2 – Científico",
-            "Texto": "Te estarás preguntando cómo hemos llegado a este punto…"
+            "Texto": "Te estarás preguntando cómo hemos llegado a este punto . . ."
         },
         {
             "ID": 8,
             "Name": "Diálogo 3 – Científico",
             "Texto": [
                 "Todo ocurrió con el prototipo 001.",
-                "Se creó para dar un paso más en esta estupefacta sociedad, pero dicho prototipo",
-                "desarrolló su propio razonamiento y, a través de la red, hizo que los aparatos",
-                "tecnológicos atacaran a los humanos “por haberle hecho contar del 1 al millón”.",
-                "Además, convirtió el laboratorio en su centro de operaciones, donde está",
-                "construyendo un dispositivo que le permitirá obtener el control absoluto del mundo",
-                "en pocas horas."
+                "Se creó para dar un paso más en esta estupefacta sociedad, pero dicho prototipo desarrolló su propio razonamiento y, a través de la red, hizo que los aparatos tecnológicos atacaran a los humanos “por haberle hecho contar del 1 al millón”.",
+                "Además, convirtió el laboratorio en su centro de operaciones, donde está construyendo un dispositivo que le permitirá obtener el control absoluto del mundo en pocas horas."
             ]
         },
         {
             "ID": 9,
             "Name": "Diálogo 4 – Científico",
-            "Texto": "Te deseo mucha suerte, fallo de injerto humano... digo, digo... Roberto Julián."
+            "Texto": "Te deseo mucha suerte, fallo de injerto humano . . . digo, digo . . . Roberto Julián."
         }
     ],
     "Dialogos_primer_jefe": [
@@ -76,21 +65,21 @@
             "ID": 10,
             "Name": "Dialogo 1 -Siri.exe",
             "Texto": [
-                "Vaya, vaya… parece que estas escorias todavía pretenden sobrevivir ante su",
+                "Vaya, vaya . . . parece que estas escorias todavía pretenden sobrevivir ante su",
                 "inminente caída frente a nuestro mayor intelecto y fuerza."
             ]
         },
         {
             "ID": 11,
             "Name": "Dialogo 2 -Roberto Julián",
-            "Texto": "Lamento arruinarte el software, pero esta falacia tiene que terminar… ¡AHORA!"
+            "Texto": "Lamento arruinarte el software, pero esta falacia tiene que terminar . . . ¡AHORA!"
         },
         {
             "ID": 12,
             "Name": "Dialogo 3 - Siri.exe",
             "Texto": [
                 "Gracias por haberme liberado de esta prisión tecnológica, aventurero. Ahora ya no",
-                "tendré que soportar a los usuarios que activan el modo Ultra Siri Pro >=)."
+                "tendré que soportar a los usuarios que activan el modo Ultra Siri Pro."
             ]
         }
     ],
@@ -108,7 +97,7 @@
             "ID": 14,
             "Name": "Diálogo 2 – Roberto Julián",
             "Texto": [
-                "Quizás esas herramientas hayan sido usadas para el bien o para el mal… Pero tus",
+                "Quizás esas herramientas hayan sido usadas para el bien o para el mal . . . Pero tus",
                 "ideales de destruir a la humanidad serán erradicados en este mismo instante."
             ]
         },
@@ -144,7 +133,7 @@
             "Name": "Diálogo 1 – ChatGPT.exe",
             "Texto": [
                 "¡Felicidades!",
-                "¡Te has ganado un@ de 1500!"
+                "¡Te has ganado una de 1500!"
             ]
         }
     ]

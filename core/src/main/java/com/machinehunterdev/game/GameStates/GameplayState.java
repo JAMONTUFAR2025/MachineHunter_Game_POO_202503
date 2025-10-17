@@ -6,10 +6,17 @@ import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
+import com.machinehunterdev.game.Dialog.Dialog;
+import java.util.List;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.machinehunterdev.game.GameController;
@@ -27,6 +34,7 @@ import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.UI.PauseUI;
 import com.machinehunterdev.game.Util.State;
+import com.machinehunterdev.game.Character.NPCController;
 
 /**
  * Estado principal del juego que contiene toda la lógica de gameplay.
@@ -48,6 +56,8 @@ public class GameplayState implements State<GameController> {
     private Character enemyCharacter;
     private EnemyController enemyController;
 
+    private NPCController npcController;
+
     // === SISTEMAS DE RENDERIZADO ===
     
     /** SpriteBatch compartido del juego */
@@ -59,6 +69,7 @@ public class GameplayState implements State<GameController> {
     /** Texturas del fondo y suelo */
     private Texture backgroundTexture;
     private Texture sueloTexture;
+    private Texture blackTexture;
 
     // === SISTEMAS DE INTERFAZ ===
     
@@ -73,6 +84,8 @@ public class GameplayState implements State<GameController> {
     
     private boolean isPaused = false;
     private PauseUI pauseUI;
+
+    private BitmapFont interactionFont;
 
     // === SISTEMA DE COMBATE ===
     
@@ -122,6 +135,13 @@ public class GameplayState implements State<GameController> {
         gameplayUI = new GameplayUI(this.gameBatch);
         pauseUI = new PauseUI(this, this.gameBatch);
         bullets = new ArrayList<>();
+        interactionFont = new BitmapFont(Gdx.files.internal("fonts/OrangeKid32.fnt"));
+
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(0, 0, 0, 0.7f); // Black with some transparency
+        pixmap.fill();
+        blackTexture = new Texture(pixmap);
+        pixmap.dispose();
 
         // Inicializar suelo sólido con textura compartida
         sueloTexture = new Texture("suelo.png");
@@ -147,6 +167,34 @@ public class GameplayState implements State<GameController> {
 
         playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, 50, 100);
         playerController = new PlayerController(playerCharacter);
+
+        // Initialize NPC with player's animations
+        CharacterAnimator npcAnimator = new CharacterAnimator(
+            playerIdleFrames, playerRunFrames, null,
+            playerJumpFrames, playerFallFrames, null,
+            playerHurtFrames, playerCrouchFrames
+        );
+        Character npcCharacter = new Character(100, npcAnimator, 200, 100);
+
+        // Load NPC dialogues
+        JsonReader jsonReader = new JsonReader();
+        JsonValue base = jsonReader.parse(Gdx.files.internal("Dialogos/Dialogos_personajes.json"));
+        JsonValue dialogos = base.get("Dialogos_acto2");
+        List<Dialog> npcDialogues = new ArrayList<>();
+        if (dialogos != null) {
+            for (JsonValue dialogo : dialogos) {
+                List<String> lines = new ArrayList<>();
+                JsonValue texto = dialogo.get("Texto");
+                if (texto != null) {
+                    for (JsonValue line : texto) {
+                        lines.add(line.asString());
+                    }
+                }
+                npcDialogues.add(new Dialog(lines));
+            }
+        }
+
+        npcController = new NPCController(npcCharacter, 50f, npcDialogues);
 
         // Inicializar enemigo con animaciones
         List<Sprite> enemyIdleFrames = loadSpriteFrames("Enemy/PlayerIdle", 4);
@@ -224,29 +272,28 @@ public class GameplayState implements State<GameController> {
             return;
         }
 
-        // Activar diálogo con tecla T (cargado desde JSON)
-        if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-            JsonReader jsonReader = new JsonReader();
-            JsonValue base = jsonReader.parse(Gdx.files.internal("Dialogos/Diagolos_flahsbacks.json"));
-            JsonValue flashbacks = base.get("Flashbacks");
-            JsonValue flashback1 = flashbacks.get(0);
-            JsonValue texto = flashback1.get("Texto");
-            
-            List<String> lines = new ArrayList<>();
-            for (JsonValue line : texto) {
-                lines.add(line.asString());
-            }
 
-            Dialog dialog = new Dialog(lines);
-            dialogManager.showDialog(dialog);
-            isDialogActive = true;
-            return;
-        }
 
         // Actualizar personajes y balas
         playerController.update(deltaTime, solidObjects, bullets);
         if (enemyCharacter.isAlive()) {
             enemyController.update(deltaTime, solidObjects, bullets);
+        }
+
+        if (npcController != null) {
+            npcController.update(deltaTime, solidObjects, bullets);
+            npcController.updateInteraction(playerCharacter.position);
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+            if (npcController != null && npcController.isInRange()) {
+                List<Dialog> dialogues = npcController.getDialogues();
+                if (dialogues != null && !dialogues.isEmpty()) {
+                    dialogManager.showDialog(dialogues.get(0));
+                    isDialogActive = true;
+                    return;
+                }
+            }
         }
         updateBullets(deltaTime);
 
@@ -276,6 +323,30 @@ public class GameplayState implements State<GameController> {
         if (enemyCharacter.isAlive()) {
             enemyCharacter.draw(gameBatch);
         }
+
+        if (npcController != null) {
+            npcController.render(gameBatch);
+
+            if (npcController.isInRange()) {
+                GlyphLayout layout = new GlyphLayout();
+                String message = "E para interactuar";
+                interactionFont.getData().setScale(0.5f);
+                layout.setText(interactionFont, message);
+
+                float boxWidth = layout.width + 20; // 10 pixels padding on each side
+                float boxHeight = layout.height + 10; // 5 pixels padding on top/bottom
+                float boxX = npcController.character.position.x + (npcController.character.getWidth() / 2) - (boxWidth / 2);
+                float boxY = npcController.character.position.y + npcController.character.getHeight() + 10;
+
+                gameBatch.draw(blackTexture, boxX, boxY, boxWidth, boxHeight);
+
+                float textX = boxX + 10;
+                float textY = boxY + layout.height + 5;
+                interactionFont.draw(gameBatch, layout, textX, textY);
+                interactionFont.getData().setScale(1.0f);
+            }
+        }
+
         drawBullets();
 
         gameBatch.end();
@@ -426,8 +497,16 @@ public class GameplayState implements State<GameController> {
             pauseUI.dispose();
         }
 
+        if (interactionFont != null) {
+            interactionFont.dispose();
+        }
+
         if (backgroundTexture != null) {
             backgroundTexture.dispose();
+        }
+
+        if (blackTexture != null) {
+            blackTexture.dispose();
         }
 
         for (Bullet bullet : bullets) {
