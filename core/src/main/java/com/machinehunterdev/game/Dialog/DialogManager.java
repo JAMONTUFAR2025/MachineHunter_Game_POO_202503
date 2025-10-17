@@ -72,7 +72,6 @@ public class DialogManager {
     public DialogManager(SpriteBatch batch) {
         this.batch = batch;
         font = new BitmapFont(Gdx.files.internal("fonts/OrangeKid64.fnt"));
-        font.getData().setScale(0.6f);
         font.setColor(Color.WHITE);
         glyphLayout = new GlyphLayout();
         pages = new ArrayList<>();

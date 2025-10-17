@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.WeaponType;
+import com.machinehunterdev.game.DamageTriggers.DamageSystem;
+import com.machinehunterdev.game.DamageTriggers.DamageType;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.ArrayList;
 
@@ -88,14 +90,21 @@ public class Character
     /** Temporizador del parpadeo rojo */
     private float redFlashTimer = 0f;
 
+    // === SISTEMA DE ANIMACIÓN DE DAÑO ===
+    
+    /** Indica si el personaje está en estado de daño (animación HURT) */
+    private boolean isHurt = false;
+    private float hurtTimer = 0f;
+    private static final float HURT_DURATION = 0.3f;
+
     // === SISTEMA DE ARMAS ===
     private WeaponType currentWeapon = WeaponType.LASER;
-    private float laserCooldown = 0f;
-    private float ionCooldown = 0f;
-    private float railgunCooldown = 0f;
-    private static final float RIFLE_COOLDOWN_TIME = 0.3f;    // 0.3 segundos
-    private static final float SHOTGUN_COOLDOWN_TIME = 1.0f;  // 1 segundo
-    private static final float SNIPER_COOLDOWN_TIME = 2.0f;   // 2 segundos
+    private float rifleCooldown = 0f;
+    private float shotgunCooldown = 0f;
+    private float sniperCooldown = 0f;
+    private static final float LASER_COOLDOWN_TIME = 0.3f;    // 0.3 segundos
+    private static final float ION_COOLDOWN_TIME = 0.3f;  // 0.3 segundos
+    private static final float RAILGUN_COOLDOWN_TIME = 0.3f;   // 0.3 segundos
 
     // === CONSTRUCTORES ===
 
@@ -158,7 +167,11 @@ public class Character
 
             if (!isAlive) {
                 newState = CharacterAnimator.AnimationState.DEAD;
+            } else if (isHurt && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
+                // Prioridad: Animación de daño
+                newState = CharacterAnimator.AnimationState.HURT;
             } else if (isKnockedBack && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
+                // Empuje también usa animación HURT
                 newState = CharacterAnimator.AnimationState.HURT;
             } else if (isCrouching && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.CROUCH)) {
                 newState = CharacterAnimator.AnimationState.CROUCH;
@@ -219,6 +232,16 @@ public class Character
             }
         }
 
+        // --- MANEJO DEL ESTADO DE DAÑO ---
+        if (isHurt) {
+            hurtTimer -= delta;
+            velocity.x = 0; // Detener movimiento horizontal
+            if (hurtTimer <= 0) {
+                isHurt = false;
+                hurtTimer = 0;
+            }
+        }
+
         // --- MANEJO DE EMPUJE POR DAÑO ---
         if (isKnockedBack) {
             velocity.x = isSeeingRight ? -knockbackSpeed : knockbackSpeed;
@@ -236,7 +259,7 @@ public class Character
         position.y += velocity.y * delta;
 
         // --- LÓGICA DE MOVIMIENTO NORMAL ---
-        if (!isKnockedBack) {
+        if (!isKnockedBack && !isHurt) {
             if (!isMoving) {
                 velocity.x = 0;
             }
@@ -313,11 +336,11 @@ public class Character
     public boolean canShoot() {
         switch (currentWeapon) {
             case LASER:
-                return laserCooldown <= 0f;
+                return rifleCooldown <= 0f;
             case ION:
-                return ionCooldown <= 0f;
+                return shotgunCooldown <= 0f;
             case RAILGUN:
-                return railgunCooldown <= 0f;
+                return sniperCooldown <= 0f;
             default:
                 return true;
         }
@@ -335,15 +358,15 @@ public class Character
         switch (currentWeapon) {
             case LASER:
                 shootRifle(bullets);
-                laserCooldown = RIFLE_COOLDOWN_TIME;
+                rifleCooldown = LASER_COOLDOWN_TIME;
                 break;
             case ION:
                 shootShotgun(bullets);
-                ionCooldown = SHOTGUN_COOLDOWN_TIME;
+                shotgunCooldown = ION_COOLDOWN_TIME;
                 break;
             case RAILGUN:
                 shootSniper(bullets);
-                railgunCooldown = SNIPER_COOLDOWN_TIME;
+                sniperCooldown = RAILGUN_COOLDOWN_TIME;
                 break;
         }
     }
@@ -389,32 +412,49 @@ public class Character
      * @param delta Tiempo transcurrido desde el último frame
      */
     public void updateWeaponCooldowns(float delta) {
-        if (laserCooldown > 0f) laserCooldown -= delta;
-        if (ionCooldown > 0f) ionCooldown -= delta;
-        if (railgunCooldown > 0f) railgunCooldown -= delta;
+        if (rifleCooldown > 0f) rifleCooldown -= delta;
+        if (shotgunCooldown > 0f) shotgunCooldown -= delta;
+        if (sniperCooldown > 0f) sniperCooldown -= delta;
         
         // Asegurar que no sean negativos
-        if (laserCooldown < 0f) laserCooldown = 0f;
-        if (ionCooldown < 0f) ionCooldown = 0f;
-        if (railgunCooldown < 0f) railgunCooldown = 0f;
+        if (rifleCooldown < 0f) rifleCooldown = 0f;
+        if (shotgunCooldown < 0f) shotgunCooldown = 0f;
+        if (sniperCooldown < 0f) sniperCooldown = 0f;
+    }
+
+    // === MÉTODOS DE DAÑO (usando el sistema centralizado) ===
+    
+    /**
+     * Método heredado para compatibilidad (usa el nuevo sistema DamageSystem).
+     * @param damage Cantidad de daño
+     */
+    public void takeDamage(int damage) {
+        DamageSystem.applyDamageNoKnockback(this, damage, DamageType.CONTACT);
     }
 
     /**
-     * Aplica daño al personaje.
-     * @param damage Cantidad de daño a aplicar
+     * Aplica daño sin empuje usando el sistema centralizado.
+     * @param damage Cantidad de daño
      */
-    public void takeDamage(int damage) {
-        if (invulnerable) return;
+    public void takeDamageNoKnockback(int damage) {
+        DamageSystem.applyDamageNoKnockback(this, damage, DamageType.PROJECTILE);
+    }
 
-        health -= damage;
-        if (health <= 0) {
-            isAlive = false;
-            health = 0;
-        }
+    /**
+     * Aplica daño por contacto usando el sistema centralizado.
+     * @param source Personaje que causa el daño
+     * @param damage Cantidad de daño
+     */
+    public void takeContactDamage(Character source, int damage) {
+        DamageSystem.applyContactDamage(this, source, damage);
+    }
 
-        // Activar parpadeo rojo visual
-        flashRed = true;
-        redFlashTimer = 0.1f;
+    /**
+     * Aplica daño sin activar invulnerabilidad.
+     * @param damage Cantidad de daño
+     */
+    public void takeDamageWithoutVulnerability(int damage) {
+        DamageSystem.applyDamageWithoutInvulnerability(this, damage, false);
     }
     
     /**
@@ -446,21 +486,21 @@ public class Character
     // === MÉTODOS DE MOVIMIENTO ===
     
     public void moveLeft() {
-        if (!isKnockedBack && !isCrouching && !isAttacking) {
+        if (!isKnockedBack && !isCrouching && !isAttacking && !isHurt) {
             velocity.x = -speed;
             isMoving = true;
         }
     }
 
     public void moveRight() {
-        if (!isKnockedBack && !isCrouching && !isAttacking) {
+        if (!isKnockedBack && !isCrouching && !isAttacking && !isHurt) {
             velocity.x = speed;
             isMoving = true;
         }
     }
 
     public void stopMoving() {
-        if (!isKnockedBack) {
+        if (!isKnockedBack && !isHurt) {
             isMoving = false;
         }
     }
@@ -508,6 +548,8 @@ public class Character
     public boolean isAlive() { return isAlive; }
     public boolean isKnockedBack() { return isKnockedBack; }
     public boolean isInvulnerable() { return invulnerable; }
+    public boolean isFlashingRed() { return flashRed; }
+    public boolean isHurt() { return isHurt; }
 
     public float getWidth() { 
         if (characterAnimator != null) {
@@ -535,5 +577,30 @@ public class Character
 
     public Rectangle getBounds() {
         return new Rectangle(position.x, position.y, getWidth(), getHeight());
+    }
+
+    // === SETTERS ===
+    public void setInvulnerable(boolean invulnerable) {
+        this.invulnerable = invulnerable;
+    }
+
+    public void setInvulnerabilityTimer(float timer) {
+        this.invulnerabilityTimer = timer;
+    }
+
+    public void setFlashRed(boolean flashRed) {
+        this.flashRed = flashRed;
+    }
+
+    public void setRedFlashTimer(float redFlashTimer) {
+        this.redFlashTimer = redFlashTimer;
+    }
+
+    public void setHurt(boolean isHurt) {
+        this.isHurt = isHurt;
+    }
+
+    public void setHurtTimer(float hurtTimer) {
+        this.hurtTimer = hurtTimer;
     }
 }

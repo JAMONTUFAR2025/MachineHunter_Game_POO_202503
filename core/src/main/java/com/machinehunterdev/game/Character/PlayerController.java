@@ -61,12 +61,12 @@ public class PlayerController extends CharacterController {
      * @param bullets Lista de balas activas para disparar
      */
     private void handleInput(ArrayList<Bullet> bullets) {
-        // Cambio de armas con teclas numéricas
-        if (Gdx.input.isKeyJustPressed(Keys.J)) {
+        // Cambio de armas con teclas numéricas (mientras no este atacando)
+        if (Gdx.input.isKeyJustPressed(Keys.J) && !character.isAttacking) {
             character.switchWeapon(WeaponType.LASER);
-        } else if (Gdx.input.isKeyJustPressed(Keys.K)) {
+        } else if (Gdx.input.isKeyJustPressed(Keys.K) && !character.isAttacking) {
             character.switchWeapon(WeaponType.ION);
-        } else if (Gdx.input.isKeyJustPressed(Keys.L)) {
+        } else if (Gdx.input.isKeyJustPressed(Keys.L) && !character.isAttacking) {
             character.switchWeapon(WeaponType.RAILGUN);
         }
 

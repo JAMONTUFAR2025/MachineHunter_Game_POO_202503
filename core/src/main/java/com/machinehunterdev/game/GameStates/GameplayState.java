@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Character.PlayerController;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
+import com.machinehunterdev.game.DamageTriggers.DamageSystem;
 import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.Character.Character;
 import com.machinehunterdev.game.Character.EnemyController;
@@ -152,11 +153,12 @@ public class GameplayState implements State<GameController> {
         List<Sprite> enemyRunFrames = loadSpriteFrames("Enemy/PlayerRun", 8);
         List<Sprite> enemyJumpFrames = loadSpriteFrames("Enemy/PlayerJump", 2);
         List<Sprite> enemyFallFrames = loadSpriteFrames("Enemy/PlayerFall", 2);
+        List<Sprite> enemyHurtFrames = loadSpriteFrames("Enemy/PlayerHurt", 2);
 
         CharacterAnimator enemyAnimator = new CharacterAnimator(
             enemyIdleFrames, enemyRunFrames, null,
             enemyJumpFrames, enemyFallFrames, null,
-            null, null
+            enemyHurtFrames, null
         );
 
         enemyCharacter = new Character(50, enemyAnimator, 300, 100);
@@ -295,30 +297,26 @@ public class GameplayState implements State<GameController> {
      */
     private void checkPlayerEnemyCollision() {
         if (!enemyCharacter.isAlive()) return;
+        
         Rectangle playerBounds = playerCharacter.getBounds();
         Rectangle enemyBounds = enemyCharacter.getBounds();
 
         if (playerBounds.overlaps(enemyBounds)) {
             playerCharacter.isOverlappingEnemy = true;
-            if (!playerCharacter.isInvulnerable()) {
+            
+            // Usar el sistema centralizado de daño
+            if (DamageSystem.canTakeDamage(playerCharacter)) {
                 // Resolver colisión (empujar al jugador)
-                float overlapX = Math.min(playerBounds.x + playerBounds.width, enemyBounds.x + enemyBounds.width) - Math.max(playerBounds.x, enemyBounds.x);
+                float overlapX = Math.min(playerBounds.x + playerBounds.width, enemyBounds.x + enemyBounds.width) - 
+                            Math.max(playerBounds.x, enemyBounds.x);
                 if (playerCharacter.getX() < enemyCharacter.getX()) {
                     playerCharacter.position.x -= overlapX;
                 } else {
                     playerCharacter.position.x += overlapX;
                 }
 
-                // Aplicar daño y empuje
-                playerCharacter.takeDamage(1);
-                playerCharacter.isKnockedBack = true;
-                playerCharacter.forceJump(0.7f);
-                
-                if (enemyCharacter.getX() < playerCharacter.getX()) {
-                    playerCharacter.velocity.x = 150f;
-                } else {
-                    playerCharacter.velocity.x = -150f;
-                }
+                // Aplicar daño por contacto
+                DamageSystem.applyContactDamage(playerCharacter, enemyCharacter, 1);
             }
         } else {
             playerCharacter.isOverlappingEnemy = false;
@@ -360,18 +358,26 @@ public class GameplayState implements State<GameController> {
      */
     private void checkBulletEnemyCollision() {
         if (!enemyCharacter.isAlive()) return;
-        
+
         for (int i = bullets.size() - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
             if (bullet.getBounds().overlaps(enemyCharacter.getBounds())) {
-                enemyCharacter.takeDamage(10);
-                
-                // Si la bala NO es perforante, eliminarla
-                if (!bullet.isPiercing()) {
+                // Si la bala es perforante, verificar si ya ha golpeado a este enemigo
+                if (bullet.isPiercing()) {
+                    if (!bullet.hasHit(enemyCharacter)) {
+                        if (enemyCharacter.isAlive()) {
+                            enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
+                            bullet.addHitEnemy(enemyCharacter); // Registrar el impacto
+                        }
+                    }
+                } else {
+                    // Si no es perforante, aplicar daño y eliminar la bala
+                    if (enemyCharacter.isAlive()) {
+                        enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
+                    }
                     bullets.remove(i);
                     bullet.dispose();
                 }
-                // Si es perforante, continúa su trayectoria
             }
         }
     }

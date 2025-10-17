@@ -9,7 +9,17 @@ package com.machinehunterdev.game.DamageTriggers;
  * Enumeración que define los diferentes tipos de armas disponibles.
  */
 public enum WeaponType {
-    LASER,      // Bala a larga distancia
-    ION,        // Disparo múltiple a corta distancia
-    RAILGUN     // Bala perforante de impacto
+    LASER(15),      // Bala a larga distancia
+    ION(10),        // Disparo múltiple a corta distancia
+    RAILGUN(5);     // Bala perforante de impacto
+
+    private final int damage;
+
+    WeaponType(int damage) {
+        this.damage = damage;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
 }
