@@ -37,7 +37,7 @@ public class DialogManager {
 
     /** Dimensiones y posición del cuadro de diálogo */
     private float dialogBoxWidth;
-    private float dialogBoxHeight = 100;
+    private float dialogBoxHeight = 200;
     private float dialogBoxX;
     private float dialogBoxY;
 
@@ -243,7 +243,7 @@ public class DialogManager {
         glyphLayout.setText(font, currentVisibleText, Color.WHITE, dialogBoxWidth - 20, Align.left, true);
 
         // Dibujar texto
-        font.draw(batch, glyphLayout, dialogBoxX + 10, dialogBoxY + dialogBoxHeight - 10);
+        font.draw(batch, glyphLayout, dialogBoxX + 10, dialogBoxY + dialogBoxHeight - 40);
         
         batch.end();
     }
