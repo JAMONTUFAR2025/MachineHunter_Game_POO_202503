@@ -153,4 +153,15 @@ public class SpriteAnimator
     public boolean isFinished() {
         return finished;
     }
+
+    /**
+     * Libera los recursos de las texturas de los sprites.
+     */
+    public void dispose() {
+        for (Sprite sprite : frames) {
+            if (sprite.getTexture() != null) {
+                sprite.getTexture().dispose();
+            }
+        }
+    }
 }

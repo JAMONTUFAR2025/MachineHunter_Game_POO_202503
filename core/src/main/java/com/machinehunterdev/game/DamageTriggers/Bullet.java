@@ -1,10 +1,13 @@
 package com.machinehunterdev.game.DamageTriggers;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.Character.Character;
+import com.machinehunterdev.game.Util.SpriteAnimator;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,13 +20,13 @@ public class Bullet
 {
     public Vector2 position;
     public Vector2 velocity;
-    private Texture texture;
+    private SpriteAnimator animator;
     private WeaponType weaponType;
-    private float maxDistance;      // Distancia máxima que recorre la bala
-    private float distanceTraveled; // Distancia recorrida actualmente
-    private boolean piercing;       // Si la bala puede atravesar enemigos
+    private float maxDistance;
+    private float distanceTraveled;
+    private boolean piercing;
     private Rectangle bounds;
-    private List<Character> hitEnemies; // Lista de enemigos ya golpeados
+    private List<Character> hitEnemies;
 
     /**
      * Constructor de la bala.
@@ -35,12 +38,13 @@ public class Bullet
     public Bullet(float x, float y, boolean seeingRight, WeaponType weaponType) {
         this.position = new Vector2(x, y);
         this.weaponType = weaponType;
-        this.hitEnemies = new ArrayList<>(); // Inicializar la lista
+        this.hitEnemies = new ArrayList<>();
 
         // Configurar propiedades según el tipo de arma
         configureBullet(seeingRight);
 
-        this.bounds = new Rectangle(x, y, texture.getWidth(), texture.getHeight());
+        // Initialize bounds using the first frame of the animation
+        this.bounds = new Rectangle(x, y, animator.getCurrentSprite().getWidth(), animator.getCurrentSprite().getHeight());
     }
 
     /**
@@ -51,40 +55,68 @@ public class Bullet
         float speed = 0;
         this.maxDistance = 0;
         this.piercing = false;
-        String texturePath = "";
+        String basePath = "Bullets/"; // Base path for bullet textures
+        String textureName = "";
 
         switch (weaponType) {
             case LASER:
                 speed = 200f;
-                maxDistance = 400f; // Larga distancia
-                texturePath = "Bullets/laser1.png";
+                maxDistance = 400f;
+                textureName = "laser";
                 break;
             case ION:
                 speed = 150f;
-                maxDistance = 100f; // Corta distancia
-                texturePath = "Bullets/ion1.png";
+                maxDistance = 100f;
+                textureName = "ion";
                 break;
             case RAILGUN:
                 speed = 250f;
-                maxDistance = 600f; // Muy larga distancia
-                piercing = true; // Puede atravesar enemigos
-                texturePath = "Bullets/railgun1.png";
+                maxDistance = 600f;
+                piercing = true;
+                textureName = "railgun";
                 break;
         }
 
         this.velocity = new Vector2(seeingRight ? speed : -speed, 0);
-        // Girar la textura si dispara a la izquierda
-        if (!seeingRight) {
-            texturePath = texturePath.replace(".png", "_flipped.png");
-        }
 
-        // Cargar textura (usa una textura por defecto si no existe)
-        try {
-            this.texture = new Texture(texturePath);
-        } catch (Exception e) {
-            // Textura por defecto si no se encuentra la específica
-            this.texture = new Texture("plasma.png");
+        // Load frames for the animation
+        List<Sprite> frames = loadBulletFrames(basePath + textureName, 2, !seeingRight); // Assuming 2 frames for each bullet type
+
+        // Initialize SpriteAnimator
+        this.animator = new SpriteAnimator(frames, 0.1f, true); // 0.1f frame rate, loop indefinitely
+        this.animator.start(); // Start the animation
+
+        // If the bullet is plasma (fallback), it's a single texture, so create a single-frame animator
+        if (frames.isEmpty()) { // This means loadBulletFrames failed to find specific bullet textures
+            List<Sprite> plasmaFrames = new ArrayList<>();
+            plasmaFrames.add(new Sprite(new Texture("plasma.png")));
+            this.animator = new SpriteAnimator(plasmaFrames, 0.1f, true);
+            this.animator.start();
         }
+    }
+
+    /**
+     * New method to load bullet animation frames.
+     * @param basePath The base path for the bullet texture (e.g., "Bullets/laser").
+     * @param frameCount The number of frames in the animation.
+     * @param flipped Whether the textures should be loaded as flipped versions.
+     * @return A list of sprites for the animation.
+     */
+    private List<Sprite> loadBulletFrames(String basePath, int frameCount, boolean flipped) {
+        List<Sprite> frames = new ArrayList<>();
+        for (int i = 1; i <= frameCount; i++) {
+            String texturePath = basePath + i + (flipped ? "_flipped.png" : ".png");
+            try {
+                frames.add(new Sprite(new Texture(texturePath)));
+            } catch (Exception e) {
+                // Handle missing frames, maybe log a warning or use a fallback
+                System.err.println("Warning: Could not load bullet frame: " + texturePath);
+                // If any frame is missing, we might want to return an empty list
+                // to trigger the fallback to "plasma.png"
+                return new ArrayList<>();
+            }
+        }
+        return frames;
     }
 
     /**
@@ -97,6 +129,8 @@ public class Bullet
         distanceTraveled += Math.abs(velocity.x * delta);
         bounds.setPosition(position.x, position.y);
         
+        animator.handleUpdate(delta); // Update the animation
+
         // Verificar si ha alcanzado la distancia máxima
         return distanceTraveled >= maxDistance;
     }
@@ -106,7 +140,11 @@ public class Bullet
      * @param batch SpriteBatch para renderizar
      */
     public void draw(SpriteBatch batch) {
-        batch.draw(texture, position.x, position.y);
+        Sprite currentSprite = animator.getCurrentSprite();
+        if (currentSprite != null) {
+            currentSprite.setPosition(position.x, position.y);
+            animator.draw(batch);
+        }
     }
 
     /**
@@ -162,8 +200,8 @@ public class Bullet
      * Libera los recursos de la textura.
      */
     public void dispose() {
-        if (texture != null) {
-            texture.dispose();
+        if (animator != null) {
+            animator.dispose();
         }
     }
 }
