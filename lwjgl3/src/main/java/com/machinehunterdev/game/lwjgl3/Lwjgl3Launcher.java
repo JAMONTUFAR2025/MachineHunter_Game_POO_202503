@@ -46,6 +46,7 @@ public class Lwjgl3Launcher {
         // Mostrar en pantalla completa
         configuration.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
 
+        
         return configuration;
     }
 }

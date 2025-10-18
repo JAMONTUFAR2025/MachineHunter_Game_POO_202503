@@ -33,6 +33,7 @@ import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.UI.PauseUI;
+import com.machinehunterdev.game.UI.NextLevelUI;
 import com.machinehunterdev.game.Util.State;
 import com.machinehunterdev.game.Character.NPCController;
 
@@ -84,6 +85,8 @@ public class GameplayState implements State<GameController> {
     
     private boolean isPaused = false;
     private PauseUI pauseUI;
+    private NextLevelUI nextLevelUI;
+    private boolean levelCompleted = false;
 
     private BitmapFont interactionFont;
 
@@ -119,6 +122,10 @@ public class GameplayState implements State<GameController> {
         owner.stateMachine.changeState(MainMenuState.instance);
     }
 
+    public void restartLevel() {
+        owner.stateMachine.changeState(GameplayState.instance);
+    }
+
     /**
      * Inicializa el estado al entrar.
      * @param owner Controlador del juego propietario
@@ -126,6 +133,7 @@ public class GameplayState implements State<GameController> {
     @Override
     public void enter(GameController owner) {
         isPaused = false;
+        levelCompleted = false;
         this.owner = owner;
         this.gameBatch = owner.batch;
         this.camera = owner.camera;
@@ -134,6 +142,7 @@ public class GameplayState implements State<GameController> {
         dialogManager = new DialogManager(this.gameBatch);
         gameplayUI = new GameplayUI(this.gameBatch);
         pauseUI = new PauseUI(this, this.gameBatch);
+        nextLevelUI = new NextLevelUI(this, this.gameBatch);
         bullets = new ArrayList<>();
         interactionFont = new BitmapFont(Gdx.files.internal("fonts/OrangeKid32.fnt"));
 
@@ -232,7 +241,7 @@ public class GameplayState implements State<GameController> {
     @Override
     public void execute() {
         // Manejo de pausa con tecla ESC
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !levelCompleted) {
             isPaused = !isPaused;
             if (isPaused) {
                 Gdx.input.setInputProcessor(pauseUI);
@@ -241,13 +250,17 @@ public class GameplayState implements State<GameController> {
             }
         }
 
-        if (isPaused) {
-            drawGameWorld();
-            pauseUI.draw();
-        } else {
+        if (!isPaused) {
             updateGameLogic();
-            drawGameWorld();
+        }
 
+        drawGameWorld();
+
+        if (isPaused) {
+            pauseUI.draw();
+        } else if (levelCompleted) {
+            nextLevelUI.draw();
+        } else {
             if (isDialogActive) {
                 dialogManager.render();
             }
@@ -255,12 +268,12 @@ public class GameplayState implements State<GameController> {
             if (gameplayUI != null) {
                 gameplayUI.draw(playerCharacter.getHealth(), playerCharacter.getCurrentWeapon());
             }
+        }
 
-            // Verificar muerte del jugador
-            if (!playerCharacter.isAlive()) {
-                owner.stateMachine.changeState(GameOverState.instance);
-                return;
-            }
+        // Verificar muerte del jugador
+        if (!playerCharacter.isAlive()) {
+            owner.stateMachine.changeState(GameOverState.instance);
+            return;
         }
     }
 
@@ -268,6 +281,9 @@ public class GameplayState implements State<GameController> {
      * Actualiza toda la lógica del juego.
      */
     private void updateGameLogic() {
+        if (levelCompleted) {
+            return;
+        }
         float deltaTime = Gdx.graphics.getDeltaTime();
 
         if (isDialogActive) {
@@ -292,6 +308,11 @@ public class GameplayState implements State<GameController> {
                 enemyCharacter = null;
                 enemyController = null;
             }
+        }
+
+        if (enemyCharacter == null) {
+            levelCompleted = true;
+            Gdx.input.setInputProcessor(nextLevelUI);
         }
 
         if (npcController != null) {
@@ -509,6 +530,10 @@ public class GameplayState implements State<GameController> {
 
         if (pauseUI != null) {
             pauseUI.dispose();
+        }
+
+        if (nextLevelUI != null) {
+            nextLevelUI.dispose();
         }
 
         if (interactionFont != null) {
