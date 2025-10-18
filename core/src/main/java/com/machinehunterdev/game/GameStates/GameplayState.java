@@ -212,8 +212,8 @@ public class GameplayState implements State<GameController> {
         CharacterAnimator enemyAnimator = new CharacterAnimator(
             enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
             enemyJumpFrames, enemyFallFrames, null,
-            enemyHurtFrames, null, null,
-            null, null
+            null, null, null,
+            enemyHurtFrames, null
         );
 
         enemyCharacter = new Character(50, enemyAnimator, 300, 100);
