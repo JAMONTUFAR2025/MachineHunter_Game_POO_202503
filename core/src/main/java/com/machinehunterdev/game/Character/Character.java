@@ -162,41 +162,47 @@ public class Character
             characterAnimator.setFacingRight(isSeeingRight);
             
             // Determinar el nuevo estado de animación
-            CharacterAnimator.AnimationState currentState = characterAnimator.getCurrentState();
-            CharacterAnimator.AnimationState newState = currentState;
+            CharacterAnimator.AnimationState newState;
 
             if (!isAlive) {
                 newState = CharacterAnimator.AnimationState.DEAD;
-            } else if (isHurt && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
-                // Prioridad: Animación de daño
-                newState = CharacterAnimator.AnimationState.HURT;
-            } else if (isKnockedBack && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
-                // Empuje también usa animación HURT
-                newState = CharacterAnimator.AnimationState.HURT;
-            } else if (isCrouching && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.CROUCH)) {
-                newState = CharacterAnimator.AnimationState.CROUCH;
-            } else if (isAttacking && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.ATTACK)) {
-                newState = CharacterAnimator.AnimationState.ATTACK;
-            } else if (!onGround) {
-                // En el aire: JUMP si sube, FALL si baja
-                if (velocity.y > 0) {
-                    newState = CharacterAnimator.AnimationState.JUMP;
-                } else if (velocity.y < 0) {
-                    newState = CharacterAnimator.AnimationState.FALL;
-                    // Forzar último frame de caída si está a punto de aterrizar
-                    if (distanceToGround <= 5f) {
-                        com.machinehunterdev.game.Util.SpriteAnimator fallAnimator = characterAnimator.getAnimator(CharacterAnimator.AnimationState.FALL);
-                        if (fallAnimator != null) {
-                            fallAnimator.setCurrentFrame(fallAnimator.getFrames().size() - 1);
+                // Detener todo movimiento al morir
+                velocity.x = 0;
+                velocity.y = 0;
+            } else { // Only determine other states if character is alive
+                if (isHurt && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
+                    // Prioridad: Animación de daño
+                    newState = CharacterAnimator.AnimationState.HURT;
+                } else if (isKnockedBack && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
+                    // Empuje también usa animación HURT
+                    newState = CharacterAnimator.AnimationState.HURT;
+                } else if (isCrouching && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.CROUCH)) {
+                    newState = CharacterAnimator.AnimationState.CROUCH;
+                } else if (isAttacking && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.ATTACK)) {
+                    newState = CharacterAnimator.AnimationState.ATTACK;
+                } else if (!onGround) {
+                    // En el aire: JUMP si sube, FALL si baja
+                    if (velocity.y > 0) {
+                        newState = CharacterAnimator.AnimationState.JUMP;
+                    } else if (velocity.y < 0) {
+                        newState = CharacterAnimator.AnimationState.FALL;
+                        // Forzar último frame de caída si está a punto de aterrizar
+                        if (distanceToGround <= 5f) {
+                            com.machinehunterdev.game.Util.SpriteAnimator fallAnimator = characterAnimator.getAnimator(CharacterAnimator.AnimationState.FALL);
+                            if (fallAnimator != null) {
+                                fallAnimator.setCurrentFrame(fallAnimator.getFrames().size() - 1);
+                            }
                         }
+                    } else { // Should not happen if !onGround, but for completeness
+                        newState = CharacterAnimator.AnimationState.IDLE;
                     }
-                }
-            } else {
-                // En el suelo: RUN si se mueve, IDLE si está quieto
-                if (isMoving) {
-                    newState = CharacterAnimator.AnimationState.RUN;
                 } else {
-                    newState = CharacterAnimator.AnimationState.IDLE;
+                    // En el suelo: RUN si se mueve, IDLE si está quieto
+                    if (isMoving) {
+                        newState = CharacterAnimator.AnimationState.RUN;
+                    } else {
+                        newState = CharacterAnimator.AnimationState.IDLE;
+                    }
                 }
             }
 
@@ -243,14 +249,14 @@ public class Character
         }
 
         // --- MANEJO DE EMPUJE POR DAÑO ---
-        if (isKnockedBack) {
+        if (isKnockedBack && isAlive) {
             velocity.x = isSeeingRight ? -knockbackSpeed : knockbackSpeed;
             isMoving = true;
             onGround = false;
         }
 
         // --- APLICACIÓN DE GRAVEDAD ---
-        if (!onGround) {
+        if (!onGround && isAlive) {
             velocity.y += gravity * delta;
         }
 
@@ -259,7 +265,7 @@ public class Character
         position.y += velocity.y * delta;
 
         // --- LÓGICA DE MOVIMIENTO NORMAL ---
-        if (!isKnockedBack && !isHurt) {
+        if (!isKnockedBack && !isHurt && isAlive) {
             if (!isMoving) {
                 velocity.x = 0;
             }
@@ -282,6 +288,11 @@ public class Character
      * @param spriteBatch SpriteBatch para renderizar
      */
     public void draw(SpriteBatch spriteBatch) {
+        // Solo dibujar si el personaje está vivo, o si está muerto pero la animación de muerte aún se está reproduciendo
+        if (!isAlive && (characterAnimator == null || characterAnimator.isAnimationFinished(CharacterAnimator.AnimationState.DEAD))) {
+            return; // No dibujar si está muerto y la animación ha terminado
+        }
+
         if (characterAnimator != null) {
             Sprite currentSprite = characterAnimator.getCurrentSprite();
             if (currentSprite != null) {
@@ -579,6 +590,10 @@ public class Character
         return new Rectangle(position.x, position.y, getWidth(), getHeight());
     }
 
+    public WeaponType getWeaponType() {
+        return currentWeapon;
+    }
+
     // === SETTERS ===
     public void setInvulnerable(boolean invulnerable) {
         this.invulnerable = invulnerable;
@@ -602,5 +617,26 @@ public class Character
 
     public void setHurtTimer(float hurtTimer) {
         this.hurtTimer = hurtTimer;
+    }
+
+    // === SISTEMA DE MUERTE ===
+    /**
+     * Verifica si el personaje ha terminado su animación de muerte y está listo para ser removido.
+     * @return true si el personaje está muerto y la animación ha terminado.
+     */
+    public boolean isReadyForRemoval() {
+        return !isAlive && characterAnimator != null && characterAnimator.isAnimationFinished(CharacterAnimator.AnimationState.DEAD);
+    }
+
+    /**
+     * Libera los recursos del personaje.
+     */
+    public void dispose() {
+        if (characterAnimator != null) {
+            // characterAnimator.dispose(); // Asumiendo que CharacterAnimator tiene un método dispose
+        }
+        if (fallbackTexture != null) {
+            fallbackTexture.dispose();
+        }
     }
 }

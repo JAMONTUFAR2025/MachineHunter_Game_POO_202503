@@ -19,7 +19,7 @@ public class CharacterAnimator {
      * Enumeración de estados de animación soportados.
      */
     public enum AnimationState {
-        IDLE, RUN, DEAD, JUMP, FALL, ATTACK, HURT, CROUCH
+        IDLE, RUN, DEAD, JUMP, FALL, ATTACK, ATTACK_LASER, ATTACK_ION, ATTACK_RAILGUN, HURT, CROUCH
     }
 
     /** Mapa que asocia estados de animación con sus respectivos animadores */
@@ -52,6 +52,9 @@ public class CharacterAnimator {
         List<Sprite> jumpFrames,
         List<Sprite> fallFrames,
         List<Sprite> attackFrames,
+        List<Sprite> attackLaserFrames,
+        List<Sprite> attackIonFrames,
+        List<Sprite> attackRailgunFrames,
         List<Sprite> hurtFrames,
         List<Sprite> crouchFrames
     ) {
@@ -76,7 +79,16 @@ public class CharacterAnimator {
             this.animators.put(AnimationState.FALL, new SpriteAnimator(fallFrames, 0.16f, false, true));
         }
         if (attackFrames != null && !attackFrames.isEmpty()) {
-            this.animators.put(AnimationState.ATTACK, new SpriteAnimator(attackFrames));
+            this.animators.put(AnimationState.ATTACK, new SpriteAnimator(attackFrames, 0.1f, false, false));
+        }
+        if (attackLaserFrames != null && !attackLaserFrames.isEmpty()) {
+            this.animators.put(AnimationState.ATTACK_LASER, new SpriteAnimator(attackLaserFrames, 0.1f, false, false));
+        }
+        if (attackIonFrames != null && !attackIonFrames.isEmpty()) {
+            this.animators.put(AnimationState.ATTACK_ION, new SpriteAnimator(attackIonFrames, 0.1f, false, false));
+        }
+        if (attackRailgunFrames != null && !attackRailgunFrames.isEmpty()) {
+            this.animators.put(AnimationState.ATTACK_RAILGUN, new SpriteAnimator(attackRailgunFrames, 0.1f, false, false));
         }
         if (hurtFrames != null && !hurtFrames.isEmpty()) {
             this.animators.put(AnimationState.HURT, new SpriteAnimator(hurtFrames, 0.1f, false, true));
@@ -184,5 +196,24 @@ public class CharacterAnimator {
     public Sprite getCurrentSprite() {
         SpriteAnimator currentAnimator = animators.get(currentState);
         return currentAnimator != null ? currentAnimator.getCurrentSprite() : null;
+    }
+
+    /**
+     * Verifica si una animación específica ha terminado de reproducirse (solo para animaciones no cíclicas).
+     * @param state Estado de animación a verificar.
+     * @return true si la animación ha terminado, false en caso contrario o si es cíclica.
+     */
+    public boolean isAnimationFinished(AnimationState state) {
+        SpriteAnimator animator = animators.get(state);
+        return animator != null && animator.isFinished();
+    }
+
+    /**
+     * Libera todos los recursos de los animadores.
+     */
+    public void dispose() {
+        for (SpriteAnimator animator : animators.values()) {
+            animator.dispose();
+        }
     }
 }

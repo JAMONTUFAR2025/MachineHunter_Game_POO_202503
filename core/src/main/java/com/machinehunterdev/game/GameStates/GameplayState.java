@@ -162,7 +162,8 @@ public class GameplayState implements State<GameController> {
         CharacterAnimator playerAnimator = new CharacterAnimator(
             playerIdleFrames, playerRunFrames, null,
             playerJumpFrames, playerFallFrames, null,
-            playerHurtFrames, playerCrouchFrames
+            playerHurtFrames, playerCrouchFrames, null,
+            null, null
         );
 
         playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, 50, 100);
@@ -172,7 +173,8 @@ public class GameplayState implements State<GameController> {
         CharacterAnimator npcAnimator = new CharacterAnimator(
             playerIdleFrames, playerRunFrames, null,
             playerJumpFrames, playerFallFrames, null,
-            playerHurtFrames, playerCrouchFrames
+            playerHurtFrames, playerCrouchFrames, null,
+            null, null
         );
         Character npcCharacter = new Character(100, npcAnimator, 200, 100);
 
@@ -202,11 +204,13 @@ public class GameplayState implements State<GameController> {
         List<Sprite> enemyJumpFrames = loadSpriteFrames("Enemy/PlayerJump", 2);
         List<Sprite> enemyFallFrames = loadSpriteFrames("Enemy/PlayerFall", 2);
         List<Sprite> enemyHurtFrames = loadSpriteFrames("Enemy/PlayerHurt", 2);
+        List<Sprite> enemyDeadFrames = loadSpriteFrames("Enemy/Explosion", 4);
 
         CharacterAnimator enemyAnimator = new CharacterAnimator(
-            enemyIdleFrames, enemyRunFrames, null,
+            enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
             enemyJumpFrames, enemyFallFrames, null,
-            enemyHurtFrames, null
+            enemyHurtFrames, null, null,
+            null, null
         );
 
         enemyCharacter = new Character(50, enemyAnimator, 300, 100);
@@ -272,12 +276,19 @@ public class GameplayState implements State<GameController> {
             return;
         }
 
-
-
         // Actualizar personajes y balas
         playerController.update(deltaTime, solidObjects, bullets);
-        if (enemyCharacter.isAlive()) {
+        if (enemyCharacter != null) {
+            // Siempre actualiza el personaje enemigo mientras exista,
+            // incluso si está muerto, para permitir que se reproduzca la animación de muerte.
             enemyController.update(deltaTime, solidObjects, bullets);
+
+            if (!enemyCharacter.isAlive() && enemyCharacter.isReadyForRemoval()) {
+                // El enemigo está muerto y la animación ha terminado, eliminarlo
+                enemyCharacter.dispose(); // Libera sus recursos
+                enemyCharacter = null;
+                enemyController = null;
+            }
         }
 
         if (npcController != null) {
@@ -320,7 +331,7 @@ public class GameplayState implements State<GameController> {
 
         // Dibujar personajes
         playerCharacter.draw(gameBatch);
-        if (enemyCharacter.isAlive()) {
+        if (enemyCharacter != null) {
             enemyCharacter.draw(gameBatch);
         }
 
@@ -367,7 +378,7 @@ public class GameplayState implements State<GameController> {
      * Verifica colisiones entre jugador y enemigo.
      */
     private void checkPlayerEnemyCollision() {
-        if (!enemyCharacter.isAlive()) return;
+        if (enemyCharacter == null || !enemyCharacter.isAlive()) return;
         
         Rectangle playerBounds = playerCharacter.getBounds();
         Rectangle enemyBounds = enemyCharacter.getBounds();
@@ -428,7 +439,7 @@ public class GameplayState implements State<GameController> {
      * Verifica colisiones entre balas y enemigos.
      */
     private void checkBulletEnemyCollision() {
-        if (!enemyCharacter.isAlive()) return;
+        if (enemyCharacter == null || !enemyCharacter.isAlive()) return;
 
         for (int i = bullets.size() - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
@@ -512,5 +523,16 @@ public class GameplayState implements State<GameController> {
         for (Bullet bullet : bullets) {
             bullet.dispose();
         }
+
+        if (playerCharacter != null) {
+            playerCharacter.dispose();
+        }
+        if (enemyCharacter != null) {
+            enemyCharacter.dispose();
+        }
+        if (npcController != null && npcController.character != null) {
+            npcController.character.dispose();
+        }
+        // No es necesario liberar los controladores directamente ya que no contienen recursos desechables
     }
 }

@@ -21,15 +21,12 @@ public class DamageSystem
      */
     public static void applyDamage(Character target, Character source, int damageAmount, 
                                  DamageType damageType, boolean knockback, float knockbackForce) {
-        if (target == null || target.isInvulnerable() || !target.isAlive()) {
-            return;
-        }
-
-        // Aplicar daño
         target.health -= damageAmount;
         if (target.health <= 0) {
             target.isAlive = false;
             target.health = 0;
+            target.setFlashRed(false); // Reinicia flashRed al morir
+            target.setRedFlashTimer(0f); // Reinicia redFlashTimer al morir
         }
 
         // Activar efectos visuales
@@ -92,6 +89,8 @@ public class DamageSystem
         if (target.health <= 0) {
             target.isAlive = false;
             target.health = 0;
+            target.setFlashRed(false); // Reinicia flashRed al morir
+            target.setRedFlashTimer(0f); // Reinicia redFlashTimer al morir
         }
 
         // Activar efectos visuales
