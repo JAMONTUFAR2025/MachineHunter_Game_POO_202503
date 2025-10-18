@@ -62,18 +62,18 @@ public class Bullet
             case LASER:
                 speed = 200f;
                 maxDistance = 400f;
-                textureName = "laser";
+                textureName = "Laser";
                 break;
             case ION:
                 speed = 150f;
                 maxDistance = 100f;
-                textureName = "ion";
+                textureName = "Ion";
                 break;
             case RAILGUN:
                 speed = 250f;
                 maxDistance = 600f;
                 piercing = true;
-                textureName = "railgun";
+                textureName = "Railgun";
                 break;
         }
 

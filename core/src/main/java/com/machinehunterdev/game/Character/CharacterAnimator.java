@@ -19,7 +19,7 @@ public class CharacterAnimator {
      * Enumeración de estados de animación soportados.
      */
     public enum AnimationState {
-        IDLE, RUN, DEAD, JUMP, FALL, ATTACK, ATTACK_LASER, ATTACK_ION, ATTACK_RAILGUN, HURT, CROUCH
+        IDLE, RUN, DEAD, JUMP, FALL, ATTACK, LASER_ATTACK, ION_ATTACK, RAILGUN_ATTACK, HURT, CROUCH
     }
 
     /** Mapa que asocia estados de animación con sus respectivos animadores */
@@ -82,13 +82,13 @@ public class CharacterAnimator {
             this.animators.put(AnimationState.ATTACK, new SpriteAnimator(attackFrames, 0.1f, false, false));
         }
         if (attackLaserFrames != null && !attackLaserFrames.isEmpty()) {
-            this.animators.put(AnimationState.ATTACK_LASER, new SpriteAnimator(attackLaserFrames, 0.1f, false, false));
+            this.animators.put(AnimationState.LASER_ATTACK, new SpriteAnimator(attackLaserFrames, 0.15f));
         }
         if (attackIonFrames != null && !attackIonFrames.isEmpty()) {
-            this.animators.put(AnimationState.ATTACK_ION, new SpriteAnimator(attackIonFrames, 0.1f, false, false));
+            this.animators.put(AnimationState.ION_ATTACK, new SpriteAnimator(attackIonFrames, 0.15f));
         }
         if (attackRailgunFrames != null && !attackRailgunFrames.isEmpty()) {
-            this.animators.put(AnimationState.ATTACK_RAILGUN, new SpriteAnimator(attackRailgunFrames, 0.1f, false, false));
+            this.animators.put(AnimationState.RAILGUN_ATTACK, new SpriteAnimator(attackRailgunFrames, 0.15f));
         }
         if (hurtFrames != null && !hurtFrames.isEmpty()) {
             this.animators.put(AnimationState.HURT, new SpriteAnimator(hurtFrames, 0.1f, false, true));

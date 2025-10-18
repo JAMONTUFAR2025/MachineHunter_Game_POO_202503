@@ -154,16 +154,19 @@ public class GameplayState implements State<GameController> {
         // Inicializar jugador con animaciones
         List<Sprite> playerIdleFrames = loadSpriteFrames("Player/PlayerIdle", 4);
         List<Sprite> playerRunFrames = loadSpriteFrames("Player/PlayerRun", 8);
-        List<Sprite> playerHurtFrames = loadSpriteFrames("Player/PlayerHurt", 2);
         List<Sprite> playerJumpFrames = loadSpriteFrames("Player/PlayerJump", 2);
         List<Sprite> playerFallFrames = loadSpriteFrames("Player/PlayerFall", 2);
+        List<Sprite> playerHurtFrames = loadSpriteFrames("Player/PlayerHurt", 2);
         List<Sprite> playerCrouchFrames = loadSpriteFrames("Player/PlayerCrouch", 4);
+        List<Sprite> playerLaserAttackFrames = loadSpriteFrames("Player/PlayerLaserAttack", 2);
+        List<Sprite> playerIonAttackFrames = loadSpriteFrames("Player/PlayerIonAttack", 2);
+        List<Sprite> playerRailgunAttackFrames = loadSpriteFrames("Player/PlayerRailgunAttack", 2);
 
         CharacterAnimator playerAnimator = new CharacterAnimator(
             playerIdleFrames, playerRunFrames, null,
             playerJumpFrames, playerFallFrames, null,
-            playerHurtFrames, playerCrouchFrames, null,
-            null, null
+            playerLaserAttackFrames, playerIonAttackFrames, playerRailgunAttackFrames,
+            playerHurtFrames, playerCrouchFrames
         );
 
         playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, 50, 100);

@@ -178,8 +178,19 @@ public class Character
                     newState = CharacterAnimator.AnimationState.HURT;
                 } else if (isCrouching && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.CROUCH)) {
                     newState = CharacterAnimator.AnimationState.CROUCH;
-                } else if (isAttacking && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.ATTACK)) {
-                    newState = CharacterAnimator.AnimationState.ATTACK;
+                } else if (isAttacking) {
+
+                    // Gestionar animaciones de ataque del jugador
+                    if (currentWeapon == WeaponType.LASER && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.LASER_ATTACK)) {
+                        newState = CharacterAnimator.AnimationState.LASER_ATTACK;
+                    } else if (currentWeapon == WeaponType.ION && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.ION_ATTACK)) {
+                        newState = CharacterAnimator.AnimationState.ION_ATTACK;
+                    } else if (currentWeapon == WeaponType.RAILGUN && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.RAILGUN_ATTACK)) {
+                        newState = CharacterAnimator.AnimationState.RAILGUN_ATTACK;
+                    } else {
+                        newState = CharacterAnimator.AnimationState.ATTACK;
+                    }
+                    
                 } else if (!onGround) {
                     // En el aire: JUMP si sube, FALL si baja
                     if (velocity.y > 0) {
