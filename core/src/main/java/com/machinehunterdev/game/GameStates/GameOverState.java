@@ -51,7 +51,7 @@ public class GameOverState implements State<GameController> {
         Gdx.input.setInputProcessor(gameOverUI);
 
         // Inicializar temporizadores y estados
-        deathAnimationTimer = 3f;
+        deathAnimationTimer = 1.5f;
         gameOverTextTimer = 0f;
         dialogueTimer = 0f;
 

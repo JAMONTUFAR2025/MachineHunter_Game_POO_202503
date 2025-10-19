@@ -1,9 +1,5 @@
 package com.machinehunterdev.game.UI;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -12,16 +8,21 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.GameStates.GameplayState;
 import com.machinehunterdev.game.GameStates.MainMenuState;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
  * Interfaz de usuario para la pantalla de fin de juego.
  * Muestra animaciones de texto, mensajes de muerte aleatorios y opciones de reinicio.
- * 
+ *
  * @author MachineHunterDev
  */
 public class GameOverUI implements InputProcessor {
@@ -31,24 +32,25 @@ public class GameOverUI implements InputProcessor {
 
     /** Opciones disponibles en la pantalla de fin de juego */
     private String[] options = {"Reintentar", "Salir"};
-    
+
     /** Índice de la opción seleccionada actualmente */
     private int selected = 0;
-    
+
     /** Fuente para el texto de la interfaz */
     private BitmapFont font;
-    
+
     /** SpriteBatch para renderizado */
     private SpriteBatch batch;
-    
+
     /** Controlador del juego para cambiar estados */
     private GameController gameController;
-    
+
     /** Textura del personaje para mostrar en la pantalla de fin de juego */
     private Texture placeholderTexture;
+    private Random random = new Random();
 
     // === Temporizadores y estados ===
-    
+
     private float gameOverTextTimer = 0f;
     private float dialogueTimer = 0f;
     private float optionsTimer = 0f;
@@ -59,7 +61,7 @@ public class GameOverUI implements InputProcessor {
     private boolean showContent = false;
 
     // === Mensajes de muerte ===
-    
+
     private List<String> deathMessages;
     private String randomDeathMessage;
 
@@ -74,7 +76,7 @@ public class GameOverUI implements InputProcessor {
         this.placeholderTexture = new Texture("Player/PlayerIdle1.png");
         loadCustomBitmapFont();
         loadDeathMessages();
-        
+
         // Seleccionar mensaje de muerte aleatorio al crear la interfaz
         if (deathMessages != null && !deathMessages.isEmpty()) {
             randomDeathMessage = deathMessages.get(new Random().nextInt(deathMessages.size()));
@@ -113,7 +115,7 @@ public class GameOverUI implements InputProcessor {
     }
 
     // === Métodos setters para control de estados ===
-    
+
     public void setShowContent(boolean show) {
         this.showContent = show;
     }
@@ -184,21 +186,71 @@ public class GameOverUI implements InputProcessor {
     }
 
     /**
-     * Dibuja el texto "GAME OVER" con animación de escritura.
+     * Dibuja el texto "ELIMINATED" con animación de escritura.
      */
     private void drawGameOverText() {
-        String gameOverText = "GAME OVER";
-        float charsToShow = gameOverText.length() * (Math.min(gameOverTextTimer, 1.5f) / 1.5f);
-        String visibleText = gameOverText.substring(0, Math.min((int) charsToShow, gameOverText.length()));
+        String gameOverText = "ELIMINATED";
+        float animationPerCharDuration = 0.15f;
+        float normalScale = 2.0f;
+        float startScale = 8.0f;
+        float shakeAmount = 4.0f; // Increased shake amount
+        float letterSpacing = 10.0f; // Added letter spacing
 
-        font.getData().setScale(2.0f);
+        font.getData().setScale(normalScale);
+        float totalWidth = 0;
+        for (char c : gameOverText.toCharArray()) {
+            GlyphLayout charLayout = new GlyphLayout(font, String.valueOf(c));
+            totalWidth += charLayout.width + letterSpacing;
+        }
+        totalWidth -= letterSpacing; // Remove the last spacing
 
-        GlyphLayout layout = new GlyphLayout(font, visibleText);
-        float x = (Gdx.graphics.getWidth() - layout.width) / 2f;
+        float startX = (Gdx.graphics.getWidth() - totalWidth) / 2f;
         float y = Gdx.graphics.getHeight() * 0.9f;
 
-        font.setColor(Color.RED);
-        font.draw(batch, visibleText, x, y);
+        float currentX = startX;
+
+        for (int i = 0; i < gameOverText.length(); i++) {
+            char c = gameOverText.charAt(i);
+            GlyphLayout charLayout = new GlyphLayout(font, String.valueOf(c));
+            float charWidth = charLayout.width;
+
+            float startTime = i * animationPerCharDuration;
+            
+            float drawX = currentX;
+            float drawY = y;
+            float scale = normalScale;
+
+            float shakeX = 0;
+            float shakeY = 0;
+
+            if (gameOverTextTimer >= startTime) {
+                float progress = Math.min(1f, (gameOverTextTimer - startTime) / animationPerCharDuration);
+
+                if (progress < 1f) { // Animating
+                    scale = Interpolation.pow2Out.apply(startScale, normalScale, progress);
+                    
+                    float initialX = Gdx.graphics.getWidth() / 2f;
+                    float initialY = Gdx.graphics.getHeight() / 2f;
+
+                    drawX = Interpolation.pow2Out.apply(initialX, currentX, progress);
+                    drawY = Interpolation.pow2Out.apply(initialY, y, progress);
+                    
+                    shakeX = (random.nextFloat() - 0.5f) * shakeAmount * (1 - progress);
+                    shakeY = (random.nextFloat() - 0.5f) * shakeAmount * (1 - progress);
+                } else { // Animation finished, just shake
+                    shakeX = (random.nextFloat() - 0.5f) * 4f; // Increased shake amount
+                    shakeY = (random.nextFloat() - 0.5f) * 4f;
+                }
+
+                font.getData().setScale(scale);
+                font.setColor(Color.RED);
+                font.draw(batch, String.valueOf(c), drawX + shakeX, drawY + shakeY);
+                font.getData().setScale(normalScale); // Reset scale for next char calculation
+            }
+            
+            currentX += charWidth + letterSpacing; // Added letter spacing
+        }
+
         font.setColor(Color.WHITE);
         font.getData().setScale(1.0f);
     }
@@ -241,7 +293,7 @@ public class GameOverUI implements InputProcessor {
     }
 
     // === Manejo de entrada ===
-    
+
     @Override
     public boolean keyDown(int keycode) {
         if (showOptions) {
@@ -262,7 +314,7 @@ public class GameOverUI implements InputProcessor {
     }
 
     // === Métodos de InputProcessor no utilizados ===
-    
+
     @Override public boolean keyUp(int keycode) { return false; }
     @Override public boolean keyTyped(char character) { return false; }
     @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) { return false; }
