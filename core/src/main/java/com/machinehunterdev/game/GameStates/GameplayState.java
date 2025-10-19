@@ -32,6 +32,9 @@ import com.machinehunterdev.game.UI.GameplayUI;
 import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Character.CharacterAnimator;
+import com.machinehunterdev.game.FX.ImpactEffectManager;
+
+import com.machinehunterdev.game.FX.ImpactEffectManager;
 import com.machinehunterdev.game.UI.PauseUI;
 import com.machinehunterdev.game.UI.NextLevelUI;
 import com.machinehunterdev.game.Util.State;
@@ -94,6 +97,7 @@ public class GameplayState implements State<GameController> {
     
     /** Lista de balas activas */
     private ArrayList<Bullet> bullets;
+    private ImpactEffectManager impactEffectManager;
 
     // === INSTANCIA SINGLETON ===
     
@@ -145,6 +149,7 @@ public class GameplayState implements State<GameController> {
         nextLevelUI = new NextLevelUI(this, this.gameBatch);
         bullets = new ArrayList<>();
         interactionFont = new BitmapFont(Gdx.files.internal("fonts/OrangeKid32.fnt"));
+        impactEffectManager = new ImpactEffectManager(0.1f);
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(0, 0, 0, 0.7f); // Black with some transparency
@@ -352,6 +357,7 @@ public class GameplayState implements State<GameController> {
             }
         }
         updateBullets(deltaTime);
+        impactEffectManager.update(deltaTime);
 
         checkPlayerEnemyCollision();
         playerController.centerCameraOnPlayer(camera);
@@ -405,6 +411,7 @@ public class GameplayState implements State<GameController> {
         }
 
         drawBullets();
+        impactEffectManager.draw(gameBatch);
 
         gameBatch.end();
     }
@@ -492,9 +499,11 @@ public class GameplayState implements State<GameController> {
                         if (!bullet.hasHit(enemyCharacter)) {
                             enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
                             bullet.addHitEnemy(enemyCharacter);
+                            impactEffectManager.createImpact(bullet.position.x, bullet.position.y, bullet.getWeaponType());
                         }
                     } else {
                         enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
+                        impactEffectManager.createImpact(bullet.position.x, bullet.position.y, bullet.getWeaponType());
                         bullets.remove(i);
                         bullet.dispose();
                         // Break the inner loop as the bullet is destroyed
@@ -567,6 +576,10 @@ public class GameplayState implements State<GameController> {
 
         for (Bullet bullet : bullets) {
             bullet.dispose();
+        }
+
+        if (impactEffectManager != null) {
+            impactEffectManager.dispose();
         }
 
         if (playerCharacter != null) {
