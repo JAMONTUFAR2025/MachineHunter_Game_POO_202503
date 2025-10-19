@@ -29,6 +29,7 @@ public class LevelData {
     // Diálogos del nivel
     public String dialogueFile = "Dialogos/Dialogos_personajes.json";
     public String dialogueSection = "Dialogos_acto2";
+    public String nextLevel = null;
     
     public LevelData() {
         solidObjectsData = new ArrayList<>();
@@ -42,6 +43,10 @@ public class LevelData {
         public boolean walkable = true;
     }
     
+    public static class Point {
+        public float x, y;
+    }
+
     public static class EnemyData {
         public String idleFrames = "Enemy/PlayerIdle";
         public String runFrames = "Enemy/PlayerRun";
@@ -50,7 +55,7 @@ public class LevelData {
         public String jumpFrames = "Enemy/PlayerJump";
         public String fallFrames = "Enemy/PlayerFall";
         public float x, y;
-        public List<Vector2> patrolPoints;
+        public List<Point> patrolPoints = new ArrayList<>();
         public float patrolTime = 1.0f;
         public float waitTime = 3.0f;
         public int health = 50;

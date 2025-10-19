@@ -25,6 +25,9 @@ public class GlobalSettings
     /** Nombre del jugador (para clasificaciones) */
     public static String playerName;
 
+    /** Archivo del nivel actual */
+    public static String currentLevelFile;
+
     /**
      * Constructor privado para implementar el patrón Singleton.
      */

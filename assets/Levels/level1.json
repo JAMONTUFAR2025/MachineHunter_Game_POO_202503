@@ -5,6 +5,7 @@
   "playerStartY": 100,
   "dialogueFile": "Dialogos/Dialogos_personajes.json",
   "dialogueSection": "Dialogos_acto2",
+  "nextLevel": "Levels/level2.json",
   "solidObjectsData": [
     {
       "x": 0,
@@ -66,7 +67,7 @@
       "x": 100,
       "y": 100,
       "health": 50,
-      "patrolPoints": [[100, 100], [500, 100]],
+      "patrolPoints": [{"x": 100, "y": 100}, {"x": 500, "y": 100}],
       "patrolTime": 1.0,
       "waitTime": 3.0
     },
@@ -80,7 +81,7 @@
       "x": 600,
       "y": 100,
       "health": 50,
-      "patrolPoints": [[600, 100], [1000, 100]],
+      "patrolPoints": [{"x": 600, "y": 100}, {"x": 1000, "y": 100}],
       "patrolTime": 1.0,
       "waitTime": 3.0
     },
@@ -94,7 +95,7 @@
       "x": 1100,
       "y": 100,
       "health": 50,
-      "patrolPoints": [[1100, 100], [1400, 100]],
+      "patrolPoints": [{"x": 1100, "y": 100}, {"x": 1400, "y": 100}],
       "patrolTime": 1.0,
       "waitTime": 3.0
     },
@@ -108,7 +109,7 @@
       "x": 200,
       "y": 200,
       "health": 50,
-      "patrolPoints": [[200, 200], [400, 200]],
+      "patrolPoints": [{"x": 200, "y": 200}, {"x": 400, "y": 200}],
       "patrolTime": 1.0,
       "waitTime": 3.0
     },
@@ -122,7 +123,7 @@
       "x": 800,
       "y": 200,
       "health": 50,
-      "patrolPoints": [[800, 200], [1200, 200]],
+      "patrolPoints": [{"x": 800, "y": 200}, {"x": 1200, "y": 200}],
       "patrolTime": 1.0,
       "waitTime": 3.0
     }

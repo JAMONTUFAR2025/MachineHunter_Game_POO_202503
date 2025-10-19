@@ -26,6 +26,9 @@ import com.machinehunterdev.game.GameStates.MainMenuState;
  */
 public class GameOverUI implements InputProcessor {
 
+    /** Estado de juego actual */
+    private GameplayState gameplayState;
+
     /** Opciones disponibles en la pantalla de fin de juego */
     private String[] options = {"Reintentar", "Salir"};
     
@@ -248,7 +251,8 @@ public class GameOverUI implements InputProcessor {
                 selected = (selected + 1) % options.length;
             } else if (keycode == Input.Keys.E || keycode == Input.Keys.ENTER) {
                 if (selected == 0) {
-                    gameController.stateMachine.changeState(GameplayState.instance);
+                    GameplayState currentLevel = GameplayState.createForLevel(com.machinehunterdev.game.Gameplay.GlobalSettings.currentLevelFile);
+                    gameController.stateMachine.changeState(currentLevel);
                 } else if (selected == 1) {
                     gameController.stateMachine.changeState(MainMenuState.instance);
                 }

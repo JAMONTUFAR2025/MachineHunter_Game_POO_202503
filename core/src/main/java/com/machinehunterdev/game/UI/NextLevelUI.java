@@ -87,7 +87,13 @@ public class NextLevelUI implements InputProcessor {
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ENTER || keycode == Input.Keys.E) {
             if (selectedOption == 0) { // Siguiente Nivel
-                gameplayState.restartLevel();
+                com.machinehunterdev.game.Levels.LevelData currentLevel = gameplayState.getCurrentLevel();
+                if (currentLevel != null && currentLevel.nextLevel != null && !currentLevel.nextLevel.isEmpty()) {
+                    GameplayState nextLevelState = GameplayState.createForLevel(currentLevel.nextLevel);
+                    gameplayState.getOwner().stateMachine.changeState(nextLevelState);
+                } else {
+                    gameplayState.exitToMainMenu();
+                }
             }
         }
         return true;

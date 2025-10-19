@@ -1,0 +1,77 @@
+{
+  "backgroundTexture": "FondoJuego.png",
+  "groundTexture": "suelo.png",
+  "playerStartX": 50,
+  "playerStartY": 100,
+  "dialogueFile": "Dialogos/Dialogos_personajes.json",
+  "dialogueSection": "Dialogos_acto1",
+  "solidObjectsData": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 480,
+      "height": 32,
+      "texture": "suelo.png",
+      "walkable": true
+    },
+    {
+      "x": 480,
+      "y": 0,
+      "width": 480,
+      "height": 32,
+      "texture": "suelo.png",
+      "walkable": true
+    },
+    {
+      "x": 960,
+      "y": 0,
+      "width": 480,
+      "height": 32,
+      "texture": "suelo.png",
+      "walkable": true
+    },
+    {
+      "x": 64,
+      "y": 64,
+      "width": 200,
+      "height": 16,
+      "texture": "suelo.png",
+      "walkable": true
+    },
+    {
+      "x": 544,
+      "y": 64,
+      "width": 200,
+      "height": 16,
+      "texture": "suelo.png",
+      "walkable": true
+    },
+    {
+      "x": 1024,
+      "y": 64,
+      "width": 200,
+      "height": 16,
+      "texture": "suelo.png",
+      "walkable": true
+    }
+  ],
+  "enemies": [
+    {
+      "idleFrames": "Enemy/PlayerIdle",
+      "runFrames": "Enemy/PlayerRun",
+      "deadFrames": "Enemy/Explosion",
+      "hurtFrames": "Enemy/PlayerHurt",
+      "jumpFrames": "Enemy/PlayerJump",
+      "fallFrames": "Enemy/PlayerFall",
+      "x": 100,
+      "y": 100,
+      "health": 50,
+      "patrolPoints": [{"x": 100, "y": 100}, {"x": 500, "y": 100}],
+      "patrolTime": 1.0,
+      "waitTime": 3.0
+    }
+  ],
+  "npcs": [
+    
+  ]
+}

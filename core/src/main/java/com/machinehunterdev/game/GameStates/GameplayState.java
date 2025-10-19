@@ -16,9 +16,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.machinehunterdev.game.Dialog.Dialog;
-import java.util.List;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Character.PlayerController;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
@@ -29,86 +26,75 @@ import com.machinehunterdev.game.Character.EnemyController;
 import com.machinehunterdev.game.Environment.SolidObject;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.UI.GameplayUI;
-import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Character.CharacterAnimator;
-import com.machinehunterdev.game.FX.ImpactEffectManager;
-
 import com.machinehunterdev.game.FX.ImpactEffectManager;
 import com.machinehunterdev.game.UI.PauseUI;
 import com.machinehunterdev.game.UI.NextLevelUI;
 import com.machinehunterdev.game.Util.State;
 import com.machinehunterdev.game.Character.NPCController;
+import com.machinehunterdev.game.Levels.LevelData;
+import com.machinehunterdev.game.Levels.LevelLoader;
 
 /**
- * Estado principal del juego que contiene toda la lógica de gameplay.
+ * Estado principal del juego que puede cargar cualquier nivel.
  * Gestiona personajes, enemigos, balas, colisiones, diálogos y pausa.
  * 
  * @author MachineHunterDev
  */
 public class GameplayState implements State<GameController> {
-    // === ENTIDADES DEL JUEGO ===
+    // === DATOS DEL NIVEL ===
+    private LevelData currentLevel;
+    private String currentLevelFile;
     
-    /** Lista de objetos sólidos del entorno */
+    // === ENTIDADES DEL JUEGO ===
     private ArrayList<SolidObject> solidObjects;
-
-    /** Jugador y su controlador */
     private Character playerCharacter;
     private PlayerController playerController;
-
-    /** Lista de enemigos y sus controladores */
     private ArrayList<Character> enemyCharacters;
     private ArrayList<EnemyController> enemyControllers;
-
     private NPCController npcController;
 
     // === SISTEMAS DE RENDERIZADO ===
-    
-    /** SpriteBatch compartido del juego */
     private SpriteBatch gameBatch;
-    
-    /** Cámara del juego */
     private OrthographicCamera camera;
-    
-    /** Texturas del fondo y suelo */
     private Texture backgroundTexture;
     private Texture sueloTexture;
     private Texture blackTexture;
 
     // === SISTEMAS DE INTERFAZ ===
-    
-    /** Gestor de diálogos */
     private DialogManager dialogManager;
     private boolean isDialogActive = false;
-
-    /** Interfaz de usuario durante el gameplay */
     private GameplayUI gameplayUI;
 
     // === SISTEMA DE PAUSA ===
-    
     private boolean isPaused = false;
     private PauseUI pauseUI;
     private NextLevelUI nextLevelUI;
     private boolean levelCompleted = false;
-
     private BitmapFont interactionFont;
 
     // === SISTEMA DE COMBATE ===
-    
-    /** Lista de balas activas */
     private ArrayList<Bullet> bullets;
     private ImpactEffectManager impactEffectManager;
 
-    // === INSTANCIA SINGLETON ===
-    
-    public static GameplayState instance = new GameplayState();
+    // === INSTANCIA ===
     private GameController owner;
 
     /**
-     * Constructor privado para implementar el patrón Singleton.
+     * Constructor privado - usar createForLevel() en su lugar
      */
-    private GameplayState() {
-        instance = this;
+    private GameplayState() {}
+
+    /**
+     * Crea una instancia de GameplayState para un nivel específico.
+     * @param levelFile Archivo JSON del nivel a cargar
+     * @return Nueva instancia de GameplayState
+     */
+    public static GameplayState createForLevel(String levelFile) {
+        GameplayState state = new GameplayState();
+        state.currentLevelFile = levelFile;
+        return state;
     }
 
     /**
@@ -127,7 +113,7 @@ public class GameplayState implements State<GameController> {
     }
 
     public void restartLevel() {
-        owner.stateMachine.changeState(GameplayState.instance);
+        owner.stateMachine.changeState(createForLevel(currentLevelFile));
     }
 
     /**
@@ -136,36 +122,87 @@ public class GameplayState implements State<GameController> {
      */
     @Override
     public void enter(GameController owner) {
+        GlobalSettings.currentLevelFile = this.currentLevelFile;
         isPaused = false;
         levelCompleted = false;
         this.owner = owner;
         this.gameBatch = owner.batch;
         this.camera = owner.camera;
 
-        backgroundTexture = new Texture("FondoJuego.png");
-        dialogManager = new DialogManager(this.gameBatch);
-        gameplayUI = new GameplayUI(this.gameBatch);
-        pauseUI = new PauseUI(this, this.gameBatch);
-        nextLevelUI = new NextLevelUI(this, this.gameBatch);
+        // Cargar el nivel
+        loadLevel(currentLevelFile);
+    }
+
+    /**
+     * Carga un nivel específico desde archivo JSON.
+     * @param levelFile Ruta del archivo JSON del nivel
+     */
+    private void loadLevel(String levelFile) {
+        currentLevel = LevelLoader.loadLevel(levelFile);
+        
+        // Inicializar recursos
+        initializeResources();
+        
+        // Inicializar objetos del nivel
+        initializeLevelObjects();
+    }
+
+    /**
+     * Inicializa los recursos gráficos comunes.
+     */
+    private void initializeResources() {
+        backgroundTexture = new Texture(currentLevel.backgroundTexture);
+        dialogManager = new DialogManager(gameBatch);
+        gameplayUI = new GameplayUI(gameBatch);
+        pauseUI = new PauseUI(this, gameBatch);
+        nextLevelUI = new NextLevelUI(this, gameBatch);
         bullets = new ArrayList<>();
         interactionFont = new BitmapFont(Gdx.files.internal("fonts/OrangeKid32.fnt"));
         impactEffectManager = new ImpactEffectManager(0.1f);
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(0, 0, 0, 0.7f); // Black with some transparency
+        pixmap.setColor(0, 0, 0, 0.7f);
         pixmap.fill();
         blackTexture = new Texture(pixmap);
         pixmap.dispose();
 
-        // Inicializar suelo sólido con textura compartida
-        sueloTexture = new Texture("suelo.png");
-        solidObjects = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            solidObjects.add(new SolidObject(i * 480, 0, 480, 32, sueloTexture, true));
-            solidObjects.add(new SolidObject(64 + i * 480, 64, 200, 16, sueloTexture, true));
-        }
+        sueloTexture = new Texture(currentLevel.groundTexture);
+    }
 
-        // Inicializar jugador con animaciones
+    /**
+     * Inicializa todos los objetos del nivel (jugador, enemigos, NPCs, etc.).
+     */
+    private void initializeLevelObjects() {
+        // Inicializar objetos sólidos
+        initializeSolidObjects();
+        
+        // Inicializar jugador
+        initializePlayer();
+        
+        // Inicializar enemigos
+        initializeEnemies();
+        
+        // Inicializar NPCs
+        initializeNPCs();
+    }
+
+    /**
+     * Inicializa los objetos sólidos del nivel.
+     */
+    private void initializeSolidObjects() {
+        solidObjects = new ArrayList<>();
+        for (LevelData.SolidObjectData objData : currentLevel.solidObjectsData) {
+            solidObjects.add(new SolidObject(
+                objData.x, objData.y, objData.width, objData.height,
+                sueloTexture, objData.walkable
+            ));
+        }
+    }
+
+    /**
+     * Inicializa el jugador con sus animaciones.
+     */
+    private void initializePlayer() {
         List<Sprite> playerIdleFrames = loadSpriteFrames("Player/PlayerIdle", 4);
         List<Sprite> playerRunFrames = loadSpriteFrames("Player/PlayerRun", 8);
         List<Sprite> playerJumpFrames = loadSpriteFrames("Player/PlayerJump", 2);
@@ -183,61 +220,26 @@ public class GameplayState implements State<GameController> {
             playerHurtFrames, playerCrouchFrames
         );
 
-        playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, 50, 100);
+        playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, 
+                                      currentLevel.playerStartX, currentLevel.playerStartY);
         playerController = new PlayerController(playerCharacter);
+    }
 
-        // Initialize NPC with player's animations
-        CharacterAnimator npcAnimator = new CharacterAnimator(
-            playerIdleFrames, playerRunFrames, null,
-            playerJumpFrames, playerFallFrames, null,
-            playerHurtFrames, playerCrouchFrames, null,
-            null, null
-        );
-        Character npcCharacter = new Character(100, npcAnimator, 200, 100);
-
-        // Load NPC dialogues
-        JsonReader jsonReader = new JsonReader();
-        JsonValue base = jsonReader.parse(Gdx.files.internal("Dialogos/Dialogos_personajes.json"));
-        JsonValue dialogos = base.get("Dialogos_acto2");
-        List<Dialog> npcDialogues = new ArrayList<>();
-        if (dialogos != null) {
-            for (JsonValue dialogo : dialogos) {
-                List<String> lines = new ArrayList<>();
-                JsonValue texto = dialogo.get("Texto");
-                if (texto != null) {
-                    for (JsonValue line : texto) {
-                        lines.add(line.asString());
-                    }
-                }
-                npcDialogues.add(new Dialog(lines));
-            }
-        }
-
-        npcController = new NPCController(npcCharacter, 50f, npcDialogues);
-
-        // Inicializar enemigo con animaciones
-        List<Sprite> enemyIdleFrames = loadSpriteFrames("Enemy/PlayerIdle", 4);
-        List<Sprite> enemyRunFrames = loadSpriteFrames("Enemy/PlayerRun", 8);
-        List<Sprite> enemyJumpFrames = loadSpriteFrames("Enemy/PlayerJump", 2);
-        List<Sprite> enemyFallFrames = loadSpriteFrames("Enemy/PlayerFall", 2);
-        List<Sprite> enemyHurtFrames = loadSpriteFrames("Enemy/PlayerHurt", 2);
+    /**
+     * Inicializa todos los enemigos del nivel.
+     */
+    private void initializeEnemies() {
         enemyCharacters = new ArrayList<>();
         enemyControllers = new ArrayList<>();
+        
+        for (LevelData.EnemyData enemyData : currentLevel.enemies) {
+            List<Sprite> enemyIdleFrames = loadSpriteFrames(enemyData.idleFrames, 4);
+            List<Sprite> enemyRunFrames = loadSpriteFrames(enemyData.runFrames, 8);
+            List<Sprite> enemyDeadFrames = loadSpriteFrames(enemyData.deadFrames, 4);
+            List<Sprite> enemyJumpFrames = loadSpriteFrames(enemyData.jumpFrames, 2);
+            List<Sprite> enemyFallFrames = loadSpriteFrames(enemyData.fallFrames, 2);
+            List<Sprite> enemyHurtFrames = loadSpriteFrames(enemyData.hurtFrames, 2);
 
-        // Definir puntos de patrullaje para cada enemigo
-        Vector2[][] patrolPointData = {
-            { new Vector2(100, 100), new Vector2(500, 100) },
-            { new Vector2(600, 100), new Vector2(1000, 100) },
-            { new Vector2(1100, 100), new Vector2(1400, 100) },
-            { new Vector2(200, 200), new Vector2(400, 200) }, // Enemy 4
-            { new Vector2(800, 200), new Vector2(1200, 200) }  // Enemy 5
-        };
-
-        for (int i = 0; i < 5; i++) {
-            // Cargar fotogramas de muerte para cada enemigo para que tengan su propia animación
-            List<Sprite> enemyDeadFrames = loadSpriteFrames("Enemy/Explosion", 4);
-
-            // Crear una nueva instancia de CharacterAnimator para cada enemigo
             CharacterAnimator enemyAnimator = new CharacterAnimator(
                 enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
                 enemyJumpFrames, enemyFallFrames, null,
@@ -245,19 +247,89 @@ public class GameplayState implements State<GameController> {
                 enemyHurtFrames, null
             );
 
-            ArrayList<Vector2> patrolPoints = new ArrayList<>();
-            patrolPoints.add(patrolPointData[i][0]);
-            patrolPoints.add(patrolPointData[i][1]);
+            Character enemy = new Character(enemyData.health, enemyAnimator, enemyData.x, enemyData.y);
 
-            // Usar la posición inicial del patrullaje para la posición inicial del enemigo
-            Character enemy = new Character(50, enemyAnimator, patrolPointData[i][0].x, patrolPointData[i][0].y);
-            EnemyController controller = new EnemyController(enemy, patrolPoints, 1.0f, 3.0f);
+            ArrayList<Vector2> patrolPoints = new ArrayList<>();
+            if (enemyData.patrolPoints != null) {
+                for (LevelData.Point point : enemyData.patrolPoints) {
+                    patrolPoints.add(new Vector2(point.x, point.y));
+                }
+            }
+
+            EnemyController controller = new EnemyController(enemy, 
+                patrolPoints, 
+                enemyData.patrolTime, 
+                enemyData.waitTime
+            );
             
             enemyCharacters.add(enemy);
             enemyControllers.add(controller);
         }
+    }
 
-        Gdx.app.log("GameplayState", "Number of enemies created: " + enemyCharacters.size());
+    /**
+     * Inicializa los NPCs del nivel.
+     */
+    private void initializeNPCs() {
+        if (currentLevel.npcs.isEmpty()) {
+            npcController = null;
+            return;
+        }
+        
+        LevelData.NPCData npcData = currentLevel.npcs.get(0); // Soporta solo 1 NPC por ahora
+        
+        List<Sprite> npcIdleFrames = loadSpriteFrames(npcData.idleFrames, 4);
+        List<Sprite> npcRunFrames = loadSpriteFrames(npcData.runFrames, 8);
+        List<Sprite> npcJumpFrames = loadSpriteFrames(npcData.jumpFrames, 2);
+        List<Sprite> npcFallFrames = loadSpriteFrames(npcData.fallFrames, 2);
+        List<Sprite> npcHurtFrames = loadSpriteFrames(npcData.hurtFrames, 2);
+        List<Sprite> npcCrouchFrames = loadSpriteFrames(npcData.crouchFrames, 4);
+
+        CharacterAnimator npcAnimator = new CharacterAnimator(
+            npcIdleFrames, npcRunFrames, null,
+            npcJumpFrames, npcFallFrames, null,
+            npcHurtFrames, npcCrouchFrames, null,
+            null, null
+        );
+        
+        Character npcCharacter = new Character(100, npcAnimator, npcData.x, npcData.y);
+        
+        // Cargar diálogos del NPC
+        List<Dialog> npcDialogues = loadNPCCDialogues(npcData.dialogues);
+        
+        npcController = new NPCController(npcCharacter, npcData.interactionRadius, npcDialogues);
+    }
+
+    /**
+     * Carga los diálogos de un NPC desde el archivo de diálogo del nivel.
+     */
+    private List<Dialog> loadNPCCDialogues(List<String> dialogueSections) {
+        List<Dialog> npcDialogues = new ArrayList<>();
+        
+        try {
+            JsonReader jsonReader = new JsonReader();
+            JsonValue base = jsonReader.parse(Gdx.files.internal(currentLevel.dialogueFile));
+            
+            for (String section : dialogueSections) {
+                JsonValue dialogos = base.get(section);
+                if (dialogos != null) {
+                    for (JsonValue dialogo : dialogos) {
+                        List<String> lines = new ArrayList<>();
+                        JsonValue texto = dialogo.get("Texto");
+                        if (texto != null) {
+                            for (JsonValue line : texto) {
+                                lines.add(line.asString());
+                            }
+                        }
+                        npcDialogues.add(new Dialog(lines));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Gdx.app.error("GameplayState", "Error al cargar diálogos del NPC", e);
+        }
+        
+        return npcDialogues;
     }
 
     /**
@@ -265,7 +337,6 @@ public class GameplayState implements State<GameController> {
      */
     @Override
     public void execute() {
-        // Manejo de pausa con tecla ESC
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !levelCompleted) {
             isPaused = !isPaused;
             if (isPaused) {
@@ -289,16 +360,13 @@ public class GameplayState implements State<GameController> {
             if (isDialogActive) {
                 dialogManager.render();
             }
-
             if (gameplayUI != null) {
                 gameplayUI.draw(playerCharacter.getHealth(), playerCharacter.getCurrentWeapon());
             }
         }
 
-        // Verificar muerte del jugador
         if (!playerCharacter.isAlive()) {
             owner.stateMachine.changeState(GameOverState.instance);
-            return;
         }
     }
 
@@ -306,9 +374,8 @@ public class GameplayState implements State<GameController> {
      * Actualiza toda la lógica del juego.
      */
     private void updateGameLogic() {
-        if (levelCompleted) {
-            return;
-        }
+        if (levelCompleted) return;
+        
         float deltaTime = Gdx.graphics.getDeltaTime();
 
         if (isDialogActive) {
@@ -320,9 +387,32 @@ public class GameplayState implements State<GameController> {
             return;
         }
 
-        // Actualizar personajes y balas
+        // Actualizar jugador
         playerController.update(deltaTime, solidObjects, bullets);
-        // Actualizar enemigos y eliminar los que estén muertos
+        
+        // Actualizar enemigos
+        updateEnemies(deltaTime);
+        
+        // Verificar finalización del nivel
+        checkLevelCompletion();
+        
+        // Actualizar NPC
+        updateNPC(deltaTime);
+        
+        // Manejar interacción con NPC
+        handleNPCInteraction();
+        
+        // Actualizar sistema de combate
+        updateCombatSystems(deltaTime);
+        
+        // Centrar cámara
+        playerController.centerCameraOnPlayer(camera);
+    }
+
+    /**
+     * Actualiza todos los enemigos y elimina los que están muertos.
+     */
+    private void updateEnemies(float deltaTime) {
         for (int i = enemyControllers.size() - 1; i >= 0; i--) {
             EnemyController controller = enemyControllers.get(i);
             Character enemy = enemyCharacters.get(i);
@@ -335,32 +425,66 @@ public class GameplayState implements State<GameController> {
                 enemyControllers.remove(i);
             }
         }
+    }
 
+    /**
+     * Verifica si el nivel ha sido completado (todos los enemigos derrotados).
+     */
+    private void checkLevelCompletion() {
         if (enemyCharacters.isEmpty()) {
             levelCompleted = true;
             Gdx.input.setInputProcessor(nextLevelUI);
         }
+    }
 
+    /**
+     * Obtiene el archivo del nivel actual.
+     * @return Ruta del archivo del nivel actual
+     */
+    public String getCurrentLevelFile() {
+        return currentLevelFile;
+    }
+
+    public LevelData getCurrentLevel() {
+        return currentLevel;
+    }
+
+    public GameController getOwner() {
+        return owner;
+    }
+
+    /**
+     * Actualiza el NPC si existe.
+     */
+    private void updateNPC(float deltaTime) {
         if (npcController != null) {
             npcController.update(deltaTime, solidObjects, bullets);
             npcController.updateInteraction(playerCharacter.position);
         }
+    }
 
+    /**
+     * Maneja la interacción con el NPC (tecla E).
+     */
+    private void handleNPCInteraction() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
             if (npcController != null && npcController.isInRange()) {
                 List<Dialog> dialogues = npcController.getDialogues();
                 if (dialogues != null && !dialogues.isEmpty()) {
                     dialogManager.showDialog(dialogues.get(0));
                     isDialogActive = true;
-                    return;
                 }
             }
         }
+    }
+
+    /**
+     * Actualiza el sistema de combate (balas, efectos de impacto).
+     */
+    private void updateCombatSystems(float deltaTime) {
         updateBullets(deltaTime);
         impactEffectManager.update(deltaTime);
-
         checkPlayerEnemyCollision();
-        playerController.centerCameraOnPlayer(camera);
     }
 
     /**
@@ -371,8 +495,11 @@ public class GameplayState implements State<GameController> {
         gameBatch.begin();
 
         // Dibujar fondo
-        for (int i = 0; i < 3; i++) {
-            gameBatch.draw(backgroundTexture, i * GlobalSettings.VIRTUAL_WIDTH, 0);
+        int backgroundWidth = GlobalSettings.VIRTUAL_WIDTH;
+        int mapWidth = 1440; // Ajusta según tu mapa
+        int backgroundCount = (int) Math.ceil((float) mapWidth / backgroundWidth) + 1;
+        for (int i = 0; i < backgroundCount; i++) {
+            gameBatch.draw(backgroundTexture, i * backgroundWidth, 0);
         }
 
         // Dibujar objetos sólidos
@@ -382,38 +509,45 @@ public class GameplayState implements State<GameController> {
 
         // Dibujar personajes
         playerCharacter.draw(gameBatch);
-        // Dibujar enemigos
         for (Character enemy : enemyCharacters) {
             enemy.draw(gameBatch);
         }
 
+        // Dibujar NPC
         if (npcController != null) {
             npcController.render(gameBatch);
-
             if (npcController.isInRange()) {
-                GlyphLayout layout = new GlyphLayout();
-                String message = "E para interactuar";
-                interactionFont.getData().setScale(0.5f);
-                layout.setText(interactionFont, message);
-
-                float boxWidth = layout.width + 20; // 10 pixels padding on each side
-                float boxHeight = layout.height + 10; // 5 pixels padding on top/bottom
-                float boxX = npcController.character.position.x + (npcController.character.getWidth() / 2) - (boxWidth / 2);
-                float boxY = npcController.character.position.y + npcController.character.getHeight() + 10;
-
-                gameBatch.draw(blackTexture, boxX, boxY, boxWidth, boxHeight);
-
-                float textX = boxX + 10;
-                float textY = boxY + layout.height + 5;
-                interactionFont.draw(gameBatch, layout, textX, textY);
-                interactionFont.getData().setScale(1.0f);
+                drawNPCInteractionPrompt();
             }
         }
 
+        // Dibujar sistema de combate
         drawBullets();
         impactEffectManager.draw(gameBatch);
 
         gameBatch.end();
+    }
+
+    /**
+     * Dibuja el mensaje de interacción con el NPC.
+     */
+    private void drawNPCInteractionPrompt() {
+        GlyphLayout layout = new GlyphLayout();
+        String message = "E para interactuar";
+        interactionFont.getData().setScale(0.5f);
+        layout.setText(interactionFont, message);
+
+        float boxWidth = layout.width + 20;
+        float boxHeight = layout.height + 10;
+        float boxX = npcController.character.position.x + (npcController.character.getWidth() / 2) - (boxWidth / 2);
+        float boxY = npcController.character.position.y + npcController.character.getHeight() + 10;
+
+        gameBatch.draw(blackTexture, boxX, boxY, boxWidth, boxHeight);
+
+        float textX = boxX + 10;
+        float textY = boxY + layout.height + 5;
+        interactionFont.draw(gameBatch, layout, textX, textY);
+        interactionFont.getData().setScale(1.0f);
     }
 
     /**
@@ -428,7 +562,7 @@ public class GameplayState implements State<GameController> {
     }
 
     /**
-     * Verifica colisiones entre jugador y enemigo.
+     * Verifica colisiones entre jugador y enemigos.
      */
     private void checkPlayerEnemyCollision() {
         playerCharacter.isOverlappingEnemy = false;
@@ -450,7 +584,6 @@ public class GameplayState implements State<GameController> {
                         }
                         DamageSystem.applyContactDamage(playerCharacter, enemyCharacter, 1);
                     }
-                    // Since we found a collision, we can break the loop.
                     break; 
                 }
             }
@@ -464,13 +597,7 @@ public class GameplayState implements State<GameController> {
         for (int i = bullets.size() - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
             
-            // Si la bala ha alcanzado su distancia máxima, eliminarla
-            if (bullet.update(deltaTime)) {
-                bullets.remove(i);
-                bullet.dispose();
-            }
-            // También eliminar balas que salgan de los límites del mapa
-            else if (bullet.position.x < -100 || bullet.position.x > 1540) {
+            if (bullet.update(deltaTime) || bullet.position.x < -100 || bullet.position.x > 1540) {
                 bullets.remove(i);
                 bullet.dispose();
             }
@@ -506,7 +633,6 @@ public class GameplayState implements State<GameController> {
                         impactEffectManager.createImpact(bullet.position.x, bullet.position.y, bullet.getWeaponType());
                         bullets.remove(i);
                         bullet.dispose();
-                        // Break the inner loop as the bullet is destroyed
                         break; 
                     }
                 }
@@ -542,49 +668,30 @@ public class GameplayState implements State<GameController> {
      */
     @Override
     public void exit() {
-        if (sueloTexture != null) {
-            sueloTexture.dispose();
-        }
-
-        if (dialogManager != null) {
-            dialogManager.dispose();
-        }
-
-        if (gameplayUI != null) {
-            gameplayUI.dispose();
-        }
-
-        if (pauseUI != null) {
-            pauseUI.dispose();
-        }
-
-        if (nextLevelUI != null) {
-            nextLevelUI.dispose();
-        }
-
+        // Liberar texturas
+        disposeTexture(sueloTexture);
+        disposeTexture(backgroundTexture);
+        disposeTexture(blackTexture);
+        
+        // Liberar fuentes
         if (interactionFont != null) {
             interactionFont.dispose();
         }
-
-        if (backgroundTexture != null) {
-            backgroundTexture.dispose();
-        }
-
-        if (blackTexture != null) {
-            blackTexture.dispose();
-        }
-
+        
+        // Liberar sistemas
+        if (dialogManager != null) dialogManager.dispose();
+        if (gameplayUI != null) gameplayUI.dispose();
+        if (pauseUI != null) pauseUI.dispose();
+        if (nextLevelUI != null) nextLevelUI.dispose();
+        if (impactEffectManager != null) impactEffectManager.dispose();
+        
+        // Liberar balas
         for (Bullet bullet : bullets) {
             bullet.dispose();
         }
-
-        if (impactEffectManager != null) {
-            impactEffectManager.dispose();
-        }
-
-        if (playerCharacter != null) {
-            playerCharacter.dispose();
-        }
+        
+        // Liberar personajes
+        if (playerCharacter != null) playerCharacter.dispose();
         if (enemyCharacters != null) {
             for (Character enemy : enemyCharacters) {
                 enemy.dispose();
@@ -593,6 +700,14 @@ public class GameplayState implements State<GameController> {
         if (npcController != null && npcController.character != null) {
             npcController.character.dispose();
         }
-        // No es necesario liberar los controladores directamente ya que no contienen recursos desechables
+    }
+
+    /**
+     * Método auxiliar para liberar texturas de forma segura.
+     */
+    private void disposeTexture(Texture texture) {
+        if (texture != null /*&& Esto no funciona: !texture.isDisposed()*/) {
+            texture.dispose();
+        }
     }
 }

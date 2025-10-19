@@ -109,7 +109,9 @@ public class NameInputUI implements InputProcessor {
         if (keycode == Input.Keys.ENTER) {
             if (playerName.length() > 0) {
                 GlobalSettings.playerName = playerName.toString();
-                gameController.stateMachine.changeState(GameplayState.instance);
+                // Cargar nivel 1
+                GameplayState level1 = GameplayState.createForLevel("Levels/level1.json");
+                gameController.stateMachine.changeState(level1);
             }
         } else if (keycode == Input.Keys.BACKSPACE) {
             if (playerName.length() > 0) {

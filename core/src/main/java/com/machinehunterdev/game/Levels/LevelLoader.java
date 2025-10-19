@@ -44,10 +44,16 @@ public class LevelLoader {
         LevelData.EnemyData enemy = new LevelData.EnemyData();
         enemy.x = 300;
         enemy.y = 100;
-        enemy.patrolPoints = java.util.Arrays.asList(
-            new Vector2(100, 100),
-            new Vector2(500, 100)
-        );
+
+        LevelData.Point p1 = new LevelData.Point();
+        p1.x = 100;
+        p1.y = 100;
+
+        LevelData.Point p2 = new LevelData.Point();
+        p2.x = 500;
+        p2.y = 100;
+
+        enemy.patrolPoints = java.util.Arrays.asList(p1, p2);
         defaultLevel.enemies.add(enemy);
         
         return defaultLevel;
