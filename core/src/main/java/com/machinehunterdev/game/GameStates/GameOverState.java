@@ -100,7 +100,7 @@ public class GameOverState implements State<GameController> {
         } else if (!isDialogueTypingFinished) {
             dialogueTimer += deltaTime;
             gameOverUI.setDialogueTimer(dialogueTimer);
-            if (dialogueTimer > 2.5f) {
+            if (gameOverUI.isDeathMessageFinished()) {
                 isDialogueTypingFinished = true;
             }
         }

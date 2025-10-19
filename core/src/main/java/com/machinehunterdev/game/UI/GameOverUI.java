@@ -133,6 +133,10 @@ public class GameOverUI implements InputProcessor {
         this.showDeathMessage = show;
     }
 
+    public boolean isDeathMessageFinished() {
+        return deathMessageFinished;
+    }
+
     /**
      * Renderiza la interfaz de fin de juego.
      */
@@ -155,7 +159,7 @@ public class GameOverUI implements InputProcessor {
 
             if (deathMessageFinished) {
                 optionsTimer += Gdx.graphics.getDeltaTime();
-                if (optionsTimer > 2f) {
+                if (optionsTimer > 1.5f) { // Changed delay to 1.5 seconds
                     showDeathMessage = false;
                     showOptions = true;
                 }
@@ -261,7 +265,9 @@ public class GameOverUI implements InputProcessor {
     private void drawDeathMessage() {
         if (randomDeathMessage == null) return;
 
-        float charsToShow = randomDeathMessage.length() * (Math.min(dialogueTimer, 2.5f) / 2.5f);
+        float charsPerSecond = 20f;
+        float duration = randomDeathMessage.length() / charsPerSecond;
+        float charsToShow = randomDeathMessage.length() * (Math.min(dialogueTimer, duration) / duration);
         String visibleText = randomDeathMessage.substring(0, Math.min((int) charsToShow, randomDeathMessage.length()));
 
         if ((int) charsToShow >= randomDeathMessage.length()) {
