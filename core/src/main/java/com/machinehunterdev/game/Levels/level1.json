@@ -1,0 +1,144 @@
+{
+  "backgroundTexture": "FondoJuego.png",
+  "groundTexture": "suelo.png",
+  "playerStartX": 50,
+  "playerStartY": 100,
+  "dialogueFile": "Dialogos/Dialogos_personajes.json",
+  "dialogueSection": "Dialogos_acto2",
+  "solidObjectsData": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 480,
+      "height": 32,
+      "texture": "suelo.png",
+      "walkable": true
+    },
+    {
+      "x": 480,
+      "y": 0,
+      "width": 480,
+      "height": 32,
+      "texture": "suelo.png",
+      "walkable": true
+    },
+    {
+      "x": 960,
+      "y": 0,
+      "width": 480,
+      "height": 32,
+      "texture": "suelo.png",
+      "walkable": true
+    },
+    {
+      "x": 64,
+      "y": 64,
+      "width": 200,
+      "height": 16,
+      "texture": "suelo.png",
+      "walkable": true
+    },
+    {
+      "x": 544,
+      "y": 64,
+      "width": 200,
+      "height": 16,
+      "texture": "suelo.png",
+      "walkable": true
+    },
+    {
+      "x": 1024,
+      "y": 64,
+      "width": 200,
+      "height": 16,
+      "texture": "suelo.png",
+      "walkable": true
+    }
+  ],
+  "enemies": [
+    {
+      "idleFrames": "Enemy/PlayerIdle",
+      "runFrames": "Enemy/PlayerRun",
+      "deadFrames": "Enemy/Explosion",
+      "hurtFrames": "Enemy/PlayerHurt",
+      "jumpFrames": "Enemy/PlayerJump",
+      "fallFrames": "Enemy/PlayerFall",
+      "x": 100,
+      "y": 100,
+      "health": 50,
+      "patrolPoints": [[100, 100], [500, 100]],
+      "patrolTime": 1.0,
+      "waitTime": 3.0
+    },
+    {
+      "idleFrames": "Enemy/PlayerIdle",
+      "runFrames": "Enemy/PlayerRun",
+      "deadFrames": "Enemy/Explosion",
+      "hurtFrames": "Enemy/PlayerHurt",
+      "jumpFrames": "Enemy/PlayerJump",
+      "fallFrames": "Enemy/PlayerFall",
+      "x": 600,
+      "y": 100,
+      "health": 50,
+      "patrolPoints": [[600, 100], [1000, 100]],
+      "patrolTime": 1.0,
+      "waitTime": 3.0
+    },
+    {
+      "idleFrames": "Enemy/PlayerIdle",
+      "runFrames": "Enemy/PlayerRun",
+      "deadFrames": "Enemy/Explosion",
+      "hurtFrames": "Enemy/PlayerHurt",
+      "jumpFrames": "Enemy/PlayerJump",
+      "fallFrames": "Enemy/PlayerFall",
+      "x": 1100,
+      "y": 100,
+      "health": 50,
+      "patrolPoints": [[1100, 100], [1400, 100]],
+      "patrolTime": 1.0,
+      "waitTime": 3.0
+    },
+    {
+      "idleFrames": "Enemy/PlayerIdle",
+      "runFrames": "Enemy/PlayerRun",
+      "deadFrames": "Enemy/Explosion",
+      "hurtFrames": "Enemy/PlayerHurt",
+      "jumpFrames": "Enemy/PlayerJump",
+      "fallFrames": "Enemy/PlayerFall",
+      "x": 200,
+      "y": 200,
+      "health": 50,
+      "patrolPoints": [[200, 200], [400, 200]],
+      "patrolTime": 1.0,
+      "waitTime": 3.0
+    },
+    {
+      "idleFrames": "Enemy/PlayerIdle",
+      "runFrames": "Enemy/PlayerRun",
+      "deadFrames": "Enemy/Explosion",
+      "hurtFrames": "Enemy/PlayerHurt",
+      "jumpFrames": "Enemy/PlayerJump",
+      "fallFrames": "Enemy/PlayerFall",
+      "x": 800,
+      "y": 200,
+      "health": 50,
+      "patrolPoints": [[800, 200], [1200, 200]],
+      "patrolTime": 1.0,
+      "waitTime": 3.0
+    }
+  ],
+  "npcs": [
+    {
+      "idleFrames": "Player/PlayerIdle",
+      "runFrames": "Player/PlayerRun",
+      "hurtFrames": "Player/PlayerHurt",
+      "jumpFrames": "Player/PlayerJump",
+      "fallFrames": "Player/PlayerFall",
+      "crouchFrames": "Player/PlayerCrouch",
+      "x": 200,
+      "y": 100,
+      "interactionRadius": 50,
+      "dialogues": ["Dialogos_acto2"]
+    }
+  ]
+}

@@ -70,8 +70,8 @@ public class PlayerController extends CharacterController {
             character.switchWeapon(WeaponType.RAILGUN);
         }
 
-        // Ataque con arma actual
-        if (Gdx.input.isKeyPressed(Keys.SPACE) && character.onGround && !character.isInvulnerable()) {
+        // Ataque con arma actual (solo si está en el suelo y no está invulnerable ni agachado)
+        if (Gdx.input.isKeyPressed(Keys.SPACE) && character.onGround && !character.isInvulnerable() && !character.isCrouching) {
             character.shoot(bullets);
             character.stopMoving();
             shootTimer = shootCooldown;
