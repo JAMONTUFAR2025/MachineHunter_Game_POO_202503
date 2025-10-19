@@ -53,9 +53,9 @@ public class GameplayState implements State<GameController> {
     private Character playerCharacter;
     private PlayerController playerController;
 
-    /** Enemigo de prueba y su controlador */
-    private Character enemyCharacter;
-    private EnemyController enemyController;
+    /** Lista de enemigos y sus controladores */
+    private ArrayList<Character> enemyCharacters;
+    private ArrayList<EnemyController> enemyControllers;
 
     private NPCController npcController;
 
@@ -216,23 +216,43 @@ public class GameplayState implements State<GameController> {
         List<Sprite> enemyJumpFrames = loadSpriteFrames("Enemy/PlayerJump", 2);
         List<Sprite> enemyFallFrames = loadSpriteFrames("Enemy/PlayerFall", 2);
         List<Sprite> enemyHurtFrames = loadSpriteFrames("Enemy/PlayerHurt", 2);
-        List<Sprite> enemyDeadFrames = loadSpriteFrames("Enemy/Explosion", 4);
+        enemyCharacters = new ArrayList<>();
+        enemyControllers = new ArrayList<>();
 
-        CharacterAnimator enemyAnimator = new CharacterAnimator(
-            enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
-            enemyJumpFrames, enemyFallFrames, null,
-            null, null, null,
-            enemyHurtFrames, null
-        );
+        // Definir puntos de patrullaje para cada enemigo
+        Vector2[][] patrolPointData = {
+            { new Vector2(100, 100), new Vector2(500, 100) },
+            { new Vector2(600, 100), new Vector2(1000, 100) },
+            { new Vector2(1100, 100), new Vector2(1400, 100) },
+            { new Vector2(200, 200), new Vector2(400, 200) }, // Enemy 4
+            { new Vector2(800, 200), new Vector2(1200, 200) }  // Enemy 5
+        };
 
-        enemyCharacter = new Character(50, enemyAnimator, 300, 100);
+        for (int i = 0; i < 5; i++) {
+            // Cargar fotogramas de muerte para cada enemigo para que tengan su propia animación
+            List<Sprite> enemyDeadFrames = loadSpriteFrames("Enemy/Explosion", 4);
 
-        // Configurar patrullaje del enemigo
-        ArrayList<Vector2> patrolPoints = new ArrayList<>();
-        patrolPoints.add(new Vector2(100, 100));
-        patrolPoints.add(new Vector2(500, 100));
+            // Crear una nueva instancia de CharacterAnimator para cada enemigo
+            CharacterAnimator enemyAnimator = new CharacterAnimator(
+                enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
+                enemyJumpFrames, enemyFallFrames, null,
+                null, null, null,
+                enemyHurtFrames, null
+            );
 
-        enemyController = new EnemyController(enemyCharacter, patrolPoints, 1.0f, 3.0f);
+            ArrayList<Vector2> patrolPoints = new ArrayList<>();
+            patrolPoints.add(patrolPointData[i][0]);
+            patrolPoints.add(patrolPointData[i][1]);
+
+            // Usar la posición inicial del patrullaje para la posición inicial del enemigo
+            Character enemy = new Character(50, enemyAnimator, patrolPointData[i][0].x, patrolPointData[i][0].y);
+            EnemyController controller = new EnemyController(enemy, patrolPoints, 1.0f, 3.0f);
+            
+            enemyCharacters.add(enemy);
+            enemyControllers.add(controller);
+        }
+
+        Gdx.app.log("GameplayState", "Number of enemies created: " + enemyCharacters.size());
     }
 
     /**
@@ -297,20 +317,21 @@ public class GameplayState implements State<GameController> {
 
         // Actualizar personajes y balas
         playerController.update(deltaTime, solidObjects, bullets);
-        if (enemyCharacter != null) {
-            // Siempre actualiza el personaje enemigo mientras exista,
-            // incluso si está muerto, para permitir que se reproduzca la animación de muerte.
-            enemyController.update(deltaTime, solidObjects, bullets);
+        // Actualizar enemigos y eliminar los que estén muertos
+        for (int i = enemyControllers.size() - 1; i >= 0; i--) {
+            EnemyController controller = enemyControllers.get(i);
+            Character enemy = enemyCharacters.get(i);
 
-            if (!enemyCharacter.isAlive() && enemyCharacter.isReadyForRemoval()) {
-                // El enemigo está muerto y la animación ha terminado, eliminarlo
-                enemyCharacter.dispose(); // Libera sus recursos
-                enemyCharacter = null;
-                enemyController = null;
+            controller.update(deltaTime, solidObjects, bullets);
+
+            if (!enemy.isAlive() && enemy.isReadyForRemoval()) {
+                enemy.dispose();
+                enemyCharacters.remove(i);
+                enemyControllers.remove(i);
             }
         }
 
-        if (enemyCharacter == null) {
+        if (enemyCharacters.isEmpty()) {
             levelCompleted = true;
             Gdx.input.setInputProcessor(nextLevelUI);
         }
@@ -355,8 +376,9 @@ public class GameplayState implements State<GameController> {
 
         // Dibujar personajes
         playerCharacter.draw(gameBatch);
-        if (enemyCharacter != null) {
-            enemyCharacter.draw(gameBatch);
+        // Dibujar enemigos
+        for (Character enemy : enemyCharacters) {
+            enemy.draw(gameBatch);
         }
 
         if (npcController != null) {
@@ -402,30 +424,29 @@ public class GameplayState implements State<GameController> {
      * Verifica colisiones entre jugador y enemigo.
      */
     private void checkPlayerEnemyCollision() {
-        if (enemyCharacter == null || !enemyCharacter.isAlive()) return;
-        
-        Rectangle playerBounds = playerCharacter.getBounds();
-        Rectangle enemyBounds = enemyCharacter.getBounds();
+        playerCharacter.isOverlappingEnemy = false;
+        for (Character enemyCharacter : enemyCharacters) {
+            if (enemyCharacter.isAlive()) {
+                Rectangle playerBounds = playerCharacter.getBounds();
+                Rectangle enemyBounds = enemyCharacter.getBounds();
 
-        if (playerBounds.overlaps(enemyBounds)) {
-            playerCharacter.isOverlappingEnemy = true;
-            
-            // Usar el sistema centralizado de daño
-            if (DamageSystem.canTakeDamage(playerCharacter)) {
-                // Resolver colisión (empujar al jugador)
-                float overlapX = Math.min(playerBounds.x + playerBounds.width, enemyBounds.x + enemyBounds.width) - 
-                            Math.max(playerBounds.x, enemyBounds.x);
-                if (playerCharacter.getX() < enemyCharacter.getX()) {
-                    playerCharacter.position.x -= overlapX;
-                } else {
-                    playerCharacter.position.x += overlapX;
+                if (playerBounds.overlaps(enemyBounds)) {
+                    playerCharacter.isOverlappingEnemy = true;
+
+                    if (DamageSystem.canTakeDamage(playerCharacter)) {
+                        float overlapX = Math.min(playerBounds.x + playerBounds.width, enemyBounds.x + enemyBounds.width) -
+                                    Math.max(playerBounds.x, enemyBounds.x);
+                        if (playerCharacter.getX() < enemyCharacter.getX()) {
+                            playerCharacter.position.x -= overlapX;
+                        } else {
+                            playerCharacter.position.x += overlapX;
+                        }
+                        DamageSystem.applyContactDamage(playerCharacter, enemyCharacter, 1);
+                    }
+                    // Since we found a collision, we can break the loop.
+                    break; 
                 }
-
-                // Aplicar daño por contacto
-                DamageSystem.applyContactDamage(playerCharacter, enemyCharacter, 1);
             }
-        } else {
-            playerCharacter.isOverlappingEnemy = false;
         }
     }
 
@@ -463,26 +484,22 @@ public class GameplayState implements State<GameController> {
      * Verifica colisiones entre balas y enemigos.
      */
     private void checkBulletEnemyCollision() {
-        if (enemyCharacter == null || !enemyCharacter.isAlive()) return;
-
         for (int i = bullets.size() - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
-            if (bullet.getBounds().overlaps(enemyCharacter.getBounds())) {
-                // Si la bala es perforante, verificar si ya ha golpeado a este enemigo
-                if (bullet.isPiercing()) {
-                    if (!bullet.hasHit(enemyCharacter)) {
-                        if (enemyCharacter.isAlive()) {
+            for (Character enemyCharacter : enemyCharacters) {
+                if (enemyCharacter.isAlive() && bullet.getBounds().overlaps(enemyCharacter.getBounds())) {
+                    if (bullet.isPiercing()) {
+                        if (!bullet.hasHit(enemyCharacter)) {
                             enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
-                            bullet.addHitEnemy(enemyCharacter); // Registrar el impacto
+                            bullet.addHitEnemy(enemyCharacter);
                         }
-                    }
-                } else {
-                    // Si no es perforante, aplicar daño y eliminar la bala
-                    if (enemyCharacter.isAlive()) {
+                    } else {
                         enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
+                        bullets.remove(i);
+                        bullet.dispose();
+                        // Break the inner loop as the bullet is destroyed
+                        break; 
                     }
-                    bullets.remove(i);
-                    bullet.dispose();
                 }
             }
         }
@@ -555,8 +572,10 @@ public class GameplayState implements State<GameController> {
         if (playerCharacter != null) {
             playerCharacter.dispose();
         }
-        if (enemyCharacter != null) {
-            enemyCharacter.dispose();
+        if (enemyCharacters != null) {
+            for (Character enemy : enemyCharacters) {
+                enemy.dispose();
+            }
         }
         if (npcController != null && npcController.character != null) {
             npcController.character.dispose();
