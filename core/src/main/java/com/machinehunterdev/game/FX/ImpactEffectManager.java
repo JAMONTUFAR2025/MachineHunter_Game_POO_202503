@@ -24,6 +24,7 @@ public class ImpactEffectManager {
         impactFrames.put(WeaponType.LASER, loadSpriteFrames("FX/LaserImpact", 4));
         impactFrames.put(WeaponType.ION, loadSpriteFrames("FX/IonImpact", 4));
         impactFrames.put(WeaponType.RAILGUN, loadSpriteFrames("FX/RailgunImpact", 4));
+        impactFrames.put(WeaponType.THUNDER, loadSpriteFrames("FX/ThunderImpact", 4));
     }
 
     private List<Sprite> loadSpriteFrames(String basePath, int frameCount) {

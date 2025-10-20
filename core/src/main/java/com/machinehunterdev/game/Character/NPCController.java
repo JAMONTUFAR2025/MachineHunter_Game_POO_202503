@@ -23,25 +23,25 @@ public class NPCController extends CharacterController {
     }
 
     @Override
-    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets) {
+    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
         if (character != null) {
             character.update(delta);
             checkCollisions(solidObjects);
         }
-    }
 
-    public void updateInteraction(Vector2 playerPosition) {
-        if (character.position.dst(playerPosition) <= interactionRadius) {
-            inRange = true;
-        } else {
-            inRange = false;
-        }
+        if (playerCharacter != null) {
+            if (character.position.dst(playerCharacter.position) <= interactionRadius) {
+                inRange = true;
+            } else {
+                inRange = false;
+            }
 
-        // Make NPC face the player
-        if (playerPosition.x > character.position.x) {
-            character.isSeeingRight = true;
-        } else {
-            character.isSeeingRight = false;
+            // Make NPC face the player
+            if (playerCharacter.position.x > character.position.x) {
+                character.isSeeingRight = true;
+            } else {
+                character.isSeeingRight = false;
+            }
         }
     }
 

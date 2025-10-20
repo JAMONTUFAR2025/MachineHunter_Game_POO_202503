@@ -7,7 +7,7 @@ package com.machinehunterdev.game.Util;
  * @param <T> Tipo del objeto propietario que utiliza la máquina de estados
  * @author MachineHunterDev
  */
-public interface State<T>
+public interface IState<T>
 {
     /**
      * Se ejecuta una vez cuando se entra en el estado.

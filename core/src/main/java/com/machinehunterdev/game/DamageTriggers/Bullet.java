@@ -27,6 +27,7 @@ public class Bullet
     private boolean piercing;
     private Rectangle bounds;
     private List<Character> hitEnemies;
+    private Character owner;
 
     /**
      * Constructor de la bala.
@@ -35,16 +36,21 @@ public class Bullet
      * @param seeingRight Dirección de disparo
      * @param weaponType Tipo de arma que disparó la bala
      */
-    public Bullet(float x, float y, boolean seeingRight, WeaponType weaponType) {
+    public Bullet(float x, float y, boolean seeingRight, WeaponType weaponType, Character owner) {
         this.position = new Vector2(x, y);
         this.weaponType = weaponType;
         this.hitEnemies = new ArrayList<>();
+        this.owner = owner;
 
         // Configurar propiedades según el tipo de arma
         configureBullet(seeingRight);
 
         // Initialize bounds using the first frame of the animation
         this.bounds = new Rectangle(x, y, animator.getCurrentSprite().getWidth(), animator.getCurrentSprite().getHeight());
+    }
+
+    public Character getOwner() {
+        return owner;
     }
 
     /**
@@ -75,12 +81,17 @@ public class Bullet
                 piercing = true;
                 textureName = "Railgun";
                 break;
+            case THUNDER:
+                speed = 100f;
+                maxDistance = 350f;
+                textureName = "Thunder";
+                break;
         }
 
         this.velocity = new Vector2(seeingRight ? speed : -speed, 0);
 
         // Load frames for the animation
-        List<Sprite> frames = loadBulletFrames(basePath + textureName, 2, !seeingRight); // Assuming 2 frames for each bullet type
+        List<Sprite> frames = loadBulletFrames(basePath + textureName, 2, !seeingRight); // Assuming 2 frames for thunder bullet type
 
         // Initialize SpriteAnimator
         this.animator = new SpriteAnimator(frames, 0.1f, true); // 0.1f frame rate, loop indefinitely

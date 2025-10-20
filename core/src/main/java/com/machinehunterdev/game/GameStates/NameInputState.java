@@ -9,7 +9,7 @@ import com.machinehunterdev.game.Character.Character;
 import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.UI.NameInputUI;
-import com.machinehunterdev.game.Util.State;
+import com.machinehunterdev.game.Util.IState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  * 
  * @author MachineHunterDev
  */
-public class NameInputState implements State<GameController> {
+public class NameInputState implements IState<GameController> {
 
     /** Instancia singleton del estado */
     public static NameInputState instance = new NameInputState();

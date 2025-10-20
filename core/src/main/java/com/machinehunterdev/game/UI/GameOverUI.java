@@ -27,9 +27,6 @@ import java.util.Random;
  */
 public class GameOverUI implements InputProcessor {
 
-    /** Estado de juego actual */
-    private GameplayState gameplayState;
-
     /** Opciones disponibles en la pantalla de fin de juego */
     private String[] options = {"Reintentar", "Salir"};
 

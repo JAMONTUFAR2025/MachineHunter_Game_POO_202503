@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.UI.GameOverUI;
-import com.machinehunterdev.game.Util.State;
+import com.machinehunterdev.game.Util.IState;
 
 /**
  * Estado del juego que se muestra cuando el jugador muere.
@@ -12,7 +12,7 @@ import com.machinehunterdev.game.Util.State;
  * 
  * @author MachineHunterDev
  */
-public class GameOverState implements State<GameController> {
+public class GameOverState implements IState<GameController> {
 
     /** Instancia singleton del estado */
     public static GameOverState instance = new GameOverState();

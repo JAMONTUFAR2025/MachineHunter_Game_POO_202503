@@ -36,7 +36,7 @@ public class PlayerController extends CharacterController {
      * @param bullets Lista de balas activas para disparar.
      */
     @Override
-    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets) {
+    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
         if (shootTimer > 0) {
             shootTimer -= delta;
         }

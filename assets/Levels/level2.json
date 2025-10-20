@@ -67,7 +67,6 @@
       "y": 100,
       "health": 50,
       "patrolPoints": [{"x": 100, "y": 100}, {"x": 500, "y": 100}],
-      "patrolTime": 1.0,
       "waitTime": 3.0
     }
   ],

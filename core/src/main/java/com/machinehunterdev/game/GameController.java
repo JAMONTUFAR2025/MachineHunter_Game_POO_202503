@@ -17,7 +17,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.machinehunterdev.game.GameStates.MainMenuState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
-import com.machinehunterdev.game.Util.State;
+import com.machinehunterdev.game.Util.IState;
 import com.machinehunterdev.game.Util.StateMachine;
 
 /**
@@ -172,10 +172,10 @@ public class GameController extends ApplicationAdapter
         rootTable.add(titleLabel).pad(5).row();
 
         // Mostrar todos los estados en la pila
-        Stack<State<GameController>> stackCopy = (Stack<State<GameController>>) stateMachine.stateStack.clone();
+        Stack<IState<GameController>> stackCopy = (Stack<IState<GameController>>) stateMachine.stateStack.clone();
 
         while (!stackCopy.isEmpty()) {
-            State<?> state = stackCopy.pop();
+            IState<?> state = stackCopy.pop();
             String stateName = state.getClass().getSimpleName();
             Label stateLabel = new Label(stateName, skin);
             rootTable.add(stateLabel)

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.UI.LeaderboardUI;
-import com.machinehunterdev.game.Util.State;
+import com.machinehunterdev.game.Util.IState;
 import com.machinehunterdev.game.Leaderboard.LeaderboardManager;
 
 /**
@@ -13,7 +13,7 @@ import com.machinehunterdev.game.Leaderboard.LeaderboardManager;
  * 
  * @author MachineHunterDev
  */
-public class LeaderboardState implements State<GameController> {
+public class LeaderboardState implements IState<GameController> {
 
     /** Instancia singleton del estado */
     public static LeaderboardState instance = new LeaderboardState();

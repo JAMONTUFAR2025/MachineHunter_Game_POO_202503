@@ -58,77 +58,35 @@
   ],
   "enemies": [
     {
-      "idleFrames": "Enemy/PlayerIdle",
-      "runFrames": "Enemy/PlayerRun",
-      "deadFrames": "Enemy/Explosion",
-      "hurtFrames": "Enemy/PlayerHurt",
-      "jumpFrames": "Enemy/PlayerJump",
-      "fallFrames": "Enemy/PlayerFall",
-      "x": 100,
+      "type": "PATROLLER",
+      "x": 500,
       "y": 100,
       "health": 50,
-      "patrolPoints": [{"x": 100, "y": 100}, {"x": 500, "y": 100}],
-      "patrolTime": 1.0,
-      "waitTime": 3.0
+      "patrolPoints": [
+        { "x": 500, "y": 100 },
+        { "x": 700, "y": 100 }
+      ],
+      "waitTime": 2.0
     },
     {
-      "idleFrames": "Enemy/PlayerIdle",
-      "runFrames": "Enemy/PlayerRun",
-      "deadFrames": "Enemy/Explosion",
-      "hurtFrames": "Enemy/PlayerHurt",
-      "jumpFrames": "Enemy/PlayerJump",
-      "fallFrames": "Enemy/PlayerFall",
-      "x": 600,
-      "y": 100,
-      "health": 50,
-      "patrolPoints": [{"x": 600, "y": 100}, {"x": 1000, "y": 100}],
-      "patrolTime": 1.0,
-      "waitTime": 3.0
-    },
-    {
-      "idleFrames": "Enemy/PlayerIdle",
-      "runFrames": "Enemy/PlayerRun",
-      "deadFrames": "Enemy/Explosion",
-      "hurtFrames": "Enemy/PlayerHurt",
-      "jumpFrames": "Enemy/PlayerJump",
-      "fallFrames": "Enemy/PlayerFall",
-      "x": 1100,
-      "y": 100,
-      "health": 50,
-      "patrolPoints": [{"x": 1100, "y": 100}, {"x": 1400, "y": 100}],
-      "patrolTime": 1.0,
-      "waitTime": 3.0
-    },
-    {
-      "idleFrames": "Enemy/PlayerIdle",
-      "runFrames": "Enemy/PlayerRun",
-      "deadFrames": "Enemy/Explosion",
-      "hurtFrames": "Enemy/PlayerHurt",
-      "jumpFrames": "Enemy/PlayerJump",
-      "fallFrames": "Enemy/PlayerFall",
-      "x": 200,
-      "y": 200,
-      "health": 50,
-      "patrolPoints": [{"x": 200, "y": 200}, {"x": 400, "y": 200}],
-      "patrolTime": 1.0,
-      "waitTime": 3.0
-    },
-    {
-      "idleFrames": "Enemy/PlayerIdle",
-      "runFrames": "Enemy/PlayerRun",
-      "deadFrames": "Enemy/Explosion",
-      "hurtFrames": "Enemy/PlayerHurt",
-      "jumpFrames": "Enemy/PlayerJump",
-      "fallFrames": "Enemy/PlayerFall",
+      "type": "SHOOTER",
       "x": 800,
+      "y": 100,
+      "health": 30,
+      "shootInterval": 3.0
+    },
+    {
+      "type": "FLYING",
+      "x": 1000,
       "y": 200,
-      "health": 50,
-      "patrolPoints": [{"x": 800, "y": 200}, {"x": 1200, "y": 200}],
-      "patrolTime": 1.0,
-      "waitTime": 3.0
+      "health": 20,
+      "patrolPoints": [
+        { "x": 1000, "y": 200 },
+        { "x": 1000, "y": 300 }
+      ],
+      "waitTime": 1.0
     }
-  ],
-  "npcs": [
+  ],  "npcs": [
     {
       "idleFrames": "Player/PlayerIdle",
       "runFrames": "Player/PlayerRun",

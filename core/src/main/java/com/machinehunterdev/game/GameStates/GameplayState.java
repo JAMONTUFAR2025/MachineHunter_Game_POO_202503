@@ -22,7 +22,9 @@ import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.DamageSystem;
 import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.Character.Character;
-import com.machinehunterdev.game.Character.EnemyController;
+
+import com.machinehunterdev.game.Character.EnemyManager;
+import com.machinehunterdev.game.Character.EnemyType;
 import com.machinehunterdev.game.Environment.SolidObject;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.UI.GameplayUI;
@@ -31,7 +33,7 @@ import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.FX.ImpactEffectManager;
 import com.machinehunterdev.game.UI.PauseUI;
 import com.machinehunterdev.game.UI.NextLevelUI;
-import com.machinehunterdev.game.Util.State;
+import com.machinehunterdev.game.Util.IState;
 import com.machinehunterdev.game.Character.NPCController;
 import com.machinehunterdev.game.Levels.LevelData;
 import com.machinehunterdev.game.Levels.LevelLoader;
@@ -42,7 +44,7 @@ import com.machinehunterdev.game.Levels.LevelLoader;
  * 
  * @author MachineHunterDev
  */
-public class GameplayState implements State<GameController> {
+public class GameplayState implements IState<GameController> {
     // === DATOS DEL NIVEL ===
     private LevelData currentLevel;
     private String currentLevelFile;
@@ -51,8 +53,7 @@ public class GameplayState implements State<GameController> {
     private ArrayList<SolidObject> solidObjects;
     private Character playerCharacter;
     private PlayerController playerController;
-    private ArrayList<Character> enemyCharacters;
-    private ArrayList<EnemyController> enemyControllers;
+    private EnemyManager enemyManager;
     private NPCController npcController;
 
     // === SISTEMAS DE RENDERIZADO ===
@@ -229,9 +230,8 @@ public class GameplayState implements State<GameController> {
      * Inicializa todos los enemigos del nivel.
      */
     private void initializeEnemies() {
-        enemyCharacters = new ArrayList<>();
-        enemyControllers = new ArrayList<>();
-        
+        enemyManager = new EnemyManager();
+
         for (LevelData.EnemyData enemyData : currentLevel.enemies) {
             List<Sprite> enemyIdleFrames = loadSpriteFrames(enemyData.idleFrames, 4);
             List<Sprite> enemyRunFrames = loadSpriteFrames(enemyData.runFrames, 8);
@@ -256,14 +256,7 @@ public class GameplayState implements State<GameController> {
                 }
             }
 
-            EnemyController controller = new EnemyController(enemy, 
-                patrolPoints, 
-                enemyData.patrolTime, 
-                enemyData.waitTime
-            );
-            
-            enemyCharacters.add(enemy);
-            enemyControllers.add(controller);
+            enemyManager.addEnemy(enemyData.type, enemy, patrolPoints, enemyData.waitTime, enemyData.shootInterval);
         }
     }
 
@@ -365,7 +358,7 @@ public class GameplayState implements State<GameController> {
             }
         }
 
-        if (!playerCharacter.isAlive()) {
+        if (playerCharacter.isReadyForGameOver) {
             owner.stateMachine.changeState(GameOverState.instance);
         }
     }
@@ -388,7 +381,7 @@ public class GameplayState implements State<GameController> {
         }
 
         // Actualizar jugador
-        playerController.update(deltaTime, solidObjects, bullets);
+        playerController.update(deltaTime, solidObjects, bullets, playerCharacter);
         
         // Actualizar enemigos
         updateEnemies(deltaTime);
@@ -413,16 +406,14 @@ public class GameplayState implements State<GameController> {
      * Actualiza todos los enemigos y elimina los que están muertos.
      */
     private void updateEnemies(float deltaTime) {
-        for (int i = enemyControllers.size() - 1; i >= 0; i--) {
-            EnemyController controller = enemyControllers.get(i);
-            Character enemy = enemyCharacters.get(i);
+        enemyManager.update(deltaTime, solidObjects, bullets, playerCharacter);
 
-            controller.update(deltaTime, solidObjects, bullets);
-
-            if (!enemy.isAlive() && enemy.isReadyForRemoval()) {
-                enemy.dispose();
-                enemyCharacters.remove(i);
-                enemyControllers.remove(i);
+        ArrayList<com.machinehunterdev.game.Character.IEnemy> enemies = enemyManager.getEnemies();
+        for (int i = enemies.size() - 1; i >= 0; i--) {
+            com.machinehunterdev.game.Character.IEnemy enemy = enemies.get(i);
+            if (!enemy.getCharacter().isAlive() && enemy.getCharacter().isReadyForRemoval()) {
+                enemy.getCharacter().dispose();
+                enemies.remove(i);
             }
         }
     }
@@ -431,7 +422,7 @@ public class GameplayState implements State<GameController> {
      * Verifica si el nivel ha sido completado (todos los enemigos derrotados).
      */
     private void checkLevelCompletion() {
-        if (enemyCharacters.isEmpty()) {
+        if (enemyManager.getEnemies().isEmpty()) {
             levelCompleted = true;
             Gdx.input.setInputProcessor(nextLevelUI);
         }
@@ -458,8 +449,7 @@ public class GameplayState implements State<GameController> {
      */
     private void updateNPC(float deltaTime) {
         if (npcController != null) {
-            npcController.update(deltaTime, solidObjects, bullets);
-            npcController.updateInteraction(playerCharacter.position);
+            npcController.update(deltaTime, solidObjects, bullets, playerCharacter);
         }
     }
 
@@ -485,6 +475,8 @@ public class GameplayState implements State<GameController> {
         updateBullets(deltaTime);
         impactEffectManager.update(deltaTime);
         checkPlayerEnemyCollision();
+        checkBulletEnemyCollision();
+        checkBulletPlayerCollision();
     }
 
     /**
@@ -509,9 +501,7 @@ public class GameplayState implements State<GameController> {
 
         // Dibujar personajes
         playerCharacter.draw(gameBatch);
-        for (Character enemy : enemyCharacters) {
-            enemy.draw(gameBatch);
-        }
+        enemyManager.draw(gameBatch);
 
         // Dibujar NPC
         if (npcController != null) {
@@ -566,7 +556,8 @@ public class GameplayState implements State<GameController> {
      */
     private void checkPlayerEnemyCollision() {
         playerCharacter.isOverlappingEnemy = false;
-        for (Character enemyCharacter : enemyCharacters) {
+        for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+            Character enemyCharacter = enemy.getCharacter();
             if (enemyCharacter.isAlive()) {
                 Rectangle playerBounds = playerCharacter.getBounds();
                 Rectangle enemyBounds = enemyCharacter.getBounds();
@@ -602,7 +593,6 @@ public class GameplayState implements State<GameController> {
                 bullet.dispose();
             }
         }
-        checkBulletEnemyCollision();
     }
 
     /**
@@ -620,21 +610,41 @@ public class GameplayState implements State<GameController> {
     private void checkBulletEnemyCollision() {
         for (int i = bullets.size() - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
-            for (Character enemyCharacter : enemyCharacters) {
-                if (enemyCharacter.isAlive() && bullet.getBounds().overlaps(enemyCharacter.getBounds())) {
-                    if (bullet.isPiercing()) {
-                        if (!bullet.hasHit(enemyCharacter)) {
+            if (bullet.getOwner() == playerCharacter) {
+                for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+                    Character enemyCharacter = enemy.getCharacter();
+                    if (enemyCharacter.isAlive() && bullet.getBounds().overlaps(enemyCharacter.getBounds())) {
+                        if (bullet.isPiercing()) {
+                            if (!bullet.hasHit(enemyCharacter)) {
+                                enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
+                                bullet.addHitEnemy(enemyCharacter);
+                                impactEffectManager.createImpact(bullet.position.x, bullet.position.y, bullet.getWeaponType());
+                            }
+                        } else {
                             enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
-                            bullet.addHitEnemy(enemyCharacter);
                             impactEffectManager.createImpact(bullet.position.x, bullet.position.y, bullet.getWeaponType());
+                            bullets.remove(i);
+                            bullet.dispose();
+                            break; 
                         }
-                    } else {
-                        enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
-                        impactEffectManager.createImpact(bullet.position.x, bullet.position.y, bullet.getWeaponType());
-                        bullets.remove(i);
-                        bullet.dispose();
-                        break; 
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Verifica colisiones entre balas y el jugador.
+     */
+    private void checkBulletPlayerCollision() {
+        for (int i = bullets.size() - 1; i >= 0; i--) {
+            Bullet bullet = bullets.get(i);
+            if (bullet.getOwner() != playerCharacter) {
+                if (DamageSystem.canTakeDamage(playerCharacter) && playerCharacter.isAlive() && bullet.getBounds().overlaps(playerCharacter.getBounds())) {
+                    DamageSystem.applyContactDamage(playerCharacter, bullet.getOwner(), bullet.getDamage());
+                    impactEffectManager.createImpact(bullet.position.x, bullet.position.y, bullet.getWeaponType());
+                    bullets.remove(i);
+                    bullet.dispose();
                 }
             }
         }
@@ -692,9 +702,9 @@ public class GameplayState implements State<GameController> {
         
         // Liberar personajes
         if (playerCharacter != null) playerCharacter.dispose();
-        if (enemyCharacters != null) {
-            for (Character enemy : enemyCharacters) {
-                enemy.dispose();
+        if (enemyManager != null) {
+            for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+                enemy.getCharacter().dispose();
             }
         }
         if (npcController != null && npcController.character != null) {

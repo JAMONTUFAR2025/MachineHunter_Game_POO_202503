@@ -48,6 +48,7 @@ public class LevelData {
     }
 
     public static class EnemyData {
+        public com.machinehunterdev.game.Character.EnemyType type = com.machinehunterdev.game.Character.EnemyType.PATROLLER;
         public String idleFrames = "Enemy/PlayerIdle";
         public String runFrames = "Enemy/PlayerRun";
         public String deadFrames = "Enemy/Explosion";
@@ -56,9 +57,9 @@ public class LevelData {
         public String fallFrames = "Enemy/PlayerFall";
         public float x, y;
         public List<Point> patrolPoints = new ArrayList<>();
-        public float patrolTime = 1.0f;
         public float waitTime = 3.0f;
         public int health = 50;
+        public float shootInterval = 2.0f;
     }
     
     public static class NPCData {

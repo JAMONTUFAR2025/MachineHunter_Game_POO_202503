@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Dialog.Dialog;
-import com.machinehunterdev.game.Util.State;
+import com.machinehunterdev.game.Util.IState;
 
 /**
  * Estado del juego dedicado exclusivamente a mostrar diálogos.
@@ -12,7 +12,7 @@ import com.machinehunterdev.game.Util.State;
  * 
  * @author MachineHunterDev
  */
-public class DialogState implements State<GameController> {
+public class DialogState implements IState<GameController> {
     /** Gestor de diálogos */
     private DialogManager dialogManager;
     

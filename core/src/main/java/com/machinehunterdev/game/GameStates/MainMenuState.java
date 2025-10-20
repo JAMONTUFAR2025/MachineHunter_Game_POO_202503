@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.UI.MainMenuUI;
-import com.machinehunterdev.game.Util.State;
+import com.machinehunterdev.game.Util.IState;
 
 /**
  * Estado del menú principal del juego.
@@ -14,7 +14,7 @@ import com.machinehunterdev.game.Util.State;
  * 
  * @author MachineHunterDev
  */
-public class MainMenuState implements State<GameController>{
+public class MainMenuState implements IState<GameController>{
     /** Interfaz de usuario del menú principal */
     private MainMenuUI menuUI;
     

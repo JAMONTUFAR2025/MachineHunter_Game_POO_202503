@@ -63,13 +63,14 @@ public class Character
 
     // === ESTADOS DEL PERSONAJE ===
     
-    public boolean isMoving;            // Está en movimiento
-    public boolean isSeeingRight;       // Dirección de mirada (true = derecha)
-    public boolean isAttacking;         // Está atacando
-    public boolean isAlive;             // Está vivo
-    public boolean onGround;            // Está en contacto con el suelo
-    public boolean isOverlappingEnemy;  // Está superpuesto con un enemigo (para evitar daño continuo)
-    public boolean isCrouching;         // Está agachado
+    public boolean isMoving;                    // Está en movimiento
+    public boolean isSeeingRight;               // Dirección de mirada (true = derecha)
+    public boolean isAttacking;                 // Está atacando
+    public boolean isAlive;                     // Está vivo
+    public boolean onGround;                    // Está en contacto con el suelo
+    public boolean isOverlappingEnemy;          // Está superpuesto con un enemigo (para evitar daño continuo)
+    public boolean isCrouching;                 // Está agachado
+    public boolean isReadyForGameOver = false;  // Indica si el personaje está listo para la pantalla de Game Over
 
     // === SISTEMA DE INVULNERABILIDAD ===
     
@@ -102,9 +103,11 @@ public class Character
     private float rifleCooldown = 0f;
     private float shotgunCooldown = 0f;
     private float sniperCooldown = 0f;
+    private float thunderCooldown = 0f;
     private static final float LASER_COOLDOWN_TIME = 0.3f;    // 0.3 segundos
     private static final float ION_COOLDOWN_TIME = 0.3f;  // 0.3 segundos
     private static final float RAILGUN_COOLDOWN_TIME = 0.3f;   // 0.3 segundos
+    private static final float THUNDER_COOLDOWN_TIME = 0.5f;   // 0.5 segundos
 
     // === CONSTRUCTORES ===
 
@@ -363,6 +366,8 @@ public class Character
                 return shotgunCooldown <= 0f;
             case RAILGUN:
                 return sniperCooldown <= 0f;
+            case THUNDER:
+                return thunderCooldown <= 0f;
             default:
                 return true;
         }
@@ -390,7 +395,42 @@ public class Character
                 shootSniper(bullets);
                 sniperCooldown = RAILGUN_COOLDOWN_TIME;
                 break;
+            case THUNDER:
+                shootThunder(bullets);
+                thunderCooldown = THUNDER_COOLDOWN_TIME;
+                break;
         }
+    }
+
+    /**
+     * Dispara con un tipo de arma específico (para enemigos).
+     * @param bullets Lista de balas activas
+     * @param weaponType Tipo de arma a usar
+     */
+    public void shoot(ArrayList<Bullet> bullets, WeaponType weaponType) {
+        // Esta versión no comprueba el cooldown del jugador, sino que podría tener su propio sistema.
+        isAttacking = true; // Activar la animación de ataque
+
+        switch (weaponType) {
+            case LASER:
+                shootRifle(bullets);
+                break;
+            case ION:
+                shootShotgun(bullets);
+                break;
+            case RAILGUN:
+                shootSniper(bullets);
+                break;
+            case THUNDER:
+                shootThunder(bullets);
+                break;
+        }
+    }
+
+    private void shootThunder(ArrayList<Bullet> bullets) {
+        float bulletX = position.x + (isSeeingRight ? getWidth() : 0);
+        float bulletY = position.y + getHeight() / 2;
+        bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.THUNDER, this));
     }
 
     /**
@@ -400,7 +440,7 @@ public class Character
     private void shootRifle(ArrayList<Bullet> bullets) {
         float bulletX = position.x + (isSeeingRight ? getWidth() : 0);
         float bulletY = position.y + getHeight() / 2;
-        bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.LASER));
+        bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.LASER, this));
     }
 
     /**
@@ -415,7 +455,7 @@ public class Character
         for (int i = -1; i <= 1; i++) {
             // Crear bala con posición ligeramente desplazada
             float spreadY = bulletY + (i * 8f); // 8px de separación vertical
-            bullets.add(new Bullet(bulletX, spreadY, isSeeingRight, WeaponType.ION));
+            bullets.add(new Bullet(bulletX, spreadY, isSeeingRight, WeaponType.ION, this));
         }
     }
 
@@ -426,7 +466,7 @@ public class Character
     private void shootSniper(ArrayList<Bullet> bullets) {
         float bulletX = position.x + (isSeeingRight ? getWidth() : 0);
         float bulletY = position.y + getHeight() / 2;
-        bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.RAILGUN));
+        bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.RAILGUN, this));
     }
 
     /**
@@ -437,11 +477,13 @@ public class Character
         if (rifleCooldown > 0f) rifleCooldown -= delta;
         if (shotgunCooldown > 0f) shotgunCooldown -= delta;
         if (sniperCooldown > 0f) sniperCooldown -= delta;
+        if (thunderCooldown > 0f) thunderCooldown -= delta;
         
         // Asegurar que no sean negativos
         if (rifleCooldown < 0f) rifleCooldown = 0f;
         if (shotgunCooldown < 0f) shotgunCooldown = 0f;
         if (sniperCooldown < 0f) sniperCooldown = 0f;
+        if (thunderCooldown < 0f) thunderCooldown = 0f;
     }
 
     // === MÉTODOS DE DAÑO (usando el sistema centralizado) ===
@@ -487,6 +529,10 @@ public class Character
         position.y = groundY;
         velocity.y = 0;
         onGround = true;
+
+        if (!isAlive) {
+            isReadyForGameOver = true;
+        }
 
         // Activar invulnerabilidad al aterrizar después de empuje
         if (isKnockedBack) {

@@ -11,7 +11,7 @@ import com.machinehunterdev.game.Environment.SolidObject;
  * 
  * @author MachineHunterDev
  */
-public class EnemyController extends CharacterController {
+public class PatrollerEnemyController extends CharacterController {
     /** Lista de puntos de patrullaje */
     private ArrayList<Vector2> patrolPoints;
     
@@ -19,49 +19,42 @@ public class EnemyController extends CharacterController {
     private enum State { PATROLLING, WAITING }
     private State currentState;
     
-    /** Temporizadores para patrullaje y espera */
-    private float runTimer;
+    /** Temporizador solo para la espera */
     private float waitTimer;
-    private float runTime;
     private float waitTime;
     
     /** Puntos de referencia para patrullaje */
     private Vector2 currentTarget;
-    private Vector2 leftPoint;
-    private Vector2 rightPoint;
+    private int currentTargetIndex; // Índice del punto actual en la lista
 
     /**
      * Constructor del controlador de enemigos.
      * @param enemyCharacter Personaje enemigo a controlar
      * @param patrolPoints Lista de puntos de patrullaje
-     * @param runTime Tiempo de patrullaje entre esperas
-     * @param waitTime Tiempo de espera en cada extremo
+     * @param waitTime Tiempo de espera en cada punto
      */
-    public EnemyController(Character enemyCharacter, ArrayList<Vector2> patrolPoints, float runTime, float waitTime) {
+    public PatrollerEnemyController(Character enemyCharacter, ArrayList<Vector2> patrolPoints, float waitTime) {
         super(enemyCharacter);
         this.patrolPoints = patrolPoints;
-        this.runTime = runTime;
         this.waitTime = waitTime;
         
         this.currentState = State.PATROLLING;
         this.waitTimer = 0f;
-        this.runTimer = 0f;
+        this.currentTargetIndex = 0;
 
         if (patrolPoints != null && !patrolPoints.isEmpty()) {
-            this.leftPoint = patrolPoints.get(0);
-            this.rightPoint = patrolPoints.get(patrolPoints.size() - 1);
-            this.currentTarget = this.rightPoint; 
+            this.currentTarget = patrolPoints.get(currentTargetIndex);
         }
     }
 
     /**
-     * Actualiza el estado del enemigo cada frame.
-     * @param delta Tiempo transcurrido desde el último frame
+     * Actualiza el estado del enemigo según la máquina de estados.
+     * @param delta Tiempo transcurrido desde la última actualización
      * @param solidObjects Lista de objetos sólidos para colisiones
-     * @param bullets Lista de balas activas (no usada en enemigos básicos)
+     * @param bullets Lista de balas en el juego
      */
     @Override
-    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets) {
+    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
         character.update(delta);
         checkCollisions(solidObjects);
 
@@ -88,50 +81,38 @@ public class EnemyController extends CharacterController {
 
     /**
      * Maneja el estado de patrullaje.
-     * @param delta Tiempo transcurrido desde el último frame
+     * @param delta Tiempo transcurrido desde la última actualización
      */
     private void handlePatrollingState(float delta) {
-        runTimer += delta;
-        if (runTimer >= runTime) {
-            currentState = State.WAITING;
-            runTimer = 0f;
+        // Si ya está en el punto objetivo (con tolerancia)
+        float tolerance = 1f;
+        if (Math.abs(character.position.x - currentTarget.x) <= tolerance) {
             character.stopMoving();
+            currentState = State.WAITING;
+            waitTimer = 0f;
             return;
         }
 
-        // Moverse hacia el objetivo actual
-        if (currentTarget == rightPoint) {
+        // Moverse hacia el objetivo
+        if (character.position.x < currentTarget.x) {
             character.moveRight();
-            if (character.position.x >= rightPoint.x) {
-                currentTarget = leftPoint;
-            }
         } else {
             character.moveLeft();
-            if (character.position.x <= leftPoint.x) {
-                currentTarget = rightPoint;
-            }
         }
     }
 
     /**
      * Maneja el estado de espera.
-     * @param delta Tiempo transcurrido desde el último frame
+     * @param delta Tiempo transcurrido desde la última actualización
      */
     private void handleWaitingState(float delta) {
         waitTimer += delta;
         character.stopMoving();
         if (waitTimer >= waitTime) {
+            // Avanzar al siguiente punto (cíclico)
+            currentTargetIndex = (currentTargetIndex + 1) % patrolPoints.size();
+            currentTarget = patrolPoints.get(currentTargetIndex);
             currentState = State.PATROLLING;
-            waitTimer = 0f;
         }
-    }
-
-    /**
-     * Aplica daño al jugador.
-     * @param player Jugador a dañar
-     * @param damage Cantidad de daño
-     */
-    public void dealDamage(Character player, int damage) {
-        player.takeDamage(damage);
     }
 }

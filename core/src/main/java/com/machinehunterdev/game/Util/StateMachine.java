@@ -12,10 +12,10 @@ import java.util.Stack;
 public class StateMachine<T>
 {
     /** Estado actual de la máquina de estados */
-    public State<T> currentState;
+    public IState<T> currentState;
     
     /** Pila de estados para permitir navegación hacia atrás */
-    public Stack<State<T>> stateStack;
+    public Stack<IState<T>> stateStack;
     
     /** Objeto propietario que utiliza la máquina de estados */
     public T owner;
@@ -27,7 +27,7 @@ public class StateMachine<T>
     public StateMachine(T owner)
     {
         this.owner = owner;
-        stateStack = new Stack<State<T>>();
+        stateStack = new Stack<IState<T>>();
     }
 
     /**
@@ -44,7 +44,7 @@ public class StateMachine<T>
      * El estado anterior permanece en la pila para poder regresar a él.
      * @param newState Nuevo estado a agregar a la pila
      */
-    public void push(State<T> newState)
+    public void push(IState<T> newState)
     {
         stateStack.push(newState);
         currentState = newState;
@@ -73,7 +73,7 @@ public class StateMachine<T>
      * Sale del estado actual y entra en el nuevo, reemplazando completamente el estado anterior.
      * @param newState Nuevo estado que reemplazará al actual
      */
-    public void changeState(State<T> newState)
+    public void changeState(IState<T> newState)
     {
         if(currentState != null)
         {
@@ -90,7 +90,7 @@ public class StateMachine<T>
      * Devuelve el estado anterior sin sacarlo de la pila.
      * @return Estado anterior en la pila
      */
-    public State<T> getPreviousState()
+    public IState<T> getPreviousState()
     {
         if (stateStack.size() > 1) {
             return stateStack.elementAt(stateStack.size() - 2);
