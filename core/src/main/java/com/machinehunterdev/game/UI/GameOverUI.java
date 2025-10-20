@@ -1,5 +1,9 @@
 package com.machinehunterdev.game.UI;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -14,10 +18,6 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.GameStates.GameplayState;
 import com.machinehunterdev.game.GameStates.MainMenuState;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 /**
  * Interfaz de usuario para la pantalla de fin de juego.
@@ -191,11 +191,11 @@ public class GameOverUI implements InputProcessor {
      */
     private void drawGameOverText() {
         String gameOverText = "ELIMINATED";
-        float animationPerCharDuration = 0.15f;
-        float normalScale = 2.0f;
-        float startScale = 8.0f;
-        float shakeAmount = 4.0f; // Increased shake amount
-        float letterSpacing = 10.0f; // Added letter spacing
+        float animationPerCharDuration = 0.1f; // Increased speed
+        float normalScale = 4.0f; // Reduced the size
+        float startScale = 12.0f; // Adjusted for a more dramatic effect
+        float shakeAmount = 4.0f;
+        float letterSpacing = 30.0f; // Set to 30 pixels
 
         font.getData().setScale(normalScale);
         float totalWidth = 0;
@@ -203,7 +203,7 @@ public class GameOverUI implements InputProcessor {
             GlyphLayout charLayout = new GlyphLayout(font, String.valueOf(c));
             totalWidth += charLayout.width + letterSpacing;
         }
-        totalWidth -= letterSpacing; // Remove the last spacing
+        totalWidth -= letterSpacing;
 
         float startX = (Gdx.graphics.getWidth() - totalWidth) / 2f;
         float y = Gdx.graphics.getHeight() * 0.9f;
@@ -216,10 +216,11 @@ public class GameOverUI implements InputProcessor {
             float charWidth = charLayout.width;
 
             float startTime = i * animationPerCharDuration;
-            
+
             float drawX = currentX;
             float drawY = y;
             float scale = normalScale;
+            float alpha = 1.0f;
 
             float shakeX = 0;
             float shakeY = 0;
@@ -229,27 +230,25 @@ public class GameOverUI implements InputProcessor {
 
                 if (progress < 1f) { // Animating
                     scale = Interpolation.pow2Out.apply(startScale, normalScale, progress);
-                    
-                    float initialX = Gdx.graphics.getWidth() / 2f;
-                    float initialY = Gdx.graphics.getHeight() / 2f;
+                    alpha = Interpolation.fade.apply(0, 1, progress);
 
-                    drawX = Interpolation.pow2Out.apply(initialX, currentX, progress);
-                    drawY = Interpolation.pow2Out.apply(initialY, y, progress);
-                    
+                    drawX = currentX;
+                    drawY = y;
+
                     shakeX = (random.nextFloat() - 0.5f) * shakeAmount * (1 - progress);
                     shakeY = (random.nextFloat() - 0.5f) * shakeAmount * (1 - progress);
                 } else { // Animation finished, just shake
-                    shakeX = (random.nextFloat() - 0.5f) * 4f; // Increased shake amount
-                    shakeY = (random.nextFloat() - 0.5f) * 4f;
+                    shakeX = (random.nextFloat() - 0.5f) * 8f;
+                    shakeY = (random.nextFloat() - 0.5f) * 8f;
                 }
 
                 font.getData().setScale(scale);
-                font.setColor(Color.RED);
+                font.setColor(1, 0, 0, alpha); // Red color with alpha
                 font.draw(batch, String.valueOf(c), drawX + shakeX, drawY + shakeY);
                 font.getData().setScale(normalScale); // Reset scale for next char calculation
             }
-            
-            currentX += charWidth + letterSpacing; // Added letter spacing
+
+            currentX += charWidth + letterSpacing;
         }
 
         font.setColor(Color.WHITE);
