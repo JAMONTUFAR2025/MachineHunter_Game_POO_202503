@@ -221,8 +221,8 @@ public class GameplayState implements IState<GameController> {
             playerHurtFrames, playerCrouchFrames
         );
 
-        playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, 
-                                      currentLevel.playerStartX, currentLevel.playerStartY);
+        playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, null, 
+                                      currentLevel.playerStartX, currentLevel.playerStartY, true);
         playerController = new PlayerController(playerCharacter);
     }
 
@@ -247,7 +247,7 @@ public class GameplayState implements IState<GameController> {
                 enemyHurtFrames, null
             );
 
-            Character enemy = new Character(enemyData.health, enemyAnimator, enemyData.x, enemyData.y);
+            Character enemy = new Character(enemyData.health, enemyAnimator, null, enemyData.x, enemyData.y, false);
 
             ArrayList<Vector2> patrolPoints = new ArrayList<>();
             if (enemyData.patrolPoints != null) {
@@ -285,7 +285,7 @@ public class GameplayState implements IState<GameController> {
             null, null
         );
         
-        Character npcCharacter = new Character(100, npcAnimator, npcData.x, npcData.y);
+        Character npcCharacter = new Character(100, npcAnimator, null, npcData.x, npcData.y, false);
         
         // Cargar diálogos del NPC
         List<Dialog> npcDialogues = loadNPCCDialogues(npcData.dialogues);

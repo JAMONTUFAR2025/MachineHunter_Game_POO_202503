@@ -71,6 +71,7 @@ public class Character
     public boolean isOverlappingEnemy;          // Está superpuesto con un enemigo (para evitar daño continuo)
     public boolean isCrouching;                 // Está agachado
     public boolean isReadyForGameOver = false;  // Indica si el personaje está listo para la pantalla de Game Over
+    public boolean isPlayer = false;
 
     // === SISTEMA DE INVULNERABILIDAD ===
     
@@ -112,33 +113,56 @@ public class Character
     // === CONSTRUCTORES ===
 
     /**
-     * Constructor para personajes estáticos (sin animaciones).
+     * Constructor principal del personaje.
      * @param health Salud inicial del personaje
-     * @param texture Textura del personaje
+     * @param characterAnimator Animador del personaje
+     * @param fallbackTexture Textura de respaldo del personaje
      * @param x Posición inicial en X
      * @param y Posición inicial en Y
+     * @param isPlayer true si es el personaje jugador, false si es NPC/enemigo
      */
-    public Character(int health, Texture texture, float x, float y) {
+    public Character(int health, CharacterAnimator animator, Texture fallbackTexture, float x, float y, boolean isPlayer) {
         this.health = health;
-        this.fallbackTexture = texture;
+        this.characterAnimator = animator;
+        this.fallbackTexture = fallbackTexture;
         this.position = new Vector2(x, y);
         this.velocity = new Vector2(0, 0);
+        this.isPlayer = isPlayer;
         initDefaults();
     }
 
     /**
-     * Constructor para personajes animados.
+     * Constructor simplificado del personaje.
      * @param health Salud inicial del personaje
-     * @param animator Sistema de animación
+     * @param fallbackTexture Textura de respaldo del personaje
+     * @param x Posición inicial en X
+     * @param y Posición inicial en Y
+     */
+    public Character(int health, Texture fallbackTexture, float x, float y) {
+        this(health, null, fallbackTexture, x, y, false);
+    }
+
+    /**
+     * Constructor simplificado del personaje.
+     * @param health Salud inicial del personaje
+     * @param animator Animador del personaje
      * @param x Posición inicial en X
      * @param y Posición inicial en Y
      */
     public Character(int health, CharacterAnimator animator, float x, float y) {
-        this.health = health;
-        this.characterAnimator = animator;
-        this.position = new Vector2(x, y);
-        this.velocity = new Vector2(0, 0);
-        initDefaults();
+        this(health, animator, null, x, y, false);
+    }
+
+    /**
+     * Constructor simplificado del personaje jugador.
+     * @param health Salud inicial del personaje
+     * @param animator Animador del personaje
+     * @param x Posición inicial en X
+     * @param y Posición inicial en Y
+     * @param isPlayer true si es el personaje jugador, false si es NPC/enemigo
+     */
+    public Character(int health, CharacterAnimator animator, float x, float y, boolean isPlayer) {
+        this(health, animator, null, x, y, isPlayer);
     }
 
     /**
@@ -160,6 +184,13 @@ public class Character
      * @param delta Tiempo transcurrido desde el último frame
      */
     public void update(float delta) {
+        // --- MANEJO DE EMPUJE POR DAÑO ---
+        if (isKnockedBack) {
+            velocity.x = isSeeingRight ? -knockbackSpeed : knockbackSpeed;
+            isMoving = true;
+            onGround = false;
+        }
+
         // --- ACTUALIZACIÓN DE ANIMACIONES ---
         if (characterAnimator != null) {
             characterAnimator.setFacingRight(isSeeingRight);
@@ -167,17 +198,18 @@ public class Character
             // Determinar el nuevo estado de animación
             CharacterAnimator.AnimationState newState;
 
-            if (!isAlive) {
+            if (isKnockedBack && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
+                // Prioridad máxima: Animación de empuje
+                newState = CharacterAnimator.AnimationState.HURT;
+            } else if (!isAlive) {
                 newState = CharacterAnimator.AnimationState.DEAD;
-                // Detener todo movimiento al morir
-                velocity.x = 0;
-                velocity.y = 0;
+                if (!isPlayer) {
+                    velocity.x = 0;
+                    velocity.y = 0;
+                }
             } else { // Only determine other states if character is alive
                 if (isHurt && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
                     // Prioridad: Animación de daño
-                    newState = CharacterAnimator.AnimationState.HURT;
-                } else if (isKnockedBack && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
-                    // Empuje también usa animación HURT
                     newState = CharacterAnimator.AnimationState.HURT;
                 } else if (isCrouching && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.CROUCH)) {
                     newState = CharacterAnimator.AnimationState.CROUCH;
@@ -262,15 +294,9 @@ public class Character
             }
         }
 
-        // --- MANEJO DE EMPUJE POR DAÑO ---
-        if (isKnockedBack && isAlive) {
-            velocity.x = isSeeingRight ? -knockbackSpeed : knockbackSpeed;
-            isMoving = true;
-            onGround = false;
-        }
 
         // --- APLICACIÓN DE GRAVEDAD ---
-        if (!onGround && isAlive) {
+        if (!onGround) {
             velocity.y += gravity * delta;
         }
 
@@ -302,7 +328,6 @@ public class Character
      * @param spriteBatch SpriteBatch para renderizar
      */
     public void draw(SpriteBatch spriteBatch) {
-        // Solo dibujar si el personaje está vivo, o si está muerto pero la animación de muerte aún se está reproduciendo
         if (!isAlive && (characterAnimator == null || characterAnimator.isAnimationFinished(CharacterAnimator.AnimationState.DEAD))) {
             return; // No dibujar si está muerto y la animación ha terminado
         }
