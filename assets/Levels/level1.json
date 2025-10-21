@@ -95,7 +95,7 @@
       "fallFrames": "Player/PlayerFall",
       "crouchFrames": "Player/PlayerCrouch",
       "x": 200,
-      "y": 100,
+      "y": 200,
       "interactionRadius": 50,
       "dialogues": ["Dialogos_acto2"]
     }

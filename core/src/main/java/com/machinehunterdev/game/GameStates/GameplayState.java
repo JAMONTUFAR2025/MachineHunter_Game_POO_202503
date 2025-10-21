@@ -92,6 +92,8 @@ public class GameplayState implements IState<GameController> {
      * @return Nueva instancia de GameplayState
      */
     public static GameplayState createForLevel(String levelFile) {
+        // Solución temporal para evitar problemas de input al cambiar de estado
+        Gdx.input.setInputProcessor(null);
         GameplayState state = new GameplayState();
         state.currentLevelFile = levelFile;
         return state;
@@ -113,6 +115,7 @@ public class GameplayState implements IState<GameController> {
     }
 
     public void retryLevel() {
+        Gdx.input.setInputProcessor(null);
         restartLevel();
     }
 
@@ -492,7 +495,7 @@ public class GameplayState implements IState<GameController> {
         gameBatch.begin();
 
         // Dibujar fondo con opacidad reducida
-        gameBatch.setColor(1, 1, 1, 0.8f); // 80% de opacidad
+        gameBatch.setColor(1, 1, 1, 0.5f); // 50% de opacidad
         int backgroundWidth = GlobalSettings.VIRTUAL_WIDTH;
         int mapWidth = 1440; // Ajusta según tu mapa
         int backgroundCount = (int) Math.ceil((float) mapWidth / backgroundWidth) + 1;
