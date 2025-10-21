@@ -61,7 +61,7 @@ public class GameOverUI implements InputProcessor {
 
     private List<String> deathMessages;
     private String randomDeathMessage;
-
+    
     /**
      * Constructor de la interfaz de fin de juego.
      * @param batch SpriteBatch para renderizado
