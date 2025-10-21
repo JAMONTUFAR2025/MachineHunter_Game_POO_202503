@@ -88,19 +88,43 @@ public class GameplayUI {
         batch.begin();
         GlyphLayout layout = new GlyphLayout();
         
-        String weaponName = "";
-        switch (currentWeapon) {
-            case LASER: weaponName = "Laser"; break;
-            case ION: weaponName = "Ion"; break;
-            case RAILGUN: weaponName = "Riel"; break;
-        }
-        
-        String text = "Player: " + GlobalSettings.playerName + " | " + weaponName;
+        String text = "Player: " + GlobalSettings.playerName;
         layout.setText(font, text);
         float x = uiCamera.viewportWidth - layout.width - 10;
         float y = layout.height + 10;
         font.draw(batch, text, x, y);
         batch.end();
+
+        // Dibujar cuadrados de seleccion de arma
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        float totalWidth = (3 * squareSize) + (2 * padding);
+        float startX = (uiCamera.viewportWidth - totalWidth) / 2;
+
+        // Cuadrado para LASER (J)
+        if (currentWeapon == WeaponType.LASER) {
+            shapeRenderer.setColor(Color.WHITE);
+        } else {
+            shapeRenderer.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+        }
+        shapeRenderer.rect(startX, padding, squareSize, squareSize);
+
+        // Cuadrado para ION (K)
+        if (currentWeapon == WeaponType.ION) {
+            shapeRenderer.setColor(Color.WHITE);
+        } else {
+            shapeRenderer.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+        }
+        shapeRenderer.rect(startX + squareSize + padding, padding, squareSize, squareSize);
+
+        // Cuadrado para RAILGUN (L)
+        if (currentWeapon == WeaponType.RAILGUN) {
+            shapeRenderer.setColor(Color.WHITE);
+        } else {
+            shapeRenderer.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+        }
+        shapeRenderer.rect(startX + (2 * (squareSize + padding)), padding, squareSize, squareSize);
+
+        shapeRenderer.end();
     }
 
     /**
