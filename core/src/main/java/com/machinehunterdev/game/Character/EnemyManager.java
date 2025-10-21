@@ -43,4 +43,13 @@ public class EnemyManager {
     public ArrayList<IEnemy> getEnemies() {
         return enemies;
     }
+
+    public CharacterController getController(Character character) {
+        for (IEnemy enemy : enemies) {
+            if (enemy.getCharacter() == character) {
+                return ((BaseEnemy) enemy).getController();
+            }
+        }
+        return null;
+    }
 }
