@@ -57,12 +57,6 @@
   ],
   "enemies": [
     {
-      "idleFrames": "Enemy/PlayerIdle",
-      "runFrames": "Enemy/PlayerRun",
-      "deadFrames": "Enemy/Explosion",
-      "hurtFrames": "Enemy/PlayerHurt",
-      "jumpFrames": "Enemy/PlayerJump",
-      "fallFrames": "Enemy/PlayerFall",
       "x": 100,
       "y": 100,
       "health": 50,

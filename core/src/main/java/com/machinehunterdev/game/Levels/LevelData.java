@@ -1,6 +1,8 @@
 package com.machinehunterdev.game.Levels;
 
 import com.badlogic.gdx.math.Vector2;
+import com.machinehunterdev.game.Character.EnemyType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,13 +50,7 @@ public class LevelData {
     }
 
     public static class EnemyData {
-        public com.machinehunterdev.game.Character.EnemyType type = com.machinehunterdev.game.Character.EnemyType.PATROLLER;
-        public String idleFrames = "Enemy/PlayerIdle";
-        public String runFrames = "Enemy/PlayerRun";
-        public String deadFrames = "Enemy/Explosion";
-        public String hurtFrames = "Enemy/PlayerHurt";
-        public String jumpFrames = "Enemy/PlayerJump";
-        public String fallFrames = "Enemy/PlayerFall";
+        public EnemyType type = EnemyType.PATROLLER;
         public float x, y;
         public List<Point> patrolPoints = new ArrayList<>();
         public float waitTime = 3.0f;

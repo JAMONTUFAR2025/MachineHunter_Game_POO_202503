@@ -37,7 +37,7 @@ public class CharacterAnimator {
     /**
      * Constructor principal del sistema de animación.
      * @param idleFrames Frames para animación idle (obligatorio)
-     * @param runFrames Frames para animación run (obligatorio)
+     * @param runFrames Frames para animación run (opcional)
      * @param deadFrames Frames para animación dead (opcional)
      * @param jumpFrames Frames para animación jump (opcional)
      * @param fallFrames Frames para animación fall (opcional)
@@ -64,11 +64,11 @@ public class CharacterAnimator {
         if (idleFrames != null && !idleFrames.isEmpty()) {
             this.animators.put(AnimationState.IDLE, new SpriteAnimator(idleFrames));
         }
+        
+        // Inicializar animaciones opcionales con configuraciones específicas
         if (runFrames != null && !runFrames.isEmpty()) {
             this.animators.put(AnimationState.RUN, new SpriteAnimator(runFrames));
         }
-        
-        // Inicializar animaciones opcionales con configuraciones específicas
         if (deadFrames != null && !deadFrames.isEmpty()) {
             this.animators.put(AnimationState.DEAD, new SpriteAnimator(deadFrames, 0.1f, false, false));
         }

@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.Character.Character;
 
 import com.machinehunterdev.game.Character.EnemyManager;
+import com.machinehunterdev.game.Character.EnemySkin;
 import com.machinehunterdev.game.Character.EnemyType;
 import com.machinehunterdev.game.Environment.SolidObject;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
@@ -233,12 +234,14 @@ public class GameplayState implements IState<GameController> {
         enemyManager = new EnemyManager();
 
         for (LevelData.EnemyData enemyData : currentLevel.enemies) {
-            List<Sprite> enemyIdleFrames = loadSpriteFrames(enemyData.idleFrames, 4);
-            List<Sprite> enemyRunFrames = loadSpriteFrames(enemyData.runFrames, 8);
-            List<Sprite> enemyDeadFrames = loadSpriteFrames(enemyData.deadFrames, 4);
-            List<Sprite> enemyJumpFrames = loadSpriteFrames(enemyData.jumpFrames, 2);
-            List<Sprite> enemyFallFrames = loadSpriteFrames(enemyData.fallFrames, 2);
-            List<Sprite> enemyHurtFrames = loadSpriteFrames(enemyData.hurtFrames, 2);
+            EnemySkin skin = EnemySkin.getSkin(enemyData.type);
+
+            List<Sprite> enemyIdleFrames = loadSpriteFrames(skin.idleFrames, 4);
+            List<Sprite> enemyRunFrames = loadSpriteFrames(skin.runFrames, 4);
+            List<Sprite> enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 4);
+            List<Sprite> enemyJumpFrames = loadSpriteFrames(skin.jumpFrames, 1);
+            List<Sprite> enemyFallFrames = loadSpriteFrames(skin.fallFrames, 1);
+            List<Sprite> enemyHurtFrames = loadSpriteFrames(skin.hurtFrames, 1);
 
             CharacterAnimator enemyAnimator = new CharacterAnimator(
                 enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
@@ -654,6 +657,9 @@ public class GameplayState implements IState<GameController> {
      * Carga frames de animación desde archivos numerados.
      */
     private List<Sprite> loadSpriteFrames(String basePath, int frameCount) {
+        if (basePath == null) {
+            return null;
+        }
         List<Sprite> frames = new ArrayList<>();
         for (int i = 1; i <= frameCount; i++) {
             frames.add(new Sprite(new Texture(basePath + i + ".png")));
