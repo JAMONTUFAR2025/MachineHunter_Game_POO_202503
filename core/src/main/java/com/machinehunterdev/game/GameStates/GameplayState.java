@@ -114,6 +114,10 @@ public class GameplayState implements IState<GameController> {
         owner.stateMachine.changeState(MainMenuState.instance);
     }
 
+    public void retryLevel() {
+        restartLevel();
+    }
+
     public void restartLevel() {
         owner.stateMachine.changeState(createForLevel(currentLevelFile));
     }

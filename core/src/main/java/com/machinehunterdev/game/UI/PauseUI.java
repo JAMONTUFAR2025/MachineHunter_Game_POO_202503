@@ -36,7 +36,7 @@ public class PauseUI implements InputProcessor {
     private MenuState currentState = MenuState.MAIN;
 
     /** Opciones para cada estado del menú */
-    private String[] mainOptions = {"Reanudar", "Salir"};
+    private String[] mainOptions = {"Reanudar","Reintentar", "Salir"};
     private String[] confirmOptions = {"Si", "No"};
     
     /** Índice de la opción seleccionada actualmente */
@@ -172,7 +172,9 @@ public class PauseUI implements InputProcessor {
         } else if (keycode == Input.Keys.ENTER || keycode == Input.Keys.E) {
             if (selectedOption == 0) { // Reanudar
                 gameplayState.resumeGame();
-            } else if (selectedOption == 1) { // Salir
+            } else if (selectedOption == 1) { // Reintentar
+                gameplayState.retryLevel();
+            } else if (selectedOption == 2) { // Salir
                 currentState = MenuState.CONFIRM_EXIT;
                 selectedOption = 0;
             }
