@@ -4,40 +4,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.machinehunterdev.game.Dialog.Dialog;
-import com.machinehunterdev.game.GameController;
+import com.machinehunterdev.game.Character.Character;
+import com.machinehunterdev.game.Character.CharacterAnimator;
+import com.machinehunterdev.game.Character.EnemyManager;
+import com.machinehunterdev.game.Character.EnemySkin;
+import com.machinehunterdev.game.Character.NPCController;
 import com.machinehunterdev.game.Character.PlayerController;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.DamageSystem;
-import com.badlogic.gdx.math.Vector2;
-import com.machinehunterdev.game.Character.Character;
-
-import com.machinehunterdev.game.Character.EnemyManager;
-import com.machinehunterdev.game.Character.EnemySkin;
-import com.machinehunterdev.game.Character.EnemyType;
-import com.machinehunterdev.game.Environment.SolidObject;
-import com.machinehunterdev.game.Gameplay.GlobalSettings;
-import com.machinehunterdev.game.UI.GameplayUI;
+import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
-import com.machinehunterdev.game.Character.CharacterAnimator;
+import com.machinehunterdev.game.Environment.SolidObject;
 import com.machinehunterdev.game.FX.ImpactEffectManager;
-import com.machinehunterdev.game.UI.PauseUI;
-import com.machinehunterdev.game.UI.NextLevelUI;
-import com.machinehunterdev.game.Util.IState;
-import com.machinehunterdev.game.Character.NPCController;
+import com.machinehunterdev.game.GameController;
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.Levels.LevelData;
 import com.machinehunterdev.game.Levels.LevelLoader;
+import com.machinehunterdev.game.UI.GameplayUI;
+import com.machinehunterdev.game.UI.NextLevelUI;
+import com.machinehunterdev.game.UI.PauseUI;
+import com.machinehunterdev.game.Util.IState;
 
 /**
  * Estado principal del juego que puede cargar cualquier nivel.
@@ -493,13 +491,15 @@ public class GameplayState implements IState<GameController> {
         gameBatch.setProjectionMatrix(camera.combined);
         gameBatch.begin();
 
-        // Dibujar fondo
+        // Dibujar fondo con opacidad reducida
+        gameBatch.setColor(1, 1, 1, 0.8f); // 80% de opacidad
         int backgroundWidth = GlobalSettings.VIRTUAL_WIDTH;
         int mapWidth = 1440; // Ajusta según tu mapa
         int backgroundCount = (int) Math.ceil((float) mapWidth / backgroundWidth) + 1;
         for (int i = 0; i < backgroundCount; i++) {
             gameBatch.draw(backgroundTexture, i * backgroundWidth, 0);
         }
+        gameBatch.setColor(1, 1, 1, 1); // Restaurar opacidad completa
 
         // Dibujar objetos sólidos
         for (SolidObject floor : solidObjects) {
