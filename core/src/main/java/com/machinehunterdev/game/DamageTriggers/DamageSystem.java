@@ -25,8 +25,8 @@ public class DamageSystem
         if (target.health <= 0) {
             target.isAlive = false;
             target.health = 0;
-            target.setFlashRed(false); // Reinicia flashRed al morir
-            target.setRedFlashTimer(0f); // Reinicia redFlashTimer al morir
+            target.setFlashTransparent(false); // Reinicia flashRed al morir
+            target.setTransparentFlashTimer(0f); // Reinicia redFlashTimer al morir
         }
 
         // Activar efectos visuales
@@ -89,8 +89,8 @@ public class DamageSystem
         if (target.health <= 0) {
             target.isAlive = false;
             target.health = 0;
-            target.setFlashRed(false); // Reinicia flashRed al morir
-            target.setRedFlashTimer(0f); // Reinicia redFlashTimer al morir
+            target.setFlashTransparent(false); // Reinicia flashRed al morir
+            target.setTransparentFlashTimer(0f); // Reinicia redFlashTimer al morir
         }
 
         // Activar efectos visuales
@@ -115,8 +115,8 @@ public class DamageSystem
      * Activa los efectos visuales al recibir daño.
      */
     private static void activateVisualEffects(Character target) {
-        target.setFlashRed(true);
-        target.setRedFlashTimer(0.1f);
+        target.setFlashTransparent(true);
+        target.setTransparentFlashTimer(0.1f);
     }
 
     /**

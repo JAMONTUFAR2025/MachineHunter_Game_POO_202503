@@ -20,6 +20,7 @@ import com.machinehunterdev.game.Character.Character;
 import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.Character.EnemyManager;
 import com.machinehunterdev.game.Character.EnemySkin;
+import com.machinehunterdev.game.Character.EnemyType;
 import com.machinehunterdev.game.Character.NPCController;
 import com.machinehunterdev.game.Character.PlayerController;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
@@ -115,7 +116,6 @@ public class GameplayState implements IState<GameController> {
     }
 
     public void retryLevel() {
-        Gdx.input.setInputProcessor(null);
         restartLevel();
     }
 
@@ -257,6 +257,14 @@ public class GameplayState implements IState<GameController> {
             );
 
             Character enemy = new Character(enemyData.health, enemyAnimator, null, enemyData.x, enemyData.y, false);
+
+            // Ajustar la posición Y para enemigos voladores si la coordenada Y del JSON
+            // se interpreta como el centro y el motor de renderizado usa la base.
+            if (enemyData.type == EnemyType.FLYING) {
+                // Asumiendo que enemyData.y es el centro, y Character.position.y es la base.
+                // Elevamos el enemigo por la mitad de su altura.
+                enemy.position.y -= enemy.getHeight() / 2;
+            }
 
             ArrayList<Vector2> patrolPoints = new ArrayList<>();
             if (enemyData.patrolPoints != null) {

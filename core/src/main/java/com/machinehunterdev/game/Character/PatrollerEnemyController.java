@@ -85,9 +85,10 @@ public class PatrollerEnemyController extends CharacterController {
      */
     private void handlePatrollingState(float delta) {
         // Si ya está en el punto objetivo (con tolerancia)
-        float tolerance = 1f;
+        float tolerance = 5f; // Aumentar la tolerancia para evitar oscilaciones
         if (Math.abs(character.position.x - currentTarget.x) <= tolerance) {
             character.stopMoving();
+            character.velocity.x = 0; // Asegurar que el movimiento horizontal se detenga
             currentState = State.WAITING;
             waitTimer = 0f;
             return;

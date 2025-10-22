@@ -74,7 +74,7 @@ public class GameplayUI {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         int totalHealth = 3;
-        int squareSize = 50;
+        int squareSize = 64;
         int padding = 10;
 
         // Dibujar cuadrados de salud (rojos = vida, blancos = perdida)

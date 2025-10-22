@@ -51,9 +51,10 @@ public class FlyingEnemyController extends CharacterController {
     }
 
     private void handlePatrollingState(float delta) {
-        float tolerance = 1.0f;
+        float tolerance = 5.0f; // Aumentar la tolerancia para evitar oscilaciones verticales
         if (Math.abs(character.position.y - currentTarget.y) <= tolerance) {
             character.stopMoving();
+            character.velocity.y = 0; // Detener el movimiento vertical
             currentState = State.WAITING;
             waitTimer = 0f;
             return;

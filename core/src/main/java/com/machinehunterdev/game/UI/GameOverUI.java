@@ -200,7 +200,7 @@ public class GameOverUI implements InputProcessor {
         String gameOverText = "ELIMINATED";
         float animationPerCharDuration = 0.1f; // Increased speed
         float normalScale = 4.0f; // Reduced the size
-        float startScale = 12.0f; // Adjusted for a more dramatic effect
+        float startScale = 20.0f; // Adjusted for a more dramatic effect
         float shakeAmount = 4.0f;
         float letterSpacing = 30.0f; // Set to 30 pixels
 

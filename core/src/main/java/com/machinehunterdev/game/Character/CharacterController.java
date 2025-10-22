@@ -57,18 +57,18 @@ public abstract class CharacterController {
 
                 // Solo verificar si el personaje está cayendo
                 if (character.velocity.y <= 0) {
-                    // Verificar que los pies estén en la zona de aterrizaje
-                    if (feetY <= platformTop + 2f && feetY >= platformTop - 5f) {
-                        // Calcular superposición horizontal
-                        float overlapLeft = Math.max(feetLeft, platform.x);
-                        float overlapRight = Math.min(feetRight, platform.x + platform.width);
-                        float overlapWidth = overlapRight - overlapLeft;
+                    // Calcular superposición horizontal
+                    float overlapLeft = Math.max(feetLeft, platform.x);
+                    float overlapRight = Math.min(feetRight, platform.x + platform.width);
+                    float overlapWidth = overlapRight - overlapLeft;
 
-                        // Aterrizar solo si hay superposición significativa
-                        if (overlapWidth > 0) {
-                            character.landOn(platformTop);
-                            return;
-                        }
+                    // Si hay superposición horizontal y el personaje está a punto de aterrizar en la parte superior de la plataforma
+                    // (es decir, sus pies están justo por encima o en la parte superior de la plataforma)
+                    // La condición charY >= platformTop - 5 y charY <= platformTop + 5 crea una pequeña ventana vertical
+                    // para detectar el aterrizaje, evitando que el personaje se "teletransporte" si golpea el lateral.
+                    if (overlapWidth > 0 && charY >= platformTop - 5 && charY <= platformTop + 5) {
+                        character.landOn(platformTop);
+                        return;
                     }
                 }
             }

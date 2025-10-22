@@ -82,15 +82,15 @@ public class Character
     private float invulnerabilityTimer = 0f;
     
     /** Duración de la invulnerabilidad en segundos */
-    private static final float INVULNERABILITY_DURATION = 5.0F;
+    private static final float INVULNERABILITY_DURATION = 3.0F;
 
     // === EFECTOS VISUALES ===
     
-    /** Indica si debe mostrar parpadeo rojo al recibir daño */
-    private boolean flashRed = false;
-    
-    /** Temporizador del parpadeo rojo */
-    private float redFlashTimer = 0f;
+    /** Indica si debe mostrar parpadeo transparente al recibir daño */
+    private boolean flashTransparent = false;
+
+    /** Temporizador del parpadeo transparente */
+    private float transparentFlashTimer = 0f;
 
     // === SISTEMA DE ANIMACIÓN DE DAÑO ===
     
@@ -108,7 +108,7 @@ public class Character
     private static final float LASER_COOLDOWN_TIME = 0.3f;    // 0.3 segundos
     private static final float ION_COOLDOWN_TIME = 0.3f;  // 0.3 segundos
     private static final float RAILGUN_COOLDOWN_TIME = 0.3f;   // 0.3 segundos
-    private static final float THUNDER_COOLDOWN_TIME = 0.5f;   // 0.5 segundos
+    private static final float THUNDER_COOLDOWN_TIME = 0.3f;   // 0.3 segundos
 
     // === CONSTRUCTORES ===
 
@@ -254,10 +254,10 @@ public class Character
 
             // Fallback para animaciones no disponibles
             if (!characterAnimator.hasAnimation(newState)) {
-                if (newState == CharacterAnimator.AnimationState.JUMP || newState == CharacterAnimator.AnimationState.FALL) {
-                    newState = CharacterAnimator.AnimationState.RUN;
+                if ((newState == CharacterAnimator.AnimationState.JUMP || newState == CharacterAnimator.AnimationState.FALL || newState == CharacterAnimator.AnimationState.RUN) && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.IDLE)) {
+                    newState = CharacterAnimator.AnimationState.IDLE; // Si no hay animaciones de movimiento/salto/caída, usar IDLE
                 } else {
-                    newState = CharacterAnimator.AnimationState.IDLE;
+                    newState = CharacterAnimator.AnimationState.IDLE; // Fallback general a IDLE
                 }
             }
             
@@ -266,10 +266,10 @@ public class Character
         }
 
         // --- MANEJO DE EFECTOS VISUALES ---
-        if (flashRed) {
-            redFlashTimer -= delta;
-            if (redFlashTimer <= 0) {
-                flashRed = false;
+        if (flashTransparent) {
+            transparentFlashTimer -= delta;
+            if (transparentFlashTimer <= 0) {
+                flashTransparent = false;
             }
         }
 
@@ -337,9 +337,9 @@ public class Character
             if (currentSprite != null) {
                 Color originalColor = new Color(currentSprite.getColor());
 
-                // Aplicar efectos visuales: parpadeo rojo > invulnerabilidad > normal
-                if (flashRed) {
-                    currentSprite.setColor(Color.RED);
+                // Aplicar efectos visuales: parpadeo transparente > invulnerabilidad > normal
+                if (flashTransparent) {
+                    currentSprite.setColor(1,1,1,0.3f);
                 } else if (invulnerable) {
                     float blinkTime = invulnerabilityTimer % 1.0f;
                     float alpha = (blinkTime < 0.5f) ? 0.7f : 0.3f;
@@ -641,7 +641,7 @@ public class Character
     public boolean isAlive() { return isAlive; }
     public boolean isKnockedBack() { return isKnockedBack; }
     public boolean isInvulnerable() { return invulnerable; }
-    public boolean isFlashingRed() { return flashRed; }
+    public boolean isFlashingTransparent() { return flashTransparent; }
     public boolean isHurt() { return isHurt; }
 
     public float getWidth() { 
@@ -685,12 +685,12 @@ public class Character
         this.invulnerabilityTimer = timer;
     }
 
-    public void setFlashRed(boolean flashRed) {
-        this.flashRed = flashRed;
+    public void setFlashTransparent(boolean flashTransparent) {
+        this.flashTransparent = flashTransparent;
     }
 
-    public void setRedFlashTimer(float redFlashTimer) {
-        this.redFlashTimer = redFlashTimer;
+    public void setTransparentFlashTimer(float redFlashTimer) {
+        this.transparentFlashTimer = redFlashTimer;
     }
 
     public void setHurt(boolean isHurt) {
