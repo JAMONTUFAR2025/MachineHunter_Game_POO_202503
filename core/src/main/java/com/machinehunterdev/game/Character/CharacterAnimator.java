@@ -1,12 +1,12 @@
 package com.machinehunterdev.game.Character;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.machinehunterdev.game.Util.SpriteAnimator;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.machinehunterdev.game.Util.SpriteAnimator;
 
 /**
  * Sistema de animación para personajes con soporte para múltiples estados.
@@ -70,7 +70,7 @@ public class CharacterAnimator {
             this.animators.put(AnimationState.RUN, new SpriteAnimator(runFrames));
         }
         if (deadFrames != null && !deadFrames.isEmpty()) {
-            this.animators.put(AnimationState.DEAD, new SpriteAnimator(deadFrames, 0.1f, false, false));
+            this.animators.put(AnimationState.DEAD, new SpriteAnimator(deadFrames, 0.15f, false, false));
         }
         if (jumpFrames != null && !jumpFrames.isEmpty()) {
             this.animators.put(AnimationState.JUMP, new SpriteAnimator(jumpFrames, 0.16f, false, false));

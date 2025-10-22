@@ -2,6 +2,7 @@ package com.machinehunterdev.game.GameStates;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.UI.GameOverUI;
 import com.machinehunterdev.game.Util.IState;
@@ -21,14 +22,11 @@ public class GameOverState implements IState<GameController> {
     private GameController owner;
     private SpriteBatch batch;
     private GameOverUI gameOverUI;
+    public static CharacterAnimator playerAnimator;
 
-    /** Temporizadores para la secuencia de fin de juego */
-    private float deathAnimationTimer;
     private float gameOverTextTimer;
     private float dialogueTimer;
 
-    /** Estados de la secuencia */
-    private boolean isDeathAnimationFinished;
     private boolean isGameOverTextFinished;
     private boolean isDialogueTypingFinished;
 
@@ -39,6 +37,13 @@ public class GameOverState implements IState<GameController> {
         instance = this;
     }
 
+    public static void setPlayerAnimator(CharacterAnimator animator) {
+        playerAnimator = animator;
+        if (playerAnimator != null) {
+            playerAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.DEAD);
+        }
+    }
+
     /**
      * Inicializa el estado al entrar.
      * @param owner Controlador del juego propietario
@@ -47,15 +52,13 @@ public class GameOverState implements IState<GameController> {
     public void enter(GameController owner) {
         this.owner = owner;
         this.batch = owner.batch;
-        this.gameOverUI = new GameOverUI(batch, owner);
+        this.gameOverUI = new GameOverUI(batch, owner, playerAnimator);
         Gdx.input.setInputProcessor(gameOverUI);
 
         // Inicializar temporizadores y estados
-        deathAnimationTimer = 1.5f;
         gameOverTextTimer = 0f;
         dialogueTimer = 0f;
 
-        isDeathAnimationFinished = false;
         isGameOverTextFinished = false;
         isDialogueTypingFinished = false;
 
@@ -69,17 +72,15 @@ public class GameOverState implements IState<GameController> {
     public void execute() {
         float deltaTime = Gdx.graphics.getDeltaTime();
 
-        // Temporizador de animación de muerte
-        if (deathAnimationTimer > 0) {
-            deathAnimationTimer -= deltaTime;
-        } else {
-            isDeathAnimationFinished = true;
+        if (playerAnimator != null) {
+            playerAnimator.update(deltaTime);
         }
 
-        gameOverUI.setShowContent(isDeathAnimationFinished);
+        boolean deathAnimationFinished = playerAnimator == null || playerAnimator.isAnimationFinished(CharacterAnimator.AnimationState.DEAD);
+        gameOverUI.setShowContent(deathAnimationFinished);
 
         // Secuencia de fin de juego
-        if (isDeathAnimationFinished) {
+        if (deathAnimationFinished) {
             updateGameOverSequence(deltaTime);
         }
 
@@ -112,7 +113,11 @@ public class GameOverState implements IState<GameController> {
     @Override
     public void exit() {
         if (gameOverUI != null) {
-            gameOverUI.equals(this); // Nota: Esto parece un error, debería ser dispose()
+            gameOverUI.dispose();
+        }
+        if (playerAnimator != null) {
+            playerAnimator.dispose();
+            playerAnimator = null;
         }
         Gdx.input.setInputProcessor(null);
     }

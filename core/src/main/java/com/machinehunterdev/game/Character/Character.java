@@ -70,7 +70,7 @@ public class Character
     public boolean onGround;                    // Está en contacto con el suelo
     public boolean isOverlappingEnemy;          // Está superpuesto con un enemigo (para evitar daño continuo)
     public boolean isCrouching;                 // Está agachado
-    public boolean isReadyForGameOver = false;  // Indica si el personaje está listo para la pantalla de Game Over
+    public boolean readyForGameOverTransition = false; // Indica si el personaje está listo para la pantalla de Game Over
     public boolean isPlayer = false;
 
     // === SISTEMA DE INVULNERABILIDAD ===
@@ -556,7 +556,7 @@ public class Character
         onGround = true;
 
         if (!isAlive) {
-            isReadyForGameOver = true;
+            readyForGameOverTransition = true;
         }
 
         // Activar invulnerabilidad al aterrizar después de empuje

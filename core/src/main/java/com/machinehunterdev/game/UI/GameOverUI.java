@@ -8,13 +8,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.GameStates.GameplayState;
 import com.machinehunterdev.game.GameStates.MainMenuState;
@@ -42,8 +43,8 @@ public class GameOverUI implements InputProcessor {
     /** Controlador del juego para cambiar estados */
     private GameController gameController;
 
-    /** Textura del personaje para mostrar en la pantalla de fin de juego */
-    private Texture placeholderTexture;
+    /** Animador del personaje para mostrar en la pantalla de fin de juego */
+    private CharacterAnimator playerAnimator;
     private Random random = new Random();
 
     // === Temporizadores y estados ===
@@ -66,11 +67,12 @@ public class GameOverUI implements InputProcessor {
      * Constructor de la interfaz de fin de juego.
      * @param batch SpriteBatch para renderizado
      * @param gameController Controlador del juego para gestión de estados
+     * @param animator Animador del personaje para mostrar la animación de muerte
      */
-    public GameOverUI(SpriteBatch batch, GameController gameController) {
+    public GameOverUI(SpriteBatch batch, GameController gameController, CharacterAnimator animator) {
         this.batch = batch;
         this.gameController = gameController;
-        this.placeholderTexture = new Texture("Player/PlayerIdle1.png");
+        this.playerAnimator = animator;
         loadCustomBitmapFont();
         loadDeathMessages();
 
@@ -141,14 +143,22 @@ public class GameOverUI implements InputProcessor {
         batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.begin();
 
-        // Dibujar imagen del personaje
-        if (placeholderTexture != null) {
-            float scale = 7.0f;
-            float newWidth = placeholderTexture.getWidth() * scale;
-            float newHeight = placeholderTexture.getHeight() * scale;
-            float imgX = (Gdx.graphics.getWidth() - newWidth) / 2f;
-            float imgY = (Gdx.graphics.getHeight() - newHeight) / 2f;
-            batch.draw(placeholderTexture, imgX, imgY, newWidth, newHeight);
+        // Dibujar animación del personaje
+        if (playerAnimator != null) {
+            Sprite currentSprite = playerAnimator.getCurrentSprite();
+            if (currentSprite != null) {
+                float scale = 7.0f;
+                // Usar getRegionWidth/Height para obtener el tamaño original y evitar escalado doble
+                float newWidth = currentSprite.getRegionWidth() * scale;
+                float newHeight = currentSprite.getRegionHeight() * scale;
+                float imgX = (Gdx.graphics.getWidth() - newWidth) / 2f;
+                float imgY = (Gdx.graphics.getHeight() - newHeight) / 2f;
+                
+                // Dibujar el sprite manualmente en lugar de usar el método draw del animador
+                currentSprite.setSize(newWidth, newHeight);
+                currentSprite.setPosition(imgX, imgY);
+                currentSprite.draw(batch);
+            }
         }
 
         if (showContent) {
@@ -180,9 +190,6 @@ public class GameOverUI implements InputProcessor {
     public void dispose() {
         if (font != null) {
             font.dispose();
-        }
-        if (placeholderTexture != null) {
-            placeholderTexture.dispose();
         }
     }
 

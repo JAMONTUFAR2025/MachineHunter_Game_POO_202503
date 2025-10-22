@@ -219,16 +219,17 @@ public class GameplayState implements IState<GameController> {
         List<Sprite> playerLaserAttackFrames = loadSpriteFrames("Player/PlayerLaserAttack", 2);
         List<Sprite> playerIonAttackFrames = loadSpriteFrames("Player/PlayerIonAttack", 2);
         List<Sprite> playerRailgunAttackFrames = loadSpriteFrames("Player/PlayerRailgunAttack", 2);
+        List<Sprite> playerDeadFrames = loadSpriteFrames("Player/PlayerDead", 14);
 
         CharacterAnimator playerAnimator = new CharacterAnimator(
-            playerIdleFrames, playerRunFrames, null,
+            playerIdleFrames, playerRunFrames, playerDeadFrames,
             playerJumpFrames, playerFallFrames, null,
             playerLaserAttackFrames, playerIonAttackFrames, playerRailgunAttackFrames,
             playerHurtFrames, playerCrouchFrames
         );
 
         playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, null, 
-                                      currentLevel.playerStartX, currentLevel.playerStartY, true);
+        currentLevel.playerStartX, currentLevel.playerStartY, true);
         playerController = new PlayerController(playerCharacter);
     }
 
@@ -333,6 +334,8 @@ public class GameplayState implements IState<GameController> {
         return npcDialogues;
     }
 
+    private boolean transitioningToGameOver = false;
+
     /**
      * Ejecuta la lógica del estado cada frame.
      */
@@ -366,7 +369,14 @@ public class GameplayState implements IState<GameController> {
             }
         }
 
-        if (playerCharacter.isReadyForGameOver) {
+        if (playerCharacter.readyForGameOverTransition && !transitioningToGameOver) {
+            transitioningToGameOver = true; // Prevenir múltiples llamadas
+
+            // Desvincular el animador para que no se elimine con el personaje
+            CharacterAnimator animator = playerCharacter.characterAnimator;
+            playerCharacter.characterAnimator = null; 
+
+            GameOverState.setPlayerAnimator(animator);
             owner.stateMachine.changeState(GameOverState.instance);
         }
     }
