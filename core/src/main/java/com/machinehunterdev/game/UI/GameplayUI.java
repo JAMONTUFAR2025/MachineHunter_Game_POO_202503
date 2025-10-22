@@ -3,6 +3,7 @@ package com.machinehunterdev.game.UI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -30,6 +31,10 @@ public class GameplayUI {
     /** SpriteBatch compartido para renderizado */
     private SpriteBatch batch;
 
+    private Texture laserIcon;
+    private Texture ionIcon;
+    private Texture railgunIcon;
+
     /**
      * Constructor de la interfaz de gameplay.
      * @param batch SpriteBatch compartido del juego
@@ -40,6 +45,10 @@ public class GameplayUI {
         this.uiCamera = new OrthographicCamera();
         this.uiCamera.setToOrtho(false, 1280, 720);
         loadCustomBitmapFont();
+
+        laserIcon = new Texture(Gdx.files.internal("UI/LaserIcon.png"));
+        ionIcon = new Texture(Gdx.files.internal("UI/IonIcon.png"));
+        railgunIcon = new Texture(Gdx.files.internal("UI/RailgunIcon.png"));
     }
 
     /**
@@ -65,7 +74,7 @@ public class GameplayUI {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         int totalHealth = 3;
-        int squareSize = 30;
+        int squareSize = 50;
         int padding = 10;
 
         // Dibujar cuadrados de salud (rojos = vida, blancos = perdida)
@@ -96,35 +105,35 @@ public class GameplayUI {
         batch.end();
 
         // Dibujar cuadrados de seleccion de arma
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        batch.begin();
         float totalWidth = (3 * squareSize) + (2 * padding);
         float startX = (uiCamera.viewportWidth - totalWidth) / 2;
 
         // Cuadrado para LASER (J)
         if (currentWeapon == WeaponType.LASER) {
-            shapeRenderer.setColor(Color.WHITE);
+            batch.setColor(Color.WHITE);
         } else {
-            shapeRenderer.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+            batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
         }
-        shapeRenderer.rect(startX, padding, squareSize, squareSize);
+        batch.draw(laserIcon, startX, padding, squareSize, squareSize);
 
         // Cuadrado para ION (K)
         if (currentWeapon == WeaponType.ION) {
-            shapeRenderer.setColor(Color.WHITE);
+            batch.setColor(Color.WHITE);
         } else {
-            shapeRenderer.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+            batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
         }
-        shapeRenderer.rect(startX + squareSize + padding, padding, squareSize, squareSize);
+        batch.draw(ionIcon, startX + squareSize + padding, padding, squareSize, squareSize);
 
         // Cuadrado para RAILGUN (L)
         if (currentWeapon == WeaponType.RAILGUN) {
-            shapeRenderer.setColor(Color.WHITE);
+            batch.setColor(Color.WHITE);
         } else {
-            shapeRenderer.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+            batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
         }
-        shapeRenderer.rect(startX + (2 * (squareSize + padding)), padding, squareSize, squareSize);
-
-        shapeRenderer.end();
+        batch.draw(railgunIcon, startX + (2 * (squareSize + padding)), padding, squareSize, squareSize);
+        batch.setColor(Color.WHITE); // Reset color
+        batch.end();
     }
 
     /**
