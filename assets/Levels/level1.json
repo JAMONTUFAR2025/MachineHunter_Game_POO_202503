@@ -59,12 +59,12 @@
   "enemies": [
     {
       "type": "PATROLLER",
-      "x": 500,
-      "y": 100,
+      "x": 100,
+      "y": 300,
       "health": 50,
       "patrolPoints": [
-        { "x": 500, "y": 100 },
-        { "x": 700, "y": 100 }
+        { "x": 100, "y": 300 },
+        { "x": 200, "y": 300 }
       ],
       "waitTime": 2.0
     },
@@ -94,8 +94,8 @@
       "jumpFrames": "Player/PlayerJump",
       "fallFrames": "Player/PlayerFall",
       "crouchFrames": "Player/PlayerCrouch",
-      "x": 200,
-      "y": 200,
+      "x": 100,
+      "y": 100,
       "interactionRadius": 50,
       "dialogues": ["Dialogos_acto2"]
     }

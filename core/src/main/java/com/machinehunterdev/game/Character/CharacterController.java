@@ -31,8 +31,6 @@ public abstract class CharacterController {
      * @param solidObjects Lista de objetos sólidos en el nivel.
      */
     protected void checkCollisions(ArrayList<SolidObject> solidObjects) {
-        character.onGround = false;
-
         float charWidth = character.getWidth();
         float charHeight = character.getHeight();
         float charX = character.getX();
@@ -73,6 +71,8 @@ public abstract class CharacterController {
                 }
             }
         }
+
+        character.onGround = false;
     }
 
     /**

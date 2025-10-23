@@ -230,6 +230,13 @@ public class GameplayState implements IState<GameController> {
 
         playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, null, 
         currentLevel.playerStartX, currentLevel.playerStartY, true);
+        
+        // Ajustar la posición Y del jugador para que esté sobre el suelo o plataforma
+        float adjustedPlayerY = findGroundY(playerCharacter.position.x, currentLevel.playerStartY, playerCharacter.getWidth());
+        playerCharacter.position.y = adjustedPlayerY;
+        playerCharacter.onGround = true;
+        playerCharacter.velocity.y = 0;
+
         playerController = new PlayerController(playerCharacter);
     }
 
@@ -264,6 +271,12 @@ public class GameplayState implements IState<GameController> {
                 // Asumiendo que enemyData.y es el centro, y Character.position.y es la base.
                 // Elevamos el enemigo por la mitad de su altura.
                 enemy.position.y -= enemy.getHeight() / 2;
+            } else {
+                // Ajustar la posición Y para enemigos terrestres
+                float adjustedEnemyY = findGroundY(enemy.position.x, enemyData.y, enemy.getWidth());
+                enemy.position.y = adjustedEnemyY;
+                enemy.onGround = true;
+                enemy.velocity.y = 0;
             }
 
             ArrayList<Vector2> patrolPoints = new ArrayList<>();
@@ -303,6 +316,12 @@ public class GameplayState implements IState<GameController> {
         );
         
         Character npcCharacter = new Character(100, npcAnimator, null, npcData.x, npcData.y, false);
+        
+        // Ajustar la posición Y del NPC para que esté sobre el suelo o plataforma
+        float adjustedNpcY = findGroundY(npcCharacter.position.x, npcData.y, npcCharacter.getWidth());
+        npcCharacter.position.y = adjustedNpcY;
+        npcCharacter.onGround = true;
+        npcCharacter.velocity.y = 0;
         
         // Cargar diálogos del NPC
         List<Dialog> npcDialogues = loadNPCCDialogues(npcData.dialogues);
@@ -484,7 +503,7 @@ public class GameplayState implements IState<GameController> {
      */
     private void handleNPCInteraction() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
-            if (npcController != null && npcController.isInRange()) {
+            if (npcController != null && npcController.isInRange() && playerCharacter.onGround) {
                 List<Dialog> dialogues = npcController.getDialogues();
                 if (dialogues != null && !dialogues.isEmpty()) {
                     dialogManager.showDialog(dialogues.get(0));
@@ -750,5 +769,31 @@ public class GameplayState implements IState<GameController> {
         if (texture != null /*&& Esto no funciona: !texture.isDisposed()*/) {
             texture.dispose();
         }
+    }
+
+    /**
+     * Encuentra la posición Y correcta para un personaje en el suelo o sobre un objeto sólido.
+     * @param x Posición X del personaje.
+     * @param characterWidth Ancho del personaje.
+     * @return La posición Y ajustada para que el personaje esté sobre una superficie.
+     */
+    private float findGroundY(float x, float initialY, float characterWidth) {
+        float closestGroundY = GlobalSettings.GROUND_LEVEL;
+
+        for (SolidObject obj : solidObjects) {
+            if (obj.isWalkable()) {
+                Rectangle platform = obj.getBounds();
+                // Verificar si el personaje está horizontalmente sobre la plataforma
+                if (x < platform.x + platform.width && x + characterWidth > platform.x) {
+                    float platformTop = platform.y + platform.height;
+                    // Si la plataforma está por debajo o al mismo nivel que la posición inicial del personaje,
+                    // y es más alta que el suelo actual, usar esta plataforma.
+                    if (platformTop <= initialY && platformTop > closestGroundY) {
+                        closestGroundY = platformTop;
+                    }
+                }
+            }
+        }
+        return closestGroundY;
     }
 }
