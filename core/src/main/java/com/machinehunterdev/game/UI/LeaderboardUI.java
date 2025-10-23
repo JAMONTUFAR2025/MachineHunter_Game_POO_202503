@@ -17,6 +17,7 @@ import com.machinehunterdev.game.Leaderboard.LeaderboardManager;
 /**
  * Interfaz de usuario para la tabla de clasificaciones.
  * Maneja toda la visualización y la interacción del usuario.
+ * Nota: Posiblemente esto NO se use.
  * 
  * @author MachineHunterDev
  */

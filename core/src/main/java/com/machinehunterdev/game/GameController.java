@@ -163,6 +163,7 @@ public class GameController extends ApplicationAdapter
     /**
      * Muestra la pila de estados en la pantalla para depuración.
      */
+    @SuppressWarnings("unchecked") // Para evitar la advertencia de conversión de Stack
     private void showStateStack() 
     {
         rootTable.clear();

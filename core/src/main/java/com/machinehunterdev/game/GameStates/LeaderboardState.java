@@ -10,6 +10,7 @@ import com.machinehunterdev.game.Leaderboard.LeaderboardManager;
 /**
  * Estado del juego que muestra la tabla de clasificaciones.
  * Implementa el patrón Singleton para asegurar una única instancia.
+ * Nota: Posiblemente esto NO se use.
  * 
  * @author MachineHunterDev
  */

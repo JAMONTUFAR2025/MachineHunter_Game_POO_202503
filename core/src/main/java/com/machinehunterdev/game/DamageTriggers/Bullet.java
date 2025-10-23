@@ -18,6 +18,7 @@ import java.util.List;
  */
 public class Bullet
 {
+    /* Propiedades para las balas */
     public Vector2 position;
     public Vector2 velocity;
     private SpriteAnimator animator;
@@ -45,23 +46,19 @@ public class Bullet
         // Configurar propiedades según el tipo de arma
         configureBullet(seeingRight);
 
-        // Initialize bounds using the first frame of the animation
+        // Inicializar el rectángulo de colisión
         this.bounds = new Rectangle(x, y, animator.getCurrentSprite().getWidth(), animator.getCurrentSprite().getHeight());
-    }
-
-    public Character getOwner() {
-        return owner;
     }
 
     /**
      * Configura las propiedades de la bala según el tipo de arma.
-     * @param seeingRight Dirección de disparo
+     * @param seeingRight Dirección de disparo.
      */
     private void configureBullet(boolean seeingRight) {
         float speed = 0;
         this.maxDistance = 0;
         this.piercing = false;
-        String basePath = "Bullets/"; // Base path for bullet textures
+        String basePath = "Bullets/"; // Carpeta base para las texturas de las balas
         String textureName = "";
 
         switch (weaponType) {
@@ -90,15 +87,15 @@ public class Bullet
 
         this.velocity = new Vector2(seeingRight ? speed : -speed, 0);
 
-        // Load frames for the animation
-        List<Sprite> frames = loadBulletFrames(basePath + textureName, 2, !seeingRight); // Assuming 2 frames for thunder bullet type
+        // Cargar las texturas de la bala según el tipo de arma
+        List<Sprite> frames = loadBulletFrames(basePath + textureName, 2, !seeingRight);
 
-        // Initialize SpriteAnimator
-        this.animator = new SpriteAnimator(frames, 0.1f, true); // 0.1f frame rate, loop indefinitely
+        // Inicializar el animador de sprites
+        this.animator = new SpriteAnimator(frames, 0.1f, true);
         this.animator.start(); // Start the animation
 
-        // If the bullet is plasma (fallback), it's a single texture, so create a single-frame animator
-        if (frames.isEmpty()) { // This means loadBulletFrames failed to find specific bullet textures
+        // Usamos textura provisional si no se cargaron frames
+        if (frames.isEmpty()) {
             List<Sprite> plasmaFrames = new ArrayList<>();
             plasmaFrames.add(new Sprite(new Texture("plasma.png")));
             this.animator = new SpriteAnimator(plasmaFrames, 0.1f, true);
@@ -107,11 +104,11 @@ public class Bullet
     }
 
     /**
-     * New method to load bullet animation frames.
-     * @param basePath The base path for the bullet texture (e.g., "Bullets/laser").
-     * @param frameCount The number of frames in the animation.
-     * @param flipped Whether the textures should be loaded as flipped versions.
-     * @return A list of sprites for the animation.
+     * Nuevo método para cargar los frames de la bala.
+     * @param basePath Ruta base de las texturas.
+     * @param frameCount Número de frames a cargar.
+     * @param flipped Indica si las texturas deben ser volteadas horizontalmente.
+     * @return Lista de sprites cargados.
      */
     private List<Sprite> loadBulletFrames(String basePath, int frameCount, boolean flipped) {
         List<Sprite> frames = new ArrayList<>();
@@ -120,10 +117,8 @@ public class Bullet
             try {
                 frames.add(new Sprite(new Texture(texturePath)));
             } catch (Exception e) {
-                // Handle missing frames, maybe log a warning or use a fallback
+                // Manejar el error de carga de textura
                 System.err.println("Warning: Could not load bullet frame: " + texturePath);
-                // If any frame is missing, we might want to return an empty list
-                // to trigger the fallback to "plasma.png"
                 return new ArrayList<>();
             }
         }
@@ -156,6 +151,14 @@ public class Bullet
             currentSprite.setPosition(position.x, position.y);
             animator.draw(batch);
         }
+    }
+
+    /**
+     * Obtiene el personaje que disparó la bala.
+     * @return El personaje propietario de la bala.
+     */
+    public Character getOwner() {
+        return owner;
     }
 
     /**

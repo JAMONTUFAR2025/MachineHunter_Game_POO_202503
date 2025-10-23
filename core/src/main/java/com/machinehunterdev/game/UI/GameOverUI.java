@@ -113,29 +113,6 @@ public class GameOverUI implements InputProcessor {
         }
     }
 
-    // === Métodos setters para control de estados ===
-
-    public void setShowContent(boolean show) {
-        this.showContent = show;
-    }
-
-    public void setGameOverTextTimer(float timer) {
-        this.gameOverTextTimer = timer;
-    }
-
-    public void setDialogueTimer(float timer) {
-        this.dialogueTimer = timer;
-    }
-
-
-    public void setShowDeathMessage(boolean show) {
-        this.showDeathMessage = show;
-    }
-
-    public boolean isDeathMessageFinished() {
-        return deathMessageFinished;
-    }
-
     /**
      * Renderiza la interfaz de fin de juego.
      */
@@ -182,15 +159,6 @@ public class GameOverUI implements InputProcessor {
         }
 
         batch.end();
-    }
-
-    /**
-     * Libera los recursos utilizados por la interfaz.
-     */
-    public void dispose() {
-        if (font != null) {
-            font.dispose();
-        }
     }
 
     /**
@@ -302,7 +270,10 @@ public class GameOverUI implements InputProcessor {
     }
 
     // === Manejo de entrada ===
-
+    /**
+     * Maneja la entrada del teclado para navegar y seleccionar opciones.
+     * @param keycode Código de la tecla presionada.
+     */
     @Override
     public boolean keyDown(int keycode) {
         if (showOptions) {
@@ -322,6 +293,57 @@ public class GameOverUI implements InputProcessor {
         return true;
     }
 
+    // === Métodos setters para control de estados ===
+    /**
+     * Muestra u oculta el contenido de la pantalla de Game Over.
+     * @param show Indica si se debe mostrar el contenido.
+     */
+    public void setShowContent(boolean show) {
+        this.showContent = show;
+    }
+
+    /**
+     * Establece el temporizador para la animación del texto de fin de juego.
+     * @param timer Nuevo valor del temporizador.
+     */
+    public void setGameOverTextTimer(float timer) {
+        this.gameOverTextTimer = timer;
+    }
+
+    /**
+     * Establece el temporizador para la animación del mensaje de muerte.
+     * @param timer Nuevo valor del temporizador.
+     */
+    public void setDialogueTimer(float timer) {
+        this.dialogueTimer = timer;
+    }
+
+    /**
+     * Establece si se debe mostrar el mensaje de muerte.
+     * @param show Indica si se debe mostrar el mensaje de muerte.
+     */
+    public void setShowDeathMessage(boolean show) {
+        this.showDeathMessage = show;
+    }
+
+    // === Métodos getters para control de estados ===
+    /**
+     * Verifica si el mensaje de muerte ha terminado de mostrarse.
+     * @return true si el mensaje ha terminado.
+     */
+    public boolean isDeathMessageFinished() {
+        return deathMessageFinished;
+    }
+
+    /**
+     * Libera los recursos utilizados por la interfaz.
+     */
+    public void dispose() {
+        if (font != null) {
+            font.dispose();
+        }
+    }
+    
     // === Métodos de InputProcessor no utilizados ===
 
     @Override public boolean keyUp(int keycode) { return false; }

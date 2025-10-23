@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 /**
  * Clase que representa un suelo sólido en el entorno del juego.
- * Versión antigua que carga su propia textura (menos eficiente).
+ * Versión antigua que carga su propia textura.
  * 
  * @author MachineHunterDev
  */

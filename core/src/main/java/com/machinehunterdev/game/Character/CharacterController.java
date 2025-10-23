@@ -32,7 +32,7 @@ public abstract class CharacterController {
      */
     protected void checkCollisions(ArrayList<SolidObject> solidObjects) {
         float charWidth = character.getWidth();
-        float charHeight = character.getHeight();
+        //float charHeight = character.getHeight();
         float charX = character.getX();
         float charY = character.getY();
 
@@ -72,6 +72,7 @@ public abstract class CharacterController {
             }
         }
 
+        // Si no hay colisión, el personaje está en el aire
         character.onGround = false;
     }
 

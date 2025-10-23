@@ -19,7 +19,7 @@ public class GameOverState implements IState<GameController> {
     public static GameOverState instance = new GameOverState();
     
     /** Componentes del estado */
-    private GameController owner;
+    //private GameController owner;
     private SpriteBatch batch;
     private GameOverUI gameOverUI;
     public static CharacterAnimator playerAnimator;
@@ -50,7 +50,7 @@ public class GameOverState implements IState<GameController> {
      */
     @Override
     public void enter(GameController owner) {
-        this.owner = owner;
+        //this.owner = owner;
         this.batch = owner.batch;
         this.gameOverUI = new GameOverUI(batch, owner, playerAnimator);
         Gdx.input.setInputProcessor(gameOverUI);

@@ -6,15 +6,35 @@ import com.machinehunterdev.game.Environment.SolidObject;
 
 import java.util.ArrayList;
 
+/**
+ * Controlador específico para enemigos voladores.
+ * Maneja el comportamiento de patrullaje y espera en el aire.
+ * 
+ * @author MachineHunterDev
+ */
 public class FlyingEnemyController extends CharacterController {
+
+    /* Puntos de patrullaje */
     private ArrayList<Vector2> patrolPoints;
+    /* Estado del enemigo volador */
     private enum State { PATROLLING, WAITING }
+    /* Estado actual del enemigo */
     private State currentState;
+
+    /* Temporizadores para la lógica de espera */
     private float waitTimer;
     private float waitTime;
+
+    /* Punto de destino actual */
     private Vector2 currentTarget;
     private int currentTargetIndex;
 
+    /**
+     * Constructor del controlador de enemigos voladores.
+     * @param enemyCharacter El personaje enemigo asociado
+     * @param patrolPoints Puntos de patrullaje
+     * @param waitTime Tiempo de espera entre patrullas
+     */
     public FlyingEnemyController(Character enemyCharacter, ArrayList<Vector2> patrolPoints, float waitTime) {
         super(enemyCharacter);
         this.patrolPoints = patrolPoints;
@@ -26,14 +46,21 @@ public class FlyingEnemyController extends CharacterController {
         if (patrolPoints != null && !patrolPoints.isEmpty()) {
             this.currentTarget = patrolPoints.get(currentTargetIndex);
         }
-        // Disable gravity for flying enemies
+        // Desactivar la gravedad para enemigos voladores
         character.gravity = 0;
     }
 
+    /**
+     * Actualiza el estado del enemigo volador.
+     * @param delta Tiempo transcurrido desde la última actualización.
+     * @param solidObjects Objetos sólidos en el entorno.
+     * @param bullets Balas en el entorno.
+     * @param playerCharacter El personaje jugador.
+     */
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
         character.update(delta);
-        // No collision check for flying enemies
+        // No se necesitan colisiones para enemigos voladores
 
         if (patrolPoints == null || patrolPoints.isEmpty()) {
             character.stopMoving();
@@ -50,6 +77,10 @@ public class FlyingEnemyController extends CharacterController {
         }
     }
 
+    /**
+     * Maneja el estado de patrullaje.
+     * @param delta Tiempo transcurrido desde la última actualización.
+     */
     private void handlePatrollingState(float delta) {
         float tolerance = 5.0f; // Aumentar la tolerancia para evitar oscilaciones verticales
         if (Math.abs(character.position.y - currentTarget.y) <= tolerance) {
@@ -60,7 +91,7 @@ public class FlyingEnemyController extends CharacterController {
             return;
         }
 
-        // Move only vertically
+        // Moverse unicamente en vertical
         character.velocity.x = 0;
         if (character.position.y < currentTarget.y) {
             character.velocity.y = character.speed;
@@ -69,6 +100,10 @@ public class FlyingEnemyController extends CharacterController {
         }
     }
 
+    /**
+     * Maneja el estado de espera.
+     * @param delta Tiempo transcurrido desde la última actualización.
+     */
     private void handleWaitingState(float delta) {
         waitTimer += delta;
         character.stopMoving();

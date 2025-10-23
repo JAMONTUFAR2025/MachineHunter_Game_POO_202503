@@ -2,7 +2,6 @@ package com.machinehunterdev.game.GameStates;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.UI.MainMenuUI;
@@ -30,7 +29,7 @@ public class MainMenuState implements IState<GameController>{
     }
 
     /** Controlador del juego propietario */
-    private GameController owner;
+    //private GameController owner;
 
     /**
      * Inicializa el estado al entrar.
@@ -39,8 +38,8 @@ public class MainMenuState implements IState<GameController>{
     @Override
     public void enter(GameController owner) 
     {
-        this.owner = owner;
-        BitmapFont font = new BitmapFont();
+        //this.owner = owner;
+        //BitmapFont font = new BitmapFont();
         SpriteBatch batch = new SpriteBatch();
         this.menuUI = new MainMenuUI(batch, owner, new Texture("FondoMenuPrincipal.png"));
         Gdx.input.setInputProcessor(this.menuUI);

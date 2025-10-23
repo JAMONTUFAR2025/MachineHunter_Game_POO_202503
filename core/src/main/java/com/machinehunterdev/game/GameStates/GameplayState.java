@@ -115,10 +115,9 @@ public class GameplayState implements IState<GameController> {
         owner.stateMachine.changeState(MainMenuState.instance);
     }
 
-    public void retryLevel() {
-        restartLevel();
-    }
-
+    /**
+     * Reinicia el nivel actual.
+     */
     public void restartLevel() {
         owner.stateMachine.changeState(createForLevel(currentLevelFile));
     }
@@ -474,22 +473,6 @@ public class GameplayState implements IState<GameController> {
     }
 
     /**
-     * Obtiene el archivo del nivel actual.
-     * @return Ruta del archivo del nivel actual
-     */
-    public String getCurrentLevelFile() {
-        return currentLevelFile;
-    }
-
-    public LevelData getCurrentLevel() {
-        return currentLevel;
-    }
-
-    public GameController getOwner() {
-        return owner;
-    }
-
-    /**
      * Actualiza el NPC si existe.
      */
     private void updateNPC(float deltaTime) {
@@ -795,5 +778,29 @@ public class GameplayState implements IState<GameController> {
             }
         }
         return closestGroundY;
+    }
+
+    /**
+     * Obtiene el archivo del nivel actual.
+     * @return Ruta del archivo del nivel actual
+     */
+    public String getCurrentLevelFile() {
+        return currentLevelFile;
+    }
+
+    /**
+     * Obtiene los datos del nivel actual.
+     * @return Datos del nivel actual
+     */
+    public LevelData getCurrentLevel() {
+        return currentLevel;
+    }
+
+    /**
+     * Obtiene el controlador del juego propietario.
+     * @return Controlador del juego
+     */
+    public GameController getOwner() {
+        return owner;
     }
 }

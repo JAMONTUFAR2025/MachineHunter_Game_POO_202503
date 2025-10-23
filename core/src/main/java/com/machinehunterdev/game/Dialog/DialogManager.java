@@ -51,8 +51,8 @@ public class DialogManager {
     private float textTimer = 0f;
     private float textSpeed = 0.05f;
     private boolean textFullyVisible = false;
-    private float autoAdvanceTimer = 0f;
-    private float autoAdvanceDelay = 0.5f;
+    //private float autoAdvanceTimer = 0f;
+    //private float autoAdvanceDelay = 0.5f;
 
     /** Sistema de paginación para textos largos */
     private List<String> pages;
@@ -163,7 +163,7 @@ public class DialogManager {
         currentVisibleText = "";
         textTimer = 0f;
         textFullyVisible = false;
-        autoAdvanceTimer = 0f;
+        //autoAdvanceTimer = 0f;
     }
 
     /**
@@ -185,7 +185,7 @@ public class DialogManager {
         } else {
             currentVisibleText = pages.get(currentPage);
             textFullyVisible = true;
-            autoAdvanceTimer = 0f;
+            //autoAdvanceTimer = 0f;
         }
     }
 

@@ -29,21 +29,24 @@ public class CharacterAnimator {
     private AnimationState currentState = AnimationState.IDLE;
     
     /** Estado de animación anterior */
-    private AnimationState previousState = AnimationState.IDLE;
+    //private AnimationState previousState = AnimationState.IDLE;
     
     /** Dirección de mirada del personaje */
     private boolean facingRight = true;
 
     /**
      * Constructor principal del sistema de animación.
-     * @param idleFrames Frames para animación idle (obligatorio)
-     * @param runFrames Frames para animación run (opcional)
-     * @param deadFrames Frames para animación dead (opcional)
-     * @param jumpFrames Frames para animación jump (opcional)
-     * @param fallFrames Frames para animación fall (opcional)
-     * @param attackFrames Frames para animación attack (opcional)
-     * @param hurtFrames Frames para animación hurt (opcional)
-     * @param crouchFrames Frames para animación crouch (opcional)
+     * @param idleFrames Lista de sprites para la animación de idle. (obligatorio)
+     * @param runFrames Lista de sprites para la animación de run. (opcional)
+     * @param deadFrames Lista de sprites para la animación de dead. (opcional)
+     * @param jumpFrames Lista de sprites para la animación de jump. (opcional)
+     * @param fallFrames Lista de sprites para la animación de fall. (opcional)
+     * @param attackFrames Lista de sprites para la animación de attack. (opcional)
+     * @param attackLaserFrames Lista de sprites para la animación de laser attack. (opcional)
+     * @param attackIonFrames Lista de sprites para la animación de ion attack. (opcional)
+     * @param attackRailgunFrames Lista de sprites para la animación de railgun attack. (opcional)
+     * @param hurtFrames Lista de sprites para la animación de hurt. (opcional)
+     * @param crouchFrames Lista de sprites para la animación de crouch. (opcional)
      */
     public CharacterAnimator(
         List<Sprite> idleFrames,
@@ -143,7 +146,7 @@ public class CharacterAnimator {
      */
     public void setCurrentAnimation(AnimationState newState) {
         if (this.currentState != newState && animators.containsKey(newState)) {
-            this.previousState = this.currentState;
+            //this.previousState = this.currentState;
             this.currentState = newState;
             animators.get(newState).start();
         }

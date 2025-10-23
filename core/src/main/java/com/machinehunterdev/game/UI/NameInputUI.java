@@ -103,7 +103,11 @@ public class NameInputUI implements InputProcessor {
     }
 
     // === Manejo de entrada ===
-    
+    /**
+     * Maneja la entrada del teclado para construir el nombre del jugador.
+     * @param keycode Código de la tecla presionada.
+     * @return true si la entrada fue procesada
+     */
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ENTER) {
@@ -121,6 +125,11 @@ public class NameInputUI implements InputProcessor {
         return true;
     }
 
+    /**
+     * Maneja la entrada de caracteres para construir el nombre del jugador.
+     * @param character Carácter ingresado por el usuario.
+     * @return true si la entrada fue procesada.
+     */
     @Override
     public boolean keyTyped(char character) {
         if (playerName.length() < 15 && (java.lang.Character.isLetterOrDigit(character) || character == ' ')) {

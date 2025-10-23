@@ -10,6 +10,7 @@ import java.util.Comparator;
  * Gestor de la tabla de clasificaciones (leaderboard).
  * Almacena los mejores puntajes usando Preferences de libGDX.
  * Implementa el patrón Singleton para asegurar una única instancia en todo el juego.
+ * Nota: Posiblemente esto NO se use.
  * 
  * @author MachineHunterDev
  */

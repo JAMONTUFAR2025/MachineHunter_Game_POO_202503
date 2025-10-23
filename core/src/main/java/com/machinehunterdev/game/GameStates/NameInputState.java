@@ -26,7 +26,7 @@ public class NameInputState implements IState<GameController> {
     public static NameInputState instance = new NameInputState();
     
     /** Componentes del estado */
-    private GameController owner;
+    //private GameController owner;
     private NameInputUI nameInputUI;
     private SpriteBatch batch;
     private Character playerCharacter;
@@ -44,7 +44,7 @@ public class NameInputState implements IState<GameController> {
      */
     @Override
     public void enter(GameController owner) {
-        this.owner = owner;
+        //this.owner = owner;
         this.batch = owner.batch;
         this.nameInputUI = new NameInputUI(batch, owner);
         Gdx.input.setInputProcessor(nameInputUI);

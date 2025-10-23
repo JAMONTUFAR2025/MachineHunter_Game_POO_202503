@@ -97,7 +97,7 @@ public class Character
     /** Indica si el personaje está en estado de daño (animación HURT) */
     private boolean isHurt = false;
     private float hurtTimer = 0f;
-    private static final float HURT_DURATION = 0.3f;
+    //private static final float HURT_DURATION = 0.3f;
 
     // === SISTEMA DE ARMAS ===
     private WeaponType currentWeapon = WeaponType.LASER;

@@ -6,8 +6,14 @@ import com.machinehunterdev.game.Environment.SolidObject;
 
 import java.util.ArrayList;
 
+/**
+ * Interfaz para enemigos en el juego.
+ * Define los métodos esenciales que deben implementar todos los enemigos.
+ * 
+ * @author MachineHunterDev
+ */
 public interface IEnemy {
-    void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullet);
-    void draw(SpriteBatch batch);
-    Character getCharacter(); // Para acceder a la lgica de CharacterController
+    void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullet); // Para actualizar el estado del enemigo
+    void draw(SpriteBatch batch); // Para dibujar el enemigo
+    Character getCharacter(); // Para acceder a la lógica de CharacterController
 }

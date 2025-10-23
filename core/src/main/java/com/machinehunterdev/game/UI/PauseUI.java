@@ -149,7 +149,11 @@ public class PauseUI implements InputProcessor {
     }
 
     // === Manejo de entrada ===
-    
+    /**
+     * Maneja la entrada del teclado para la selección de opciones.
+     * @param keycode Código de la tecla presionada.
+     * @return true si la entrada fue procesada.
+     */
     @Override
     public boolean keyDown(int keycode) {
         if (currentState == MenuState.MAIN) {
@@ -173,7 +177,7 @@ public class PauseUI implements InputProcessor {
             if (selectedOption == 0) { // Reanudar
                 gameplayState.resumeGame();
             } else if (selectedOption == 1) { // Reintentar
-                gameplayState.retryLevel();
+                gameplayState.restartLevel();
             } else if (selectedOption == 2) { // Salir
                 currentState = MenuState.CONFIRM_EXIT;
                 selectedOption = 0;

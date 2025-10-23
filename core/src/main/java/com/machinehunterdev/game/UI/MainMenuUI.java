@@ -10,15 +10,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
-import com.machinehunterdev.game.GameStates.GameplayState;
 import com.machinehunterdev.game.GameStates.LeaderboardState;
 
 /**
  * Interfaz de usuario para el menú principal del juego.
  * Implementa InputProcessor para manejar la navegación con teclado.
  * 
- * @author Anner Alessandro Teruel
- * @version 2025-10-03
+ * @author MachineHunterDev
  */
 public class MainMenuUI implements InputProcessor {
     

@@ -11,16 +11,33 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameStates.GameplayState;
 
+/**
+ * Interfaz de usuario que se muestra al completar un nivel.
+ * Permite al jugador avanzar al siguiente nivel o regresar al menú principal.
+ * 
+ * @author MachineHunterDev
+ */
 public class NextLevelUI implements InputProcessor {
 
+    /** Estado del juego */
     private GameplayState gameplayState;
+    /** SpriteBatch para renderizado */
     private SpriteBatch batch;
+    /** Fuente para el texto */
     private BitmapFont font;
+    /** Textura de fondo */
     private Texture backgroundTexture;
 
+    /* Opciones del menú */
     private String[] options = {"Siguiente Nivel"};
+    /* Índice de la opción seleccionada */
     private int selectedOption = 0;
 
+    /**
+     * Constructor de la interfaz de siguiente nivel.
+     * @param gameplayState Estado de juego actual.
+     * @param batch SpriteBatch para renderizado.
+     */
     public NextLevelUI(GameplayState gameplayState, SpriteBatch batch) {
         this.gameplayState = gameplayState;
         this.batch = batch;
@@ -34,6 +51,9 @@ public class NextLevelUI implements InputProcessor {
         loadCustomBitmapFont();
     }
 
+    /**
+     * Carga la fuente personalizada para la interfaz.
+     */
     private void loadCustomBitmapFont() {
         try {
             this.font = new BitmapFont(Gdx.files.internal("fonts/OrangeKid64.fnt"));
@@ -42,6 +62,9 @@ public class NextLevelUI implements InputProcessor {
         }
     }
 
+    /**
+     * Renderiza la interfaz de siguiente nivel.
+     */
     public void draw() {
         batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         
@@ -59,6 +82,9 @@ public class NextLevelUI implements InputProcessor {
         batch.end();
     }
 
+    /**
+     * Dibuja las instrucciones de control en pantalla.
+     */
     private void drawControls() {
         String controlsText = "E-Seleccionar";
         GlyphLayout layout = new GlyphLayout(font, controlsText);
@@ -69,6 +95,11 @@ public class NextLevelUI implements InputProcessor {
         font.draw(batch, controlsText, textX, textY);
     }
 
+    /**
+     * Dibuja el menú de opciones.
+     * @param options Opciones del menú.
+     * @param startY Posición Y inicial para dibujar las opciones.
+     */
     private void drawMenu(String[] options, float startY) {
         drawText("¡Nivel completado!", Gdx.graphics.getHeight() / 2f + 160, false);
         for (int i = 0; i < options.length; i++) {
@@ -76,6 +107,12 @@ public class NextLevelUI implements InputProcessor {
         }
     }
 
+    /**
+     * Dibuja una línea de texto en pantalla.
+     * @param text Texto a dibujar.
+     * @param y Posición Y para dibujar el texto.
+     * @param isSelected Indica si la opción está seleccionada.
+     */
     private void drawText(String text, float y, boolean isSelected) {
         GlyphLayout layout = new GlyphLayout(font, text);
         float x = (Gdx.graphics.getWidth() - layout.width) / 2f;
@@ -83,6 +120,12 @@ public class NextLevelUI implements InputProcessor {
         font.draw(batch, text, x, y);
     }
 
+    // === Manejo de entrada ===
+    /**
+     * Maneja la entrada del teclado para la selección de opciones.
+     * @param keycode Código de la tecla presionada.
+     * @return true si la entrada fue procesada.
+     */
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ENTER || keycode == Input.Keys.E) {
@@ -99,11 +142,15 @@ public class NextLevelUI implements InputProcessor {
         return true;
     }
 
+    /**
+     * Libera los recursos utilizados por la interfaz.
+     */
     public void dispose() {
         font.dispose();
         backgroundTexture.dispose();
     }
 
+    // === Métodos de InputProcessor no utilizados ===
     @Override public boolean keyUp(int keycode) { return false; }
     @Override public boolean keyTyped(char character) { return false; }
     @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) { return false; }

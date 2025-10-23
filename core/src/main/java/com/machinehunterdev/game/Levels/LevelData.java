@@ -1,6 +1,5 @@
 package com.machinehunterdev.game.Levels;
 
-import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.Character.EnemyType;
 
 import java.util.ArrayList;
@@ -33,22 +32,34 @@ public class LevelData {
     public String dialogueSection = "Dialogos_acto2";
     public String nextLevel = null;
     
+    /**
+     * Constructor de LevelData.
+     */
     public LevelData() {
         solidObjectsData = new ArrayList<>();
         enemies = new ArrayList<>();
         npcs = new ArrayList<>();
     }
     
+    /**
+     * Datos de un objeto sólido en el nivel.
+     */
     public static class SolidObjectData {
         public float x, y, width, height;
         public String texture = "suelo.png";
         public boolean walkable = true;
     }
     
+    /**
+     * Punto 2D simple, alternativa porque JSON no maneja Vector2.
+     */
     public static class Point {
         public float x, y;
     }
 
+    /**
+     * Datos de un enemigo en el nivel.
+     */
     public static class EnemyData {
         public EnemyType type = EnemyType.PATROLLER;
         public float x, y;
@@ -58,6 +69,9 @@ public class LevelData {
         public float shootInterval = 2.0f;
     }
     
+    /**
+     * Datos de un NPC en el nivel.
+     */
     public static class NPCData {
         public String idleFrames = "Player/PlayerIdle";
         public String runFrames = "Player/PlayerRun";

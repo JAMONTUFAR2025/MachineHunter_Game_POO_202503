@@ -5,6 +5,7 @@ import com.machinehunterdev.game.Character.Character;
 /**
  * Sistema centralizado para gestionar todo el daño en el juego.
  * Maneja diferentes tipos de daño con efectos específicos.
+ * 
  * @author MachineHunterDev
  */
 public class DamageSystem 
@@ -89,8 +90,8 @@ public class DamageSystem
         if (target.health <= 0) {
             target.isAlive = false;
             target.health = 0;
-            target.setFlashTransparent(false); // Reinicia flashRed al morir
-            target.setTransparentFlashTimer(0f); // Reinicia redFlashTimer al morir
+            target.setFlashTransparent(false); // Reinicia flashTransparent al morir
+            target.setTransparentFlashTimer(0f); // Reinicia transparentFlashTimer al morir
         }
 
         // Activar efectos visuales
@@ -113,6 +114,7 @@ public class DamageSystem
 
     /**
      * Activa los efectos visuales al recibir daño.
+     * @param target Personaje objetivo.
      */
     private static void activateVisualEffects(Character target) {
         target.setFlashTransparent(true);
@@ -121,6 +123,9 @@ public class DamageSystem
 
     /**
      * Aplica el efecto de empuje al personaje objetivo.
+     * @param target Personaje objetivo.
+     * @param source Personaje que causa el empuje.
+     * @param knockbackForce Fuerza del empuje.
      */
     private static void applyKnockback(Character target, Character source, float knockbackForce) {
         target.isKnockedBack = true;
@@ -136,14 +141,16 @@ public class DamageSystem
 
     /**
      * Activa la invulnerabilidad temporal.
+     * @param target Personaje objetivo.
      */
     private static void activateInvulnerability(Character target) {
         target.setInvulnerable(true);
-        target.setInvulnerabilityTimer(5.0f); // Duración fija de 5 segundos
+        target.setInvulnerabilityTimer(3.0f); // Duración fija de 3 segundos
     }
 
     /**
      * Activa la animación de daño (HURT).
+     * @param target Personaje objetivo.
      */
     private static void activateHurtAnimation(Character target) {
         target.setHurt(true);

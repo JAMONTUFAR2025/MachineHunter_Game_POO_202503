@@ -17,8 +17,8 @@ import com.machinehunterdev.game.Gameplay.GlobalSettings;
  */
 public class PlayerController extends CharacterController {
     
-    private float shootCooldown = 0.5f; // Cooldown of 0.5 seconds
-    private float shootTimer = 0;
+    private float shootCooldown = 0.5f; // Cooldown de 0.5 segundos entre disparos
+    private float shootTimer = 0; // Temporizador para el cooldown de disparo
 
     /**
      * Constructor que vincula este controlador con el personaje del jugador.
@@ -157,6 +157,7 @@ public class PlayerController extends CharacterController {
 
     /**
      * Centra la cámara en el jugador, respetando los límites del mapa.
+     * Cambiar esto para distintos niveles en el futuro.
      * @param camera Cámara a centrar.
      */
     public void centerCameraOnPlayer(OrthographicCamera camera) {
