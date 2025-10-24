@@ -1,9 +1,9 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
-  "levelWidth": 1440,
+  "levelWidth": 960,
   "playerStartX": 50,
   "playerStartY": 100,
-  "nextLevel": "Levels/level2.json",
+  "nextLevel": "Levels/level1.json",
   "solidObjectsData": [
     {
         "x": 0,
@@ -89,25 +89,6 @@
         { "x": 200, "y": 300 }
       ],
       "waitTime": 2.0
-    },
-    {
-      "type": "SHOOTER",
-      "x": 800,
-      "y": 0,
-      "health": 30,
-      "shootInterval": 3.0,
-      "shootTime": 1.0
-    },
-    {
-      "type": "FLYING",
-      "x": 300,
-      "y": 200,
-      "health": 20,
-      "patrolPoints": [
-        { "x": 300, "y": 64 },
-        { "x": 300, "y": 270 }
-      ],
-      "waitTime": 1.0
     }
   ],  "npcs": [
     {
