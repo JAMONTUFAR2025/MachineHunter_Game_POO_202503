@@ -112,7 +112,11 @@ public class PlayerController extends CharacterController {
 
         // Salto
         if (Gdx.input.isKeyJustPressed(Keys.W)) {
-            character.jump();
+            if (character.isCrouching && character.onGround) {
+                character.fallThroughPlatform();
+            } else {
+                character.jump();
+            }
         }
     }
 

@@ -49,7 +49,7 @@ public abstract class CharacterController {
 
         // Verificar colisión con plataformas
         for (SolidObject obj : solidObjects) {
-            if (obj.isWalkable()) {
+            if (obj.isWalkable() && !character.isFallingThroughPlatform) {
                 Rectangle platform = obj.getBounds();
                 float platformTop = platform.y + platform.height;
 

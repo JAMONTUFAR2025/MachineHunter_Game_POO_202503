@@ -70,6 +70,7 @@ public class Character
     public boolean onGround;                    // Está en contacto con el suelo
     public boolean isOverlappingEnemy;          // Está superpuesto con un enemigo (para evitar daño continuo)
     public boolean isCrouching;                 // Está agachado
+    public boolean isFallingThroughPlatform = false; // Estado para ignorar plataformas temporalmente
     public boolean readyForGameOverTransition = false; // Indica si el personaje está listo para la pantalla de Game Over
     public boolean isPlayer = false;
 
@@ -80,6 +81,9 @@ public class Character
     
     /** Temporizador de invulnerabilidad */
     private float invulnerabilityTimer = 0f;
+
+    /** Temporizador para el estado de caída */
+    private float fallThroughTimer = 0f;
     
     /** Duración de la invulnerabilidad en segundos */
     private static final float INVULNERABILITY_DURATION = 3.0F;
@@ -291,6 +295,15 @@ public class Character
             if (hurtTimer <= 0) {
                 isHurt = false;
                 hurtTimer = 0;
+            }
+        }
+
+        // --- MANEJO DE CAÍDA A TRAVÉS DE PLATAFORMAS ---
+        if (isFallingThroughPlatform) {
+            fallThroughTimer -= delta;
+            if (fallThroughTimer <= 0) {
+                isFallingThroughPlatform = false;
+                fallThroughTimer = 0;
             }
         }
 
@@ -601,6 +614,14 @@ public class Character
     public void jump() {
         if (onGround && !isCrouching && !isAttacking) {
             velocity.y = jumpForce;
+            onGround = false;
+        }
+    }
+
+    public void fallThroughPlatform() {
+        if (onGround) {
+            isFallingThroughPlatform = true;
+            fallThroughTimer = 0.2f; // Ignorar plataformas por 0.2 segundos
             onGround = false;
         }
     }
