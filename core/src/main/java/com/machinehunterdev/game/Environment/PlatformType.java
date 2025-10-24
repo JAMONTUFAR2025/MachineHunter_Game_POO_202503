@@ -18,7 +18,7 @@ public class PlatformType {
         this.color = color;
         this.width = size.getWidth();
         this.height = size.getHeight();
-        this.texturePath = "Enviorment/Platform" + color + size.getName() + ".png";
+        this.texturePath = "Environment/Platform" + color + size.getName() + ".png";
     }
 
     /**

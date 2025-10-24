@@ -48,6 +48,18 @@
         "y": 50,
         "walkable": true,
         "type": "Platform_Gray_Medium"
+      },
+      {
+      "type": "Chain_Red",
+      "x": 300,
+      "y": 32,
+      "walkable": false
+      },
+      {
+      "type": "Chain_Gray",
+      "x": 600,
+      "y": 32,
+      "walkable": false
       }
   ],
   "enemies": [

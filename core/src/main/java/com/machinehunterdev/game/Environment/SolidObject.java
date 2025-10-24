@@ -4,34 +4,38 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
-/**
- * Clase que representa un objeto sólido en el entorno del juego.
- * Puede ser instanciado explícitamente o a través de un string de tipo.
- * 
- * @author MachineHunterDev
- */
+
+
 public class SolidObject 
 {
     private Rectangle bounds;
     private Texture texture;
     private boolean isWalkable;
 
-    /**
-     * Constructor para objetos definidos por un string de tipo (ej. "Platform_Red_Small").
-     * @param x Posición X inicial
-     * @param y Posición Y inicial
-     * @param typeString El string que define el tipo de plataforma.
-     * @param walkable Indica si se puede caminar sobre él.
-     */
+    
     public SolidObject(float x, float y, String typeString, boolean walkable) {
-        PlatformType type = PlatformType.parse(typeString);
-        if (type != null) {
-            this.bounds = new Rectangle(x, y, type.width, type.height); 
-            this.texture = new Texture(type.texturePath);
-            this.isWalkable = walkable;
+        if (typeString.startsWith("Platform")) {
+            PlatformType type = PlatformType.parse(typeString);
+            if (type != null) {
+                this.bounds = new Rectangle(x, y, type.width, type.height); 
+                this.texture = new Texture(type.texturePath);
+                this.isWalkable = walkable;
+            } else {
+                this.bounds = new Rectangle(x, y, 0, 0);
+                this.isWalkable = false;
+            }
+        } else if (typeString.startsWith("Chain")) {
+            ChainType type = ChainType.parse(typeString);
+            if (type != null) {
+                System.out.println("Loading chain texture: " + type.texturePath);
+                this.bounds = new Rectangle(x, y, type.width, type.height); 
+                this.texture = new Texture(type.texturePath);
+                this.isWalkable = walkable;
+            } else {
+                this.bounds = new Rectangle(x, y, 0, 0);
+                this.isWalkable = false;
+            }
         } else {
-            // Fallback o error si el tipo es inválido
-            // Podrías crear un objeto invisible o con una textura de error
             this.bounds = new Rectangle(x, y, 0, 0);
             this.isWalkable = false;
         }
