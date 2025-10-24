@@ -12,22 +12,23 @@ import java.util.ArrayList;
  * @author MachineHunterDev
  */
 public class ShooterEnemyController extends CharacterController {
-    private float shootTimer; // Temporizador para controlar el intervalo de disparo
-    private float shootInterval; // Intervalo entre disparos
-    private int shotsToFire; // Número de disparos a realizar en una ráfaga
-    private float shotDelayTimer; // Temporizador para el retraso entre disparos en una ráfaga
+    private float shootDuration;
+    private float shootTime;
+    private float shootCooldown;
+    private float shootInterval;
 
     /**
      * Constructor del controlador de enemigos tiradores.
      * @param character El personaje asociado al enemigo.
      * @param shootInterval Intervalo de tiempo entre disparos.
+     * @param shootTime Duración del ataque.
      */
-    public ShooterEnemyController(Character character, float shootInterval) {
+    public ShooterEnemyController(Character character, float shootInterval, float shootTime) {
         super(character);
         this.shootInterval = shootInterval;
-        this.shootTimer = 0f;
-        this.shotsToFire = 0;
-        this.shotDelayTimer = 0f;
+        this.shootCooldown = this.shootInterval; // Tiempo inicial antes del primer disparo
+        this.shootTime = shootTime;
+        this.shootDuration = this.shootTime;
     }
 
     /**
@@ -42,23 +43,19 @@ public class ShooterEnemyController extends CharacterController {
         character.update(delta);
         checkCollisions(solidObjects);
 
-        shootTimer += delta;
-        if (shootTimer >= shootInterval) {
-            shootTimer = 0f;
-            shotsToFire = 3; // Iniciar ráfaga de 3 disparos
-        }
+        shootCooldown -= delta;
 
-        // Manejar disparos en ráfaga
-        if (shotsToFire > 0) {
-            shotDelayTimer -= delta;
-            if (shotDelayTimer <= 0) {
-                character.shoot(bullets, com.machinehunterdev.game.DamageTriggers.WeaponType.THUNDER); // Usar la lógica de disparo del enemigo sin comprobación de cooldown
-                shotsToFire--;
-                shotDelayTimer = 0.5f; // Pequeño retraso entre disparos
+        if (shootCooldown <= 0 && character.onGround && !character.isInvulnerable()) {
+            character.shoot(bullets);
+            character.stopMoving();
+            shootDuration -= delta;
+
+            if(shootDuration <= 0) {
+                shootCooldown = this.shootInterval;
+                shootDuration = this.shootTime; // Duración del ataque
             }
         } else {
-            character.stopMoving(); // Asegurar que el enemigo esté en IDLE cuando no dispara
-            character.stopAttacking(); // Detener la animación de ataque cuando la ráfaga termina
+            character.stopAttacking();
         }
 
         // Hacer que el enemigo mire hacia el jugador

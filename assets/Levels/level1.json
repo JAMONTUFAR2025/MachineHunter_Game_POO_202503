@@ -1,5 +1,6 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
+  "levelWidth": 480,
   "playerStartX": 50,
   "playerStartY": 100,
   "nextLevel": "Levels/level2.json",
@@ -94,7 +95,8 @@
       "x": 800,
       "y": 0,
       "health": 30,
-      "shootInterval": 3.0
+      "shootInterval": 3.0,
+      "shootTime": 1.0
     },
     {
       "type": "FLYING",

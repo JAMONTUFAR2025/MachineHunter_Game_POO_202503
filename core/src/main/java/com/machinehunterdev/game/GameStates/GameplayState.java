@@ -117,6 +117,7 @@ public class GameplayState implements IState<GameController> {
 
     private void initializeResources() {
         backgroundTexture = new Texture(currentLevel.backgroundTexture);
+        GlobalSettings.levelWidth = currentLevel.levelWidth; // Establecer el ancho del nivel en GlobalSettings
         dialogManager = new DialogManager(gameBatch);
         gameplayUI = new GameplayUI(gameBatch);
         pauseUI = new PauseUI(this, gameBatch);
@@ -229,7 +230,7 @@ public class GameplayState implements IState<GameController> {
                 }
             }
 
-            enemyManager.addEnemy(enemyData.type, enemy, patrolPoints, enemyData.waitTime, enemyData.shootInterval);
+            enemyManager.addEnemy(enemyData.type, enemy, patrolPoints, enemyData.waitTime, enemyData.shootInterval, enemyData.shootTime);
         }
     }
 

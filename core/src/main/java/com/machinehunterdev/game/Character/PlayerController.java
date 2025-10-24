@@ -15,9 +15,6 @@ import com.machinehunterdev.game.Gameplay.GlobalSettings;
  * @author MachineHunterDev
  */
 public class PlayerController extends CharacterController {
-    
-    private float shootCooldown = 0.5f; // Cooldown de 0.5 segundos entre disparos
-    private float shootTimer = 0; // Temporizador para el cooldown de disparo
 
     /**
      * Constructor que vincula este controlador con el personaje del jugador.
@@ -36,9 +33,6 @@ public class PlayerController extends CharacterController {
      */
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
-        if (shootTimer > 0) {
-            shootTimer -= delta;
-        }
         checkDistanceToGround(solidObjects);
         handleInput(bullets);
         character.update(delta);
@@ -47,8 +41,8 @@ public class PlayerController extends CharacterController {
         float playerWidth = character.getWidth();
         if (character.position.x < 0) {
             character.position.x = 0;
-        } else if (character.position.x > 1440 - playerWidth) {
-            character.position.x = 1440 - playerWidth;
+        } else if (character.position.x > GlobalSettings.levelWidth - playerWidth) {
+            character.position.x = GlobalSettings.levelWidth - playerWidth;
             character.stopMoving();
         }
 
@@ -73,7 +67,6 @@ public class PlayerController extends CharacterController {
         if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_ATTACK) && character.onGround && !character.isInvulnerable() && !character.isCrouching) {
             character.shoot(bullets);
             character.stopMoving();
-            shootTimer = shootCooldown;
 
             // Permitir girar durante ataque
             if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_LEFT)) {
@@ -169,8 +162,8 @@ public class PlayerController extends CharacterController {
 
         if (targetX < GlobalSettings.VIRTUAL_WIDTH / 2) {
             camera.position.x = GlobalSettings.VIRTUAL_WIDTH / 2;
-        } else if (targetX > (1440 - GlobalSettings.VIRTUAL_WIDTH / 2)) {
-            camera.position.x = 1440 - GlobalSettings.VIRTUAL_WIDTH / 2;
+        } else if (targetX > (GlobalSettings.levelWidth - GlobalSettings.VIRTUAL_WIDTH / 2)) {
+            camera.position.x = GlobalSettings.levelWidth - GlobalSettings.VIRTUAL_WIDTH / 2;
         } else {
             camera.position.x = targetX;
         }

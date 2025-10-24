@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.Environment.SolidObject;
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 /**
  * Controlador específico para enemigos con sistema de patrullaje.
@@ -76,7 +77,7 @@ public class PatrollerEnemyController extends CharacterController {
         // Aplicar límites del mapa
         float enemyWidth = character.getWidth();
         if (character.position.x < 0) character.position.x = 0;
-        else if (character.position.x > 1440 - enemyWidth) character.position.x = 1440 - enemyWidth;
+        else if (character.position.x > GlobalSettings.levelWidth - enemyWidth) character.position.x = GlobalSettings.levelWidth - enemyWidth;
     }
 
     /**

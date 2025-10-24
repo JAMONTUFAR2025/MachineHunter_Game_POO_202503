@@ -31,14 +31,15 @@ public class EnemyManager {
      * @param patrolPoints Puntos de patrullaje para el enemigo.
      * @param waitTime Tiempo de espera entre patrullas.
      * @param shootInterval Intervalo de disparo para enemigos que disparan.
+     * @param shootTime Duración del ataque para enemigos que disparan.
      */
-    public void addEnemy(EnemyType type, Character character, ArrayList<Vector2> patrolPoints, float waitTime, float shootInterval) {
+    public void addEnemy(EnemyType type, Character character, ArrayList<Vector2> patrolPoints, float waitTime, float shootInterval, float shootTime) {
         switch (type) {
             case PATROLLER:
                 enemies.add(new PatrollerEnemy(character, patrolPoints, waitTime));
                 break;
             case SHOOTER:
-                enemies.add(new ShooterEnemy(character, shootInterval));
+                enemies.add(new ShooterEnemy(character, shootInterval, shootTime));
                 break;
             case FLYING:
                 enemies.add(new FlyingEnemy(character, patrolPoints, waitTime));

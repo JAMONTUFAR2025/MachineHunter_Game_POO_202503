@@ -101,6 +101,9 @@ public class Character
     /** Indica si el personaje está en estado de daño (animación HURT) */
     private boolean isHurt = false;
     private float hurtTimer = 0f;
+    private boolean bulletInvocationPending = false; // Indica si hay una invocación de bala pendiente
+    private WeaponType pendingWeaponType; // Tipo de arma pendiente para la invocación de bala
+    private ArrayList<Bullet> pendingBulletsList; // Lista de balas pendiente para la invocación
     //private static final float HURT_DURATION = 0.3f;
 
     // === SISTEMA DE ARMAS ===
@@ -231,10 +234,25 @@ public class Character
                     } else {
                         newState = CharacterAnimator.AnimationState.ATTACK;
                     }
-                    // Resetear isAttacking si la animación de ataque actual ha terminado
-                    if (characterAnimator.isAnimationFinished(newState)) {
-                        isAttacking = false;
-                    }
+
+                    // Invocar bala en el frame 1 de la animación de ataque
+                    if (bulletInvocationPending && characterAnimator.getCurrentFrameIndex() == 0) {
+                        switch (pendingWeaponType) {
+                            case LASER:
+                                shootRifle(pendingBulletsList);
+                                break;
+                            case ION:
+                                shootShotgun(pendingBulletsList);
+                                break;
+                            case RAILGUN:
+                                shootSniper(pendingBulletsList);
+                                break;
+                            case THUNDER:
+                                shootThunder(pendingBulletsList);
+                                break;
+                        }
+                        bulletInvocationPending = false;
+                                        }
                 } else if (!onGround) {
                     // En el aire: JUMP si sube, FALL si baja
                     if (velocity.y > 0) {
@@ -424,54 +442,31 @@ public class Character
         if (!canShoot() || !onGround) return;
         
         isAttacking = true;
-        
+        bulletInvocationPending = true;
+        pendingWeaponType = currentWeapon;
+        pendingBulletsList = bullets;
+
+        // Aplicar cooldowns inmediatamente
         switch (currentWeapon) {
             case LASER:
-                shootRifle(bullets);
                 rifleCooldown = LASER_COOLDOWN_TIME;
                 break;
             case ION:
-                shootShotgun(bullets);
                 shotgunCooldown = ION_COOLDOWN_TIME;
                 break;
             case RAILGUN:
-                shootSniper(bullets);
                 sniperCooldown = RAILGUN_COOLDOWN_TIME;
                 break;
             case THUNDER:
-                shootThunder(bullets);
                 thunderCooldown = THUNDER_COOLDOWN_TIME;
                 break;
         }
     }
 
-    /**
-     * Dispara con un tipo de arma específico (para enemigos).
-     * @param bullets Lista de balas activas
-     * @param weaponType Tipo de arma a usar
-     */
-    public void shoot(ArrayList<Bullet> bullets, WeaponType weaponType) {
-        // Esta versión no comprueba el cooldown del jugador, sino que podría tener su propio sistema.
-        isAttacking = true; // Activar la animación de ataque
-
-        switch (weaponType) {
-            case LASER:
-                shootRifle(bullets);
-                break;
-            case ION:
-                shootShotgun(bullets);
-                break;
-            case RAILGUN:
-                shootSniper(bullets);
-                break;
-            case THUNDER:
-                shootThunder(bullets);
-                break;
-        }
-    }
+    /* Nota: Ajustar la posición de la bala para que se alinee correctamente con el sprite del personaje, -8 es una solucion temporal */
 
     private void shootThunder(ArrayList<Bullet> bullets) {
-        float bulletX = position.x + (isSeeingRight ? getWidth() + ENEMY_BULLET_SPAWN_OFFSET.x : 0 - ENEMY_BULLET_SPAWN_OFFSET.x);
+        float bulletX = position.x + (isSeeingRight ? getWidth() + ENEMY_BULLET_SPAWN_OFFSET.x - 8: 0 - ENEMY_BULLET_SPAWN_OFFSET.x);
         float bulletY = position.y + getHeight() - ENEMY_BULLET_SPAWN_OFFSET.y;
         bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.THUNDER, this));
     }
@@ -481,7 +476,7 @@ public class Character
      * @param bullets Lista de balas activas
      */
     private void shootRifle(ArrayList<Bullet> bullets) {
-        float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x : 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
+        float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x - 8: 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
         float bulletY = position.y + getHeight() - PLAYER_BULLET_SPAWN_OFFSET.y;
         bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.LASER, this));
     }
@@ -491,7 +486,7 @@ public class Character
      * @param bullets Lista de balas activas
      */
     private void shootShotgun(ArrayList<Bullet> bullets) {
-        float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x : 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
+        float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x - 8: 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
         float bulletY = position.y + getHeight() - PLAYER_BULLET_SPAWN_OFFSET.y;
         
         // Disparar 3 balas con ligera variación en ángulo
@@ -507,7 +502,7 @@ public class Character
      * @param bullets Lista de balas activas
      */
     private void shootSniper(ArrayList<Bullet> bullets) {
-        float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x : 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
+        float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x - 8: 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
         float bulletY = position.y + getHeight() - PLAYER_BULLET_SPAWN_OFFSET.y;
         bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.RAILGUN, this));
     }
@@ -638,6 +633,7 @@ public class Character
 
     public void stopAttacking() {
         isAttacking = false;
+        bulletInvocationPending = false;
     }
 
     public void setSeeingRight(boolean seeingRight) {

@@ -145,6 +145,14 @@ public class SpriteAnimator
         if (frames.isEmpty()) return null;
         return frames.get(currentFrame);
     }
+    
+    /**
+     * Obtiene el índice del frame actual.
+     * @return Índice del frame actual
+     */
+    public int getCurrentFrameIndex() {
+        return currentFrame;
+    }
 
     /**
      * Verifica si una animación sin loop ha terminado.

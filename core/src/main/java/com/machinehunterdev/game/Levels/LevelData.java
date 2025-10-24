@@ -11,9 +11,13 @@ import java.util.List;
  * @author MachineHunterDev
  */
 public class LevelData {
+    // Texturas del nivel
     public String backgroundTexture = "FondoJuego.png";
     public String groundTexture = "suelo.png";
     
+    // Ancho del nivel en píxeles
+    public int levelWidth = 1440;
+
     // Plataformas y suelo
     public ArrayList<SolidObjectData> solidObjectsData;
     
@@ -73,6 +77,7 @@ public class LevelData {
         public float waitTime = 3.0f;
         public int health = 50;
         public float shootInterval = 2.0f;
+        public float shootTime = 1.0f;
     }
     
     /**

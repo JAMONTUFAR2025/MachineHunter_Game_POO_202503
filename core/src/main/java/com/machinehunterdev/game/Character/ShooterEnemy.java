@@ -12,7 +12,7 @@ public class ShooterEnemy extends BaseEnemy {
      * @param character El personaje asociado al enemigo.
      * @param shootInterval Intervalo de tiempo entre disparos.
      */
-    public ShooterEnemy(Character character, float shootInterval) {
-        super(character, new ShooterEnemyController(character, shootInterval));
+    public ShooterEnemy(Character character, float shootInterval, float shootTime) {
+        super(character, new ShooterEnemyController(character, shootInterval, shootTime));
     }
 }

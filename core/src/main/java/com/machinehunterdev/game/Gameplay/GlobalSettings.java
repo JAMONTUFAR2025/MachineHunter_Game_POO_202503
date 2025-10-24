@@ -38,6 +38,9 @@ public class GlobalSettings
     /** Archivo del nivel actual */
     public static String currentLevelFile;
 
+    /** Ancho del nivel actual */
+    public static int levelWidth;
+
     /** Nivel Y del suelo principal */
     public static final int GROUND_LEVEL = 32;
 

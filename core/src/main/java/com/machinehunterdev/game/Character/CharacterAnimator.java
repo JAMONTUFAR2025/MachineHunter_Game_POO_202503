@@ -202,6 +202,15 @@ public class CharacterAnimator {
     }
 
     /**
+     * Obtiene el índice del frame actual de la animación.
+     * @return Índice del frame actual o 0 si no hay animador.
+     */
+    public int getCurrentFrameIndex() {
+        SpriteAnimator currentAnimator = animators.get(currentState);
+        return currentAnimator != null ? currentAnimator.getCurrentFrameIndex() : 0;
+    }
+
+    /**
      * Verifica si una animación específica ha terminado de reproducirse (solo para animaciones no cíclicas).
      * @param state Estado de animación a verificar.
      * @return true si la animación ha terminado, false en caso contrario o si es cíclica.
@@ -219,4 +228,5 @@ public class CharacterAnimator {
             animator.dispose();
         }
     }
+
 }
