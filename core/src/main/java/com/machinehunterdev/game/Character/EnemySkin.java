@@ -11,17 +11,17 @@ public enum EnemySkin {
      * Skin del enemigo patrullero
      * Idle, Run, Dead, Hurt
     */
-    PATROLLER("Enemy/Patroller/PatrollerIdle", "Enemy/Patroller/PatrollerRun", "Enemy/Explosion", "Enemy/Patroller/PatrollerHurt", null, null),
+    PATROLLER("Enemy/Patroller/PatrollerIdle", "Enemy/Patroller/PatrollerRun", "Enemy/Explosion", "Enemy/Patroller/PatrollerHurt", null, null, null),
     /**
      * Skin del enemigo tirador
      * Idle, Run, Dead, Hurt, Attack
      */
-    SHOOTER("Enemy/Shooter/ShooterIdle", "Enemy/Shooter/ShooterRun", "Enemy/Explosion", "Enemy/Shooter/ShooterHurt", null, null),
+    SHOOTER("Enemy/Shooter/ShooterIdle", "Enemy/Shooter/ShooterRun", "Enemy/Explosion", "Enemy/Shooter/ShooterHurt", null, null, "Enemy/Shooter/ShooterAttack"),
     /**
      * Skin del enemigo volador
      * Idle, Dead, Hurt
      */
-    FLYING("Enemy/Flying/FlyingIdle", null, "Enemy/Explosion", "Enemy/Flying/FlyingHurt", null, null);
+    FLYING("Enemy/Flying/FlyingIdle", null, "Enemy/Explosion", "Enemy/Flying/FlyingHurt", null, null, null);
 
     /** Rutas de los frames de animación */
     public final String idleFrames;
@@ -30,6 +30,7 @@ public enum EnemySkin {
     public final String hurtFrames;
     public final String jumpFrames;
     public final String fallFrames;
+    public final String attackFrames;
 
     /** Constructor completo para skins de enemigos 
      * @param idleFrames Ruta de los frames de animación de idle
@@ -38,14 +39,16 @@ public enum EnemySkin {
      * @param hurtFrames Ruta de los frames de animación de hurt
      * @param jumpFrames Ruta de los frames de animación de jump
      * @param fallFrames Ruta de los frames de animación de fall
+     * @param attackFrames Ruta de los frames de animación de attack
     */
-    EnemySkin(String idleFrames, String runFrames, String deadFrames, String hurtFrames, String jumpFrames, String fallFrames) {
+    EnemySkin(String idleFrames, String runFrames, String deadFrames, String hurtFrames, String jumpFrames, String fallFrames, String attackFrames) {
         this.idleFrames = idleFrames;
         this.runFrames = runFrames;
         this.deadFrames = deadFrames;
         this.hurtFrames = hurtFrames;
         this.jumpFrames = jumpFrames;
         this.fallFrames = fallFrames;
+        this.attackFrames = attackFrames;
     }
 
     /** Constructor para el enemigo patrullero 
@@ -55,7 +58,7 @@ public enum EnemySkin {
      * @param hurtFrames Ruta de los frames de animación de hurt
     */
     EnemySkin(String idleFrames, String runFrames, String deadFrames, String hurtFrames) {
-        this(idleFrames, runFrames, deadFrames, hurtFrames, null, null);
+        this(idleFrames, runFrames, deadFrames, hurtFrames, null, null, null);
     }
 
     /** Constructor para el enemigo volador 
@@ -64,7 +67,7 @@ public enum EnemySkin {
      * @param hurtFrames Ruta de los frames de animación de hurt
     */
     EnemySkin(String idleFrames, String deadFrames, String hurtFrames) {
-        this(idleFrames, null, deadFrames, hurtFrames, null, null);
+        this(idleFrames, null, deadFrames, hurtFrames, null, null, null);
     }
 
     /** Obtiene el skin correspondiente a un tipo de enemigo 

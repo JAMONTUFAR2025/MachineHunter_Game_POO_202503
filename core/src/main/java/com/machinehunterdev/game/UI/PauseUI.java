@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameStates.GameplayState;
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 /**
  * Interfaz de usuario para el menú de pausa con sistema de confirmación.
@@ -101,7 +102,7 @@ public class PauseUI implements InputProcessor {
      * Dibuja las instrucciones de controles en la parte inferior.
      */
     private void drawControls() {
-        String controlsText = "Q-Retroceder | E-Seleccionar | W/S-Moverse";
+        String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_CANCEL) + "-Retroceder | " + Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + "-Seleccionar | " + Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + "/" + Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + "-Moverse";
         GlyphLayout layout = new GlyphLayout(font, controlsText);
 
         font.setColor(Color.WHITE);
@@ -169,11 +170,11 @@ public class PauseUI implements InputProcessor {
      * @param keycode Código de la tecla presionada
      */
     private void handleMainMenuInput(int keycode) {
-        if (keycode == Input.Keys.UP || keycode == Input.Keys.W) {
+        if (keycode == GlobalSettings.CONTROL_JUMP) {
             selectedOption = (selectedOption - 1 + mainOptions.length) % mainOptions.length;
-        } else if (keycode == Input.Keys.DOWN || keycode == Input.Keys.S) {
+        } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
             selectedOption = (selectedOption + 1) % mainOptions.length;
-        } else if (keycode == Input.Keys.ENTER || keycode == Input.Keys.E) {
+        } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
             if (selectedOption == 0) { // Reanudar
                 gameplayState.resumeGame();
             } else if (selectedOption == 1) { // Reintentar
@@ -182,7 +183,7 @@ public class PauseUI implements InputProcessor {
                 currentState = MenuState.CONFIRM_EXIT;
                 selectedOption = 0;
             }
-        } else if (keycode == Input.Keys.Q) {
+        } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
             gameplayState.resumeGame();
         }
     }
@@ -192,18 +193,18 @@ public class PauseUI implements InputProcessor {
      * @param keycode Código de la tecla presionada
      */
     private void handleConfirmExitInput(int keycode) {
-        if (keycode == Input.Keys.UP || keycode == Input.Keys.W) {
+        if (keycode == GlobalSettings.CONTROL_JUMP) {
             selectedOption = (selectedOption - 1 + confirmOptions.length) % confirmOptions.length;
-        } else if (keycode == Input.Keys.DOWN || keycode == Input.Keys.S) {
+        } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
             selectedOption = (selectedOption + 1) % confirmOptions.length;
-        } else if (keycode == Input.Keys.ENTER || keycode == Input.Keys.E) {
+        } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
             if (selectedOption == 0) { // Si
                 gameplayState.exitToMainMenu();
             } else if (selectedOption == 1) { // No
                 currentState = MenuState.MAIN;
                 selectedOption = 0;
             }
-        } else if (keycode == Input.Keys.Q) {
+        } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
             currentState = MenuState.MAIN;
             selectedOption = 0;
         }

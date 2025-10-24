@@ -1,10 +1,7 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
-  "groundTexture": "suelo.png",
   "playerStartX": 50,
   "playerStartY": 100,
-  "dialogueFile": "Dialogos/Dialogos_personajes.json",
-  "dialogueSection": "Dialogos_acto2",
   "nextLevel": "Levels/level2.json",
   "solidObjectsData": [
     {
@@ -35,13 +32,25 @@
       "x": 100,
       "y": 64,
       "walkable": true,
-      "type": "Platform_White_Medium"
+      "type": "Platform_White_Huge"
+      },
+      {
+      "x": 100,
+      "y": 128,
+      "walkable": true,
+      "type": "Platform_White_Huge"
+      },
+      {
+      "x": 100,
+      "y": 192,
+      "walkable": true,
+      "type": "Platform_White_Huge"
       },
       {
       "x": 800,
       "y": 64,
       "walkable": true,
-      "type": "Platform_Red_Medium"
+      "type": "Platform_Red_Huge"
       },
       {
         "x": 500,
@@ -50,9 +59,15 @@
         "type": "Platform_Gray_Medium"
       },
       {
-      "type": "Chain_Red",
-      "x": 300,
-      "y": 32,
+      "type": "Chain_White",
+      "x": 100,
+      "y": 80,
+      "walkable": false
+      },
+      {
+      "type": "Chain_White",
+      "x": 380,
+      "y": 80,
       "walkable": false
       },
       {

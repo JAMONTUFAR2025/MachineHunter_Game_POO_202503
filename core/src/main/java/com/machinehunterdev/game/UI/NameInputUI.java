@@ -1,7 +1,6 @@
 package com.machinehunterdev.game.UI;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -110,14 +109,14 @@ public class NameInputUI implements InputProcessor {
      */
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ENTER) {
+        if (keycode == GlobalSettings.CONTROL_CONFIRM) {
             if (playerName.length() > 0) {
                 GlobalSettings.playerName = playerName.toString();
                 // Cargar nivel 1
                 GameplayState level1 = GameplayState.createForLevel("Levels/level1.json");
                 gameController.stateMachine.changeState(level1);
             }
-        } else if (keycode == Input.Keys.BACKSPACE) {
+        } else if (keycode == GlobalSettings.CONTROL_BACKSPACE) {
             if (playerName.length() > 0) {
                 playerName.setLength(playerName.length() - 1);
             }

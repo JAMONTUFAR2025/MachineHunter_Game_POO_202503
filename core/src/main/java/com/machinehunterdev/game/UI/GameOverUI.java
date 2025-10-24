@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -19,6 +18,7 @@ import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.GameStates.GameplayState;
 import com.machinehunterdev.game.GameStates.MainMenuState;
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 /**
  * Interfaz de usuario para la pantalla de fin de juego.
@@ -277,11 +277,11 @@ public class GameOverUI implements InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         if (showOptions) {
-            if (keycode == Input.Keys.W || keycode == Input.Keys.UP) {
+            if (keycode == GlobalSettings.CONTROL_JUMP) {
                 selected = (selected - 1 + options.length) % options.length;
-            } else if (keycode == Input.Keys.S || keycode == Input.Keys.DOWN) {
+            } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
                 selected = (selected + 1) % options.length;
-            } else if (keycode == Input.Keys.E || keycode == Input.Keys.ENTER) {
+            } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
                 if (selected == 0) {
                     GameplayState currentLevel = GameplayState.createForLevel(com.machinehunterdev.game.Gameplay.GlobalSettings.currentLevelFile);
                     gameController.stateMachine.changeState(currentLevel);

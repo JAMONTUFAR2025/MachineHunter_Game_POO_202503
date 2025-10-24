@@ -229,7 +229,10 @@ public class Character
                     } else {
                         newState = CharacterAnimator.AnimationState.ATTACK;
                     }
-                    
+                    // Resetear isAttacking si la animación de ataque actual ha terminado
+                    if (characterAnimator.isAnimationFinished(newState)) {
+                        isAttacking = false;
+                    }
                 } else if (!onGround) {
                     // En el aire: JUMP si sube, FALL si baja
                     if (velocity.y > 0) {

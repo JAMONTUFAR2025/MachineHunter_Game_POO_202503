@@ -1,4 +1,5 @@
 package com.machinehunterdev.game.Gameplay;
+import com.badlogic.gdx.Input.Keys;
 
 /**
  * Clase de configuración global del juego.
@@ -13,20 +14,35 @@ public class GlobalSettings
     public static final int VIRTUAL_WIDTH = 480;
     public static final int VIRTUAL_HEIGHT = 270;
 
+    /** Nombre del jugador (para clasificaciones) */
+    public static String playerName;
+    
     /** Salud inicial del jugador */
     public static final int PLAYER_HEALTH = 3;
+    
+    /** Controles para el jugador */
+    public static final int CONTROL_MOVE_LEFT = Keys.A;
+    public static final int CONTROL_MOVE_RIGHT = Keys.D;
+    public static final int CONTROL_JUMP = Keys.W;
+    public static final int CONTROL_CROUCH = Keys.S;
+    public static final int CONTROL_ATTACK = Keys.SPACE;
+    public static final int CONTROL_INTERACT = Keys.E;
+    public static final int CONTROL_CONFIRM = Keys.ENTER;
+    public static final int CONTROL_CANCEL = Keys.Q;
+    public static final int CONTROL_BACKSPACE = Keys.BACKSPACE;
+    public static final int CONTROL_PAUSE = Keys.ESCAPE;
+    public static final int CHANGE_WEAPON_LASER = Keys.J;
+    public static final int CHANGE_WEAPON_ION = Keys.K;
+    public static final int CHANGE_WEAPON_RAILGUN = Keys.L;
+
+    /** Archivo del nivel actual */
+    public static String currentLevelFile;
 
     /** Nivel Y del suelo principal */
     public static final int GROUND_LEVEL = 32;
 
     /** Instancia singleton de la configuración global */
     public static GlobalSettings instance = new GlobalSettings();
-
-    /** Nombre del jugador (para clasificaciones) */
-    public static String playerName;
-
-    /** Archivo del nivel actual */
-    public static String currentLevelFile;
 
     /**
      * Constructor privado para implementar el patrón Singleton.

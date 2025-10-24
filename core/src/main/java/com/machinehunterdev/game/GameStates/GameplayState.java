@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -28,7 +27,6 @@ import com.machinehunterdev.game.DamageTriggers.DamageSystem;
 import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Environment.SolidObject;
-import com.machinehunterdev.game.Environment.PlatformType; // Importar la nueva clase
 import com.machinehunterdev.game.FX.ImpactEffectManager;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
@@ -202,9 +200,10 @@ public class GameplayState implements IState<GameController> {
             List<Sprite> enemyFallFrames = loadSpriteFrames(skin.fallFrames, 1);
             List<Sprite> enemyHurtFrames = loadSpriteFrames(skin.hurtFrames, 1);
 
+            List<Sprite> enemyAttackFrames = loadSpriteFrames(skin.attackFrames, 2);
             CharacterAnimator enemyAnimator = new CharacterAnimator(
                 enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
-                enemyJumpFrames, enemyFallFrames, null,
+                enemyJumpFrames, enemyFallFrames, enemyAttackFrames,
                 null, null, null,
                 enemyHurtFrames, null
             );
@@ -298,7 +297,7 @@ public class GameplayState implements IState<GameController> {
 
     @Override
     public void execute() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !levelCompleted) {
+        if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_PAUSE) && !levelCompleted) {
             isPaused = !isPaused;
             if (isPaused) {
                 Gdx.input.setInputProcessor(pauseUI);
@@ -395,7 +394,7 @@ public class GameplayState implements IState<GameController> {
     }
 
     private void handleNPCInteraction() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+        if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_INTERACT)) {
             if (npcController != null && npcController.isInRange() && playerCharacter.onGround) {
                 List<Dialog> dialogues = npcController.getDialogues();
                 if (dialogues != null && !dialogues.isEmpty()) {
@@ -467,7 +466,7 @@ public class GameplayState implements IState<GameController> {
     }
 
     private void handleDialogInput() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+        if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_INTERACT)) {
             if (dialogManager.isDialogActive()) {
                 dialogManager.nextLine();
             }

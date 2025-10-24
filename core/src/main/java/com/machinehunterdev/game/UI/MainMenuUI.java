@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.GameStates.LeaderboardState;
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 /**
  * Interfaz de usuario para el menú principal del juego.
@@ -107,7 +108,7 @@ public class MainMenuUI implements InputProcessor {
      * Dibuja las instrucciones de controles en la parte inferior.
      */
     private void drawControls() {
-        String controlsText = "E-Seleccionar | W/S-Moverse";
+        String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + "-Seleccionar | " + Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + "/" + Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + "-Moverse";
         GlyphLayout layout = new GlyphLayout(font, controlsText);
 
         float boxWidth = layout.width + 40;
@@ -137,11 +138,11 @@ public class MainMenuUI implements InputProcessor {
      * @param keycode Código de la tecla presionada
      */
     public void manejarEntrada(int keycode) {
-        if (keycode == Input.Keys.W || keycode == Input.Keys.UP) {
+        if (keycode == GlobalSettings.CONTROL_JUMP) {
             selected = (selected - 1 + options.length) % options.length;
-        } else if (keycode == Input.Keys.S || keycode == Input.Keys.DOWN) {
+        } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
             selected = (selected + 1) % options.length;
-        } else if (keycode == Input.Keys.E) {
+        } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
             if (selected == 0) {
                 starGame();
             } else if (selected == 1) {

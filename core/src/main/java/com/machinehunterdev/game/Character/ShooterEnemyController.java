@@ -14,6 +14,8 @@ import java.util.ArrayList;
 public class ShooterEnemyController extends CharacterController {
     private float shootTimer; // Temporizador para controlar el intervalo de disparo
     private float shootInterval; // Intervalo entre disparos
+    private int shotsToFire; // Número de disparos a realizar en una ráfaga
+    private float shotDelayTimer; // Temporizador para el retraso entre disparos en una ráfaga
 
     /**
      * Constructor del controlador de enemigos tiradores.
@@ -24,6 +26,8 @@ public class ShooterEnemyController extends CharacterController {
         super(character);
         this.shootInterval = shootInterval;
         this.shootTimer = 0f;
+        this.shotsToFire = 0;
+        this.shotDelayTimer = 0f;
     }
 
     /**
@@ -41,7 +45,19 @@ public class ShooterEnemyController extends CharacterController {
         shootTimer += delta;
         if (shootTimer >= shootInterval) {
             shootTimer = 0f;
-            character.shoot(bullets, com.machinehunterdev.game.DamageTriggers.WeaponType.THUNDER);
+            shotsToFire = 3; // Iniciar ráfaga de 3 disparos
+        }
+
+        // Manejar disparos en ráfaga
+        if (shotsToFire > 0) {
+            shotDelayTimer -= delta;
+            if (shotDelayTimer <= 0) {
+                character.shoot(bullets, com.machinehunterdev.game.DamageTriggers.WeaponType.THUNDER);
+                shotsToFire--;
+                shotDelayTimer = 0.15f; // Pequeño retraso entre disparos
+            }
+        } else {
+            character.stopMoving(); // Asegurar que el enemigo esté en IDLE cuando no dispara
         }
 
         // Hacer que el enemigo mire hacia el jugador

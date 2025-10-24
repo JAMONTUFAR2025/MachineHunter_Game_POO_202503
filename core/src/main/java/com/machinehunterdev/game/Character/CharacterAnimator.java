@@ -82,7 +82,7 @@ public class CharacterAnimator {
             this.animators.put(AnimationState.FALL, new SpriteAnimator(fallFrames, 0.16f, false, true));
         }
         if (attackFrames != null && !attackFrames.isEmpty()) {
-            this.animators.put(AnimationState.ATTACK, new SpriteAnimator(attackFrames, 0.1f, false, false));
+            this.animators.put(AnimationState.ATTACK, new SpriteAnimator(attackFrames, 0.15f, false));
         }
         if (attackLaserFrames != null && !attackLaserFrames.isEmpty()) {
             this.animators.put(AnimationState.LASER_ATTACK, new SpriteAnimator(attackLaserFrames, 0.15f));

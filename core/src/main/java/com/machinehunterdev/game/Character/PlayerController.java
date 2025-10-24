@@ -2,7 +2,6 @@ package com.machinehunterdev.game.Character;
 
 import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.WeaponType;
@@ -62,47 +61,47 @@ public class PlayerController extends CharacterController {
      */
     private void handleInput(ArrayList<Bullet> bullets) {
         // Cambio de armas con teclas numéricas (mientras no este atacando)
-        if (Gdx.input.isKeyJustPressed(Keys.J) && !character.isAttacking) {
+        if (Gdx.input.isKeyJustPressed(GlobalSettings.CHANGE_WEAPON_LASER) && !character.isAttacking) {
             character.switchWeapon(WeaponType.LASER);
-        } else if (Gdx.input.isKeyJustPressed(Keys.K) && !character.isAttacking) {
+        } else if (Gdx.input.isKeyJustPressed(GlobalSettings.CHANGE_WEAPON_ION) && !character.isAttacking) {
             character.switchWeapon(WeaponType.ION);
-        } else if (Gdx.input.isKeyJustPressed(Keys.L) && !character.isAttacking) {
+        } else if (Gdx.input.isKeyJustPressed(GlobalSettings.CHANGE_WEAPON_RAILGUN) && !character.isAttacking) {
             character.switchWeapon(WeaponType.RAILGUN);
         }
 
         // Ataque con arma actual (solo si está en el suelo y no está invulnerable ni agachado)
-        if (Gdx.input.isKeyPressed(Keys.SPACE) && character.onGround && !character.isInvulnerable() && !character.isCrouching) {
+        if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_ATTACK) && character.onGround && !character.isInvulnerable() && !character.isCrouching) {
             character.shoot(bullets);
             character.stopMoving();
             shootTimer = shootCooldown;
 
             // Permitir girar durante ataque
-            if (Gdx.input.isKeyPressed(Keys.A)) {
+            if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_LEFT)) {
                 character.setSeeingRight(false);
-            } else if (Gdx.input.isKeyPressed(Keys.D)) {
+            } else if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_RIGHT)) {
                 character.setSeeingRight(true);
             }
         } else {
             character.stopAttacking();
 
             // Agachado con prioridad sobre movimiento
-            if (Gdx.input.isKeyPressed(Keys.S) && character.onGround) {
+            if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_CROUCH) && character.onGround) {
                 character.setCrouching(true);
                 character.stopMoving();
 
                 // Permitir girar durante agachado
-                if (Gdx.input.isKeyPressed(Keys.A)) {
+                if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_LEFT)) {
                     character.setSeeingRight(false);
-                } else if (Gdx.input.isKeyPressed(Keys.D)) {
+                } else if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_RIGHT)) {
                     character.setSeeingRight(true);
                 }
             } else {
                 character.setCrouching(false);
 
                 // Movimiento horizontal
-                if (Gdx.input.isKeyPressed(Keys.A)) {
+                if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_LEFT)) {
                     character.moveLeft();
-                } else if (Gdx.input.isKeyPressed(Keys.D)) {
+                } else if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_RIGHT)) {
                     character.moveRight();
                 } else {
                     character.stopMoving();
@@ -111,7 +110,7 @@ public class PlayerController extends CharacterController {
         }
 
         // Salto
-        if (Gdx.input.isKeyJustPressed(Keys.W)) {
+        if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_JUMP)) {
             if (character.isCrouching && character.onGround) {
                 character.fallThroughPlatform();
             } else {

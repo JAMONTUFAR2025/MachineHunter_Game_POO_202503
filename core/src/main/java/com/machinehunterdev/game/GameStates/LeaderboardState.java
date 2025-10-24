@@ -1,8 +1,8 @@
 package com.machinehunterdev.game.GameStates;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.machinehunterdev.game.GameController;
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.UI.LeaderboardUI;
 import com.machinehunterdev.game.Util.IState;
 import com.machinehunterdev.game.Leaderboard.LeaderboardManager;
@@ -48,7 +48,7 @@ public class LeaderboardState implements IState<GameController> {
     public void execute() {
         leaderboardUI.render(Gdx.graphics.getDeltaTime());
         
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Q) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_CANCEL)) {
             exitToMainMenu();
         }
     }

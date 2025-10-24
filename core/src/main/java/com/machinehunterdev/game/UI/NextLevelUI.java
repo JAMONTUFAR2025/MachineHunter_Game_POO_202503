@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameStates.GameplayState;
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 /**
  * Interfaz de usuario que se muestra al completar un nivel.
@@ -86,7 +87,7 @@ public class NextLevelUI implements InputProcessor {
      * Dibuja las instrucciones de control en pantalla.
      */
     private void drawControls() {
-        String controlsText = "E-Seleccionar";
+        String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + "-Seleccionar";
         GlyphLayout layout = new GlyphLayout(font, controlsText);
 
         font.setColor(Color.WHITE);
@@ -128,7 +129,7 @@ public class NextLevelUI implements InputProcessor {
      */
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ENTER || keycode == Input.Keys.E) {
+        if (keycode == GlobalSettings.CONTROL_INTERACT || keycode == GlobalSettings.CONTROL_PAUSE) {
             if (selectedOption == 0) { // Siguiente Nivel
                 com.machinehunterdev.game.Levels.LevelData currentLevel = gameplayState.getCurrentLevel();
                 if (currentLevel != null && currentLevel.nextLevel != null && !currentLevel.nextLevel.isEmpty()) {
