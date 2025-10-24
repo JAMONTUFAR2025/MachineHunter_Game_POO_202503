@@ -6,28 +6,44 @@ import com.badlogic.gdx.math.Rectangle;
 
 /**
  * Clase que representa un objeto sólido en el entorno del juego.
- * Versión optimizada que usa texturas compartidas para mayor eficiencia.
+ * Puede ser instanciado explícitamente o a través de un string de tipo.
  * 
  * @author MachineHunterDev
  */
 public class SolidObject 
 {
-    /** Rectángulo de colisión y posición */
     private Rectangle bounds;
-    
-    /** Textura compartida del objeto */
     private Texture texture;
-    
-    /** Indica si se puede caminar sobre este objeto */
     private boolean isWalkable;
 
     /**
-     * Constructor para el objeto sólido.
+     * Constructor para objetos definidos por un string de tipo (ej. "Platform_Red_Small").
+     * @param x Posición X inicial
+     * @param y Posición Y inicial
+     * @param typeString El string que define el tipo de plataforma.
+     * @param walkable Indica si se puede caminar sobre él.
+     */
+    public SolidObject(float x, float y, String typeString, boolean walkable) {
+        PlatformType type = PlatformType.parse(typeString);
+        if (type != null) {
+            this.bounds = new Rectangle(x, y, type.width, type.height); 
+            this.texture = new Texture(type.texturePath);
+            this.isWalkable = walkable;
+        } else {
+            // Fallback o error si el tipo es inválido
+            // Podrías crear un objeto invisible o con una textura de error
+            this.bounds = new Rectangle(x, y, 0, 0);
+            this.isWalkable = false;
+        }
+    }
+
+    /**
+     * Constructor para objetos definidos explícitamente.
      * @param x Posición X inicial
      * @param y Posición Y inicial
      * @param width Ancho del objeto
      * @param height Alto del objeto
-     * @param texture Textura compartida a usar
+     * @param texture Textura a usar
      * @param walkable Indica si se puede caminar sobre él
      */
     public SolidObject(float x, float y, float width, float height, Texture texture, boolean walkable) {
@@ -41,10 +57,19 @@ public class SolidObject
      * @param batch SpriteBatch para dibujar
      */
     public void render(SpriteBatch batch) {
-        batch.draw(texture, bounds.x, bounds.y, bounds.width, bounds.height);
+        if (texture != null) {
+            batch.draw(texture, bounds.x, bounds.y, bounds.width, bounds.height);
+        }
     }
     
-    // Nota: No tiene método dispose() porque la textura es compartida
+    /**
+     * Libera los recursos de la textura.
+     */
+    public void dispose() {
+        if (texture != null) {
+            texture.dispose();
+        }
+    }
 
     /**
      * Verifica si el objeto es sólido (no se puede atravesar).

@@ -8,58 +8,52 @@
   "nextLevel": "Levels/level2.json",
   "solidObjectsData": [
     {
-      "x": 0,
-      "y": 0,
-      "width": 480,
-      "height": 32,
-      "texture": "suelo.png",
-      "walkable": true
-    },
-    {
-      "x": 480,
-      "y": 0,
-      "width": 480,
-      "height": 32,
-      "texture": "suelo.png",
-      "walkable": true
-    },
-    {
-      "x": 960,
-      "y": 0,
-      "width": 480,
-      "height": 32,
-      "texture": "suelo.png",
-      "walkable": true
-    },
-    {
-      "x": 64,
+        "x": 0,
+        "y": 0,
+        "width": 480,
+        "height": 32,
+        "texture": "suelo.png",
+        "walkable": true
+        },
+        {
+        "x": 480,
+        "y": 0,
+        "width": 480,
+        "height": 32,
+        "texture": "suelo.png",
+        "walkable": true
+      },
+      {
+        "x": 960,
+        "y": 0,
+        "width": 480,
+        "height": 32,
+        "texture": "suelo.png",
+        "walkable": true
+      },
+      {
+      "x": 100,
       "y": 64,
-      "width": 200,
-      "height": 16,
-      "texture": "suelo.png",
-      "walkable": true
-    },
-    {
-      "x": 544,
+      "walkable": true,
+      "type": "Platform_White_Medium"
+      },
+      {
+      "x": 800,
       "y": 64,
-      "width": 200,
-      "height": 16,
-      "texture": "suelo.png",
-      "walkable": true
-    },
-    {
-      "x": 1024,
-      "y": 64,
-      "width": 200,
-      "height": 16,
-      "texture": "suelo.png",
-      "walkable": true
-    }
+      "walkable": true,
+      "type": "Platform_Red_Medium"
+      },
+      {
+        "x": 500,
+        "y": 50,
+        "walkable": true,
+        "type": "Platform_Gray_Medium"
+      }
   ],
   "enemies": [
     {
       "type": "PATROLLER",
-      "x": 100,
+      "x": 200,
       "y": 300,
       "health": 50,
       "patrolPoints": [
@@ -71,7 +65,7 @@
     {
       "type": "SHOOTER",
       "x": 800,
-      "y": 100,
+      "y": 0,
       "health": 30,
       "shootInterval": 3.0
     },

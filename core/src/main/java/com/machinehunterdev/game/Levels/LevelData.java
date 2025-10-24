@@ -45,9 +45,15 @@ public class LevelData {
      * Datos de un objeto sólido en el nivel.
      */
     public static class SolidObjectData {
-        public float x, y, width, height;
-        public String texture = "suelo.png";
+        public float x, y;
         public boolean walkable = true;
+
+        // Nuevo sistema basado en "type"
+        public String type;
+
+        // Sistema antiguo para objetos explícitos como el suelo
+        public float width, height;
+        public String texture;
     }
     
     /**

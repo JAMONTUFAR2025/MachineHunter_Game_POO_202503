@@ -28,6 +28,7 @@ import com.machinehunterdev.game.DamageTriggers.DamageSystem;
 import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Environment.SolidObject;
+import com.machinehunterdev.game.Environment.PlatformType; // Importar la nueva clase
 import com.machinehunterdev.game.FX.ImpactEffectManager;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
@@ -38,12 +39,6 @@ import com.machinehunterdev.game.UI.NextLevelUI;
 import com.machinehunterdev.game.UI.PauseUI;
 import com.machinehunterdev.game.Util.IState;
 
-/**
- * Estado principal del juego que puede cargar cualquier nivel.
- * Gestiona personajes, enemigos, balas, colisiones, diálogos y pausa.
- * 
- * @author MachineHunterDev
- */
 public class GameplayState implements IState<GameController> {
     // === DATOS DEL NIVEL ===
     private LevelData currentLevel;
@@ -60,7 +55,6 @@ public class GameplayState implements IState<GameController> {
     private SpriteBatch gameBatch;
     private OrthographicCamera camera;
     private Texture backgroundTexture;
-    private Texture sueloTexture;
     private Texture blackTexture;
 
     // === SISTEMAS DE INTERFAZ ===
@@ -79,83 +73,50 @@ public class GameplayState implements IState<GameController> {
     private ArrayList<Bullet> bullets;
     private ImpactEffectManager impactEffectManager;
 
-    // === INSTANCIA ===
+    // === CONTROL DE ESTADO ===
     private GameController owner;
+    private boolean ignoreInputOnFirstFrame = true;
 
-    /**
-     * Constructor privado - usar createForLevel() en su lugar
-     */
     private GameplayState() {}
 
-    /**
-     * Crea una instancia de GameplayState para un nivel específico.
-     * @param levelFile Archivo JSON del nivel a cargar
-     * @return Nueva instancia de GameplayState
-     */
     public static GameplayState createForLevel(String levelFile) {
-        // Solución temporal para evitar problemas de input al cambiar de estado
         Gdx.input.setInputProcessor(null);
         GameplayState state = new GameplayState();
         state.currentLevelFile = levelFile;
         return state;
     }
 
-    /**
-     * Reanuda el juego desde el estado de pausa.
-     */
     public void resumeGame() {
         isPaused = false;
         Gdx.input.setInputProcessor(null);
     }
 
-    /**
-     * Cambia al estado del menú principal.
-     */
     public void exitToMainMenu() {
         owner.stateMachine.changeState(MainMenuState.instance);
     }
 
-    /**
-     * Reinicia el nivel actual.
-     */
     public void restartLevel() {
         owner.stateMachine.changeState(createForLevel(currentLevelFile));
     }
 
-    /**
-     * Inicializa el estado al entrar.
-     * @param owner Controlador del juego propietario
-     */
     @Override
     public void enter(GameController owner) {
         GlobalSettings.currentLevelFile = this.currentLevelFile;
+        this.ignoreInputOnFirstFrame = true;
         isPaused = false;
         levelCompleted = false;
         this.owner = owner;
         this.gameBatch = owner.batch;
         this.camera = owner.camera;
-
-        // Cargar el nivel
         loadLevel(currentLevelFile);
     }
 
-    /**
-     * Carga un nivel específico desde archivo JSON.
-     * @param levelFile Ruta del archivo JSON del nivel
-     */
     private void loadLevel(String levelFile) {
         currentLevel = LevelLoader.loadLevel(levelFile);
-        
-        // Inicializar recursos
         initializeResources();
-        
-        // Inicializar objetos del nivel
         initializeLevelObjects();
     }
 
-    /**
-     * Inicializa los recursos gráficos comunes.
-     */
     private void initializeResources() {
         backgroundTexture = new Texture(currentLevel.backgroundTexture);
         dialogManager = new DialogManager(gameBatch);
@@ -171,43 +132,33 @@ public class GameplayState implements IState<GameController> {
         pixmap.fill();
         blackTexture = new Texture(pixmap);
         pixmap.dispose();
-
-        sueloTexture = new Texture(currentLevel.groundTexture);
     }
 
-    /**
-     * Inicializa todos los objetos del nivel (jugador, enemigos, NPCs, etc.).
-     */
     private void initializeLevelObjects() {
-        // Inicializar objetos sólidos
         initializeSolidObjects();
-        
-        // Inicializar jugador
         initializePlayer();
-        
-        // Inicializar enemigos
         initializeEnemies();
-        
-        // Inicializar NPCs
         initializeNPCs();
     }
 
-    /**
-     * Inicializa los objetos sólidos del nivel.
-     */
     private void initializeSolidObjects() {
         solidObjects = new ArrayList<>();
         for (LevelData.SolidObjectData objData : currentLevel.solidObjectsData) {
-            solidObjects.add(new SolidObject(
-                objData.x, objData.y, objData.width, objData.height,
-                sueloTexture, objData.walkable
-            ));
+            SolidObject newObject = null;
+            if (objData.type != null && !objData.type.isEmpty()) {
+                // Crear objeto basado en el "type"
+                newObject = new SolidObject(objData.x, objData.y, objData.type, objData.walkable);
+            } else if (objData.texture != null) {
+                // Crear objeto con definición explícita (sistema antiguo)
+                newObject = new SolidObject(objData.x, objData.y, objData.width, objData.height, new Texture(objData.texture), objData.walkable);
+            }
+
+            if (newObject != null) {
+                solidObjects.add(newObject);
+            }
         }
     }
 
-    /**
-     * Inicializa el jugador con sus animaciones.
-     */
     private void initializePlayer() {
         List<Sprite> playerIdleFrames = loadSpriteFrames("Player/PlayerIdle", 4);
         List<Sprite> playerRunFrames = loadSpriteFrames("Player/PlayerRun", 8);
@@ -230,7 +181,6 @@ public class GameplayState implements IState<GameController> {
         playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, null, 
         currentLevel.playerStartX, currentLevel.playerStartY, true);
         
-        // Ajustar la posición Y del jugador para que esté sobre el suelo o plataforma
         float adjustedPlayerY = findGroundY(playerCharacter.position.x, currentLevel.playerStartY, playerCharacter.getWidth());
         playerCharacter.position.y = adjustedPlayerY;
         playerCharacter.onGround = true;
@@ -239,9 +189,6 @@ public class GameplayState implements IState<GameController> {
         playerController = new PlayerController(playerCharacter);
     }
 
-    /**
-     * Inicializa todos los enemigos del nivel.
-     */
     private void initializeEnemies() {
         enemyManager = new EnemyManager();
 
@@ -264,14 +211,9 @@ public class GameplayState implements IState<GameController> {
 
             Character enemy = new Character(enemyData.health, enemyAnimator, null, enemyData.x, enemyData.y, false);
 
-            // Ajustar la posición Y para enemigos voladores si la coordenada Y del JSON
-            // se interpreta como el centro y el motor de renderizado usa la base.
             if (enemyData.type == EnemyType.FLYING) {
-                // Asumiendo que enemyData.y es el centro, y Character.position.y es la base.
-                // Elevamos el enemigo por la mitad de su altura.
                 enemy.position.y -= enemy.getHeight() / 2;
             } else {
-                // Ajustar la posición Y para enemigos terrestres
                 float adjustedEnemyY = findGroundY(enemy.position.x, enemyData.y, enemy.getWidth());
                 enemy.position.y = adjustedEnemyY;
                 enemy.onGround = true;
@@ -289,16 +231,13 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    /**
-     * Inicializa los NPCs del nivel.
-     */
     private void initializeNPCs() {
         if (currentLevel.npcs.isEmpty()) {
             npcController = null;
             return;
         }
         
-        LevelData.NPCData npcData = currentLevel.npcs.get(0); // Soporta solo 1 NPC por ahora
+        LevelData.NPCData npcData = currentLevel.npcs.get(0);
         
         List<Sprite> npcIdleFrames = loadSpriteFrames(npcData.idleFrames, 4);
         List<Sprite> npcRunFrames = loadSpriteFrames(npcData.runFrames, 8);
@@ -316,21 +255,16 @@ public class GameplayState implements IState<GameController> {
         
         Character npcCharacter = new Character(100, npcAnimator, null, npcData.x, npcData.y, false);
         
-        // Ajustar la posición Y del NPC para que esté sobre el suelo o plataforma
         float adjustedNpcY = findGroundY(npcCharacter.position.x, npcData.y, npcCharacter.getWidth());
         npcCharacter.position.y = adjustedNpcY;
         npcCharacter.onGround = true;
         npcCharacter.velocity.y = 0;
         
-        // Cargar diálogos del NPC
         List<Dialog> npcDialogues = loadNPCCDialogues(npcData.dialogues);
         
         npcController = new NPCController(npcCharacter, npcData.interactionRadius, npcDialogues);
     }
 
-    /**
-     * Carga los diálogos de un NPC desde el archivo de diálogo del nivel.
-     */
     private List<Dialog> loadNPCCDialogues(List<String> dialogueSections) {
         List<Dialog> npcDialogues = new ArrayList<>();
         
@@ -362,9 +296,6 @@ public class GameplayState implements IState<GameController> {
 
     private boolean transitioningToGameOver = false;
 
-    /**
-     * Ejecuta la lógica del estado cada frame.
-     */
     @Override
     public void execute() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !levelCompleted) {
@@ -396,20 +327,14 @@ public class GameplayState implements IState<GameController> {
         }
 
         if (playerCharacter.readyForGameOverTransition && !transitioningToGameOver) {
-            transitioningToGameOver = true; // Prevenir múltiples llamadas
-
-            // Desvincular el animador para que no se elimine con el personaje
+            transitioningToGameOver = true;
             CharacterAnimator animator = playerCharacter.characterAnimator;
             playerCharacter.characterAnimator = null; 
-
             GameOverState.setPlayerAnimator(animator);
             owner.stateMachine.changeState(GameOverState.instance);
         }
     }
 
-    /**
-     * Actualiza toda la lógica del juego.
-     */
     private void updateGameLogic() {
         if (levelCompleted) return;
         
@@ -424,31 +349,25 @@ public class GameplayState implements IState<GameController> {
             return;
         }
 
-        // Actualizar jugador
         playerController.update(deltaTime, solidObjects, bullets, playerCharacter);
         
-        // Actualizar enemigos
         updateEnemies(deltaTime);
         
-        // Verificar finalización del nivel
         checkLevelCompletion();
         
-        // Actualizar NPC
         updateNPC(deltaTime);
         
-        // Manejar interacción con NPC
-        handleNPCInteraction();
+        if (!ignoreInputOnFirstFrame) {
+            handleNPCInteraction();
+        }
         
-        // Actualizar sistema de combate
         updateCombatSystems(deltaTime);
         
-        // Centrar cámara
         playerController.centerCameraOnPlayer(camera);
+
+        ignoreInputOnFirstFrame = false;
     }
 
-    /**
-     * Actualiza todos los enemigos y elimina los que están muertos.
-     */
     private void updateEnemies(float deltaTime) {
         enemyManager.update(deltaTime, solidObjects, bullets, playerCharacter);
 
@@ -462,9 +381,6 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    /**
-     * Verifica si el nivel ha sido completado (todos los enemigos derrotados).
-     */
     private void checkLevelCompletion() {
         if (enemyManager.getEnemies().isEmpty()) {
             levelCompleted = true;
@@ -472,18 +388,12 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    /**
-     * Actualiza el NPC si existe.
-     */
     private void updateNPC(float deltaTime) {
         if (npcController != null) {
             npcController.update(deltaTime, solidObjects, bullets, playerCharacter);
         }
     }
 
-    /**
-     * Maneja la interacción con el NPC (tecla E).
-     */
     private void handleNPCInteraction() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
             if (npcController != null && npcController.isInRange() && playerCharacter.onGround) {
@@ -496,9 +406,6 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    /**
-     * Actualiza el sistema de combate (balas, efectos de impacto).
-     */
     private void updateCombatSystems(float deltaTime) {
         updateBullets(deltaTime);
         impactEffectManager.update(deltaTime);
@@ -507,33 +414,26 @@ public class GameplayState implements IState<GameController> {
         checkBulletPlayerCollision();
     }
 
-    /**
-     * Renderiza el mundo del juego.
-     */
     private void drawGameWorld() {
         gameBatch.setProjectionMatrix(camera.combined);
         gameBatch.begin();
 
-        // Dibujar fondo con opacidad reducida
-        gameBatch.setColor(1, 1, 1, 0.5f); // 50% de opacidad
+        gameBatch.setColor(1, 1, 1, 0.5f);
         int backgroundWidth = GlobalSettings.VIRTUAL_WIDTH;
-        int mapWidth = 1440; // Ajusta según tu mapa
+        int mapWidth = 1440;
         int backgroundCount = (int) Math.ceil((float) mapWidth / backgroundWidth) + 1;
         for (int i = 0; i < backgroundCount; i++) {
             gameBatch.draw(backgroundTexture, i * backgroundWidth, 0);
         }
-        gameBatch.setColor(1, 1, 1, 1); // Restaurar opacidad completa
+        gameBatch.setColor(1, 1, 1, 1);
 
-        // Dibujar objetos sólidos
-        for (SolidObject floor : solidObjects) {
-            floor.render(gameBatch);
+        for (SolidObject obj : solidObjects) {
+            obj.render(gameBatch);
         }
 
-        // Dibujar personajes
         playerCharacter.draw(gameBatch);
         enemyManager.draw(gameBatch);
 
-        // Dibujar NPC
         if (npcController != null) {
             npcController.render(gameBatch);
             if (npcController.isInRange()) {
@@ -541,16 +441,12 @@ public class GameplayState implements IState<GameController> {
             }
         }
 
-        // Dibujar sistema de combate
         drawBullets();
         impactEffectManager.draw(gameBatch);
 
         gameBatch.end();
     }
 
-    /**
-     * Dibuja el mensaje de interacción con el NPC.
-     */
     private void drawNPCInteractionPrompt() {
         GlyphLayout layout = new GlyphLayout();
         String message = "E para interactuar";
@@ -570,9 +466,6 @@ public class GameplayState implements IState<GameController> {
         interactionFont.getData().setScale(1.0f);
     }
 
-    /**
-     * Maneja la entrada para avanzar en diálogos.
-     */
     private void handleDialogInput() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
             if (dialogManager.isDialogActive()) {
@@ -581,9 +474,6 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    /**
-     * Verifica colisiones entre jugador y enemigos.
-     */
     private void checkPlayerEnemyCollision() {
         playerCharacter.isOverlappingEnemy = false;
         for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
@@ -611,9 +501,6 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    /**
-     * Actualiza las balas y verifica colisiones.
-     */
     private void updateBullets(float deltaTime) {
         for (int i = bullets.size() - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
@@ -625,18 +512,12 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    /**
-     * Dibuja todas las balas activas.
-     */
     private void drawBullets() {
         for (Bullet bullet : bullets) {
             bullet.draw(gameBatch);
         }
     }
 
-    /**
-     * Verifica colisiones entre balas y enemigos.
-     */
     private void checkBulletEnemyCollision() {
         for (int i = bullets.size() - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
@@ -663,9 +544,6 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    /**
-     * Verifica colisiones entre balas y el jugador.
-     */
     private void checkBulletPlayerCollision() {
         for (int i = bullets.size() - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
@@ -680,9 +558,6 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    /**
-     * Carga frames de animación desde archivos numerados.
-     */
     private List<Sprite> loadSpriteFrames(String basePath, int frameCount) {
         if (basePath == null) {
             return null;
@@ -694,9 +569,6 @@ public class GameplayState implements IState<GameController> {
         return frames;
     }
 
-    /**
-     * Maneja el redimensionamiento de la ventana.
-     */
     public void resize(int width, int height) {
         if (dialogManager != null) {
             dialogManager.resize(width, height);
@@ -706,34 +578,29 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    /**
-     * Libera todos los recursos al salir del estado.
-     */
     @Override
     public void exit() {
-        // Liberar texturas
-        disposeTexture(sueloTexture);
         disposeTexture(backgroundTexture);
         disposeTexture(blackTexture);
         
-        // Liberar fuentes
+        for (SolidObject obj : solidObjects) {
+            obj.dispose();
+        }
+
         if (interactionFont != null) {
             interactionFont.dispose();
         }
         
-        // Liberar sistemas
         if (dialogManager != null) dialogManager.dispose();
         if (gameplayUI != null) gameplayUI.dispose();
         if (pauseUI != null) pauseUI.dispose();
         if (nextLevelUI != null) nextLevelUI.dispose();
         if (impactEffectManager != null) impactEffectManager.dispose();
         
-        // Liberar balas
         for (Bullet bullet : bullets) {
             bullet.dispose();
         }
         
-        // Liberar personajes
         if (playerCharacter != null) playerCharacter.dispose();
         if (enemyManager != null) {
             for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
@@ -745,32 +612,20 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    /**
-     * Método auxiliar para liberar texturas de forma segura.
-     */
     private void disposeTexture(Texture texture) {
-        if (texture != null /*&& Esto no funciona: !texture.isDisposed()*/) {
+        if (texture != null) {
             texture.dispose();
         }
     }
 
-    /**
-     * Encuentra la posición Y correcta para un personaje en el suelo o sobre un objeto sólido.
-     * @param x Posición X del personaje.
-     * @param characterWidth Ancho del personaje.
-     * @return La posición Y ajustada para que el personaje esté sobre una superficie.
-     */
     private float findGroundY(float x, float initialY, float characterWidth) {
         float closestGroundY = GlobalSettings.GROUND_LEVEL;
 
         for (SolidObject obj : solidObjects) {
             if (obj.isWalkable()) {
                 Rectangle platform = obj.getBounds();
-                // Verificar si el personaje está horizontalmente sobre la plataforma
                 if (x < platform.x + platform.width && x + characterWidth > platform.x) {
                     float platformTop = platform.y + platform.height;
-                    // Si la plataforma está por debajo o al mismo nivel que la posición inicial del personaje,
-                    // y es más alta que el suelo actual, usar esta plataforma.
                     if (platformTop <= initialY && platformTop > closestGroundY) {
                         closestGroundY = platformTop;
                     }
@@ -780,26 +635,14 @@ public class GameplayState implements IState<GameController> {
         return closestGroundY;
     }
 
-    /**
-     * Obtiene el archivo del nivel actual.
-     * @return Ruta del archivo del nivel actual
-     */
     public String getCurrentLevelFile() {
         return currentLevelFile;
     }
 
-    /**
-     * Obtiene los datos del nivel actual.
-     * @return Datos del nivel actual
-     */
     public LevelData getCurrentLevel() {
         return currentLevel;
     }
 
-    /**
-     * Obtiene el controlador del juego propietario.
-     * @return Controlador del juego
-     */
     public GameController getOwner() {
         return owner;
     }

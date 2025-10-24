@@ -12,7 +12,7 @@
       "width": 480,
       "height": 32,
       "texture": "suelo.png",
-      "walkable": true
+      "walkable": false
     },
     {
       "x": 480,
@@ -20,7 +20,7 @@
       "width": 480,
       "height": 32,
       "texture": "suelo.png",
-      "walkable": true
+      "walkable": false
     },
     {
       "x": 960,
@@ -28,7 +28,7 @@
       "width": 480,
       "height": 32,
       "texture": "suelo.png",
-      "walkable": true
+      "walkable": false
     },
     {
       "x": 64,
@@ -36,7 +36,7 @@
       "width": 200,
       "height": 16,
       "texture": "suelo.png",
-      "walkable": true
+      "walkable": false
     },
     {
       "x": 544,
@@ -44,7 +44,7 @@
       "width": 200,
       "height": 16,
       "texture": "suelo.png",
-      "walkable": true
+      "walkable": false
     },
     {
       "x": 1024,
@@ -52,7 +52,7 @@
       "width": 200,
       "height": 16,
       "texture": "suelo.png",
-      "walkable": true
+      "walkable": false
     }
   ],
   "enemies": [
