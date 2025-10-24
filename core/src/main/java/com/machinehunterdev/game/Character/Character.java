@@ -113,6 +113,8 @@ public class Character
     private static final float ION_COOLDOWN_TIME = 0.3f;  // 0.3 segundos
     private static final float RAILGUN_COOLDOWN_TIME = 0.3f;   // 0.3 segundos
     private static final float THUNDER_COOLDOWN_TIME = 0.3f;   // 0.3 segundos
+    private static final Vector2 PLAYER_BULLET_SPAWN_OFFSET = new Vector2(-10f, 22f); // Offset para que las balas del jugador no salgan del centro exacto
+    private static final Vector2 ENEMY_BULLET_SPAWN_OFFSET = new Vector2(-10f, 10f); // Offset para que las balas de los enemigos no salgan del centro exacto
 
     // === CONSTRUCTORES ===
 
@@ -469,8 +471,8 @@ public class Character
     }
 
     private void shootThunder(ArrayList<Bullet> bullets) {
-        float bulletX = position.x + (isSeeingRight ? getWidth() : 0);
-        float bulletY = position.y + getHeight() / 2;
+        float bulletX = position.x + (isSeeingRight ? getWidth() + ENEMY_BULLET_SPAWN_OFFSET.x : 0 - ENEMY_BULLET_SPAWN_OFFSET.x);
+        float bulletY = position.y + getHeight() - ENEMY_BULLET_SPAWN_OFFSET.y;
         bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.THUNDER, this));
     }
 
@@ -479,8 +481,8 @@ public class Character
      * @param bullets Lista de balas activas
      */
     private void shootRifle(ArrayList<Bullet> bullets) {
-        float bulletX = position.x + (isSeeingRight ? getWidth() : 0);
-        float bulletY = position.y + getHeight() / 2;
+        float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x : 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
+        float bulletY = position.y + getHeight() - PLAYER_BULLET_SPAWN_OFFSET.y;
         bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.LASER, this));
     }
 
@@ -489,8 +491,8 @@ public class Character
      * @param bullets Lista de balas activas
      */
     private void shootShotgun(ArrayList<Bullet> bullets) {
-        float bulletX = position.x + (isSeeingRight ? getWidth() : 0);
-        float bulletY = position.y + getHeight() / 2;
+        float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x : 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
+        float bulletY = position.y + getHeight() - PLAYER_BULLET_SPAWN_OFFSET.y;
         
         // Disparar 3 balas con ligera variación en ángulo
         for (int i = -1; i <= 1; i++) {
@@ -505,8 +507,8 @@ public class Character
      * @param bullets Lista de balas activas
      */
     private void shootSniper(ArrayList<Bullet> bullets) {
-        float bulletX = position.x + (isSeeingRight ? getWidth() : 0);
-        float bulletY = position.y + getHeight() / 2;
+        float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x : 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
+        float bulletY = position.y + getHeight() - PLAYER_BULLET_SPAWN_OFFSET.y;
         bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.RAILGUN, this));
     }
 

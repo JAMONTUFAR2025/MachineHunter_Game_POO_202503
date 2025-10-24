@@ -209,6 +209,9 @@ public class GameplayState implements IState<GameController> {
             );
 
             Character enemy = new Character(enemyData.health, enemyAnimator, null, enemyData.x, enemyData.y, false);
+            if (enemyData.type == EnemyType.SHOOTER) {
+                enemy.switchWeapon(com.machinehunterdev.game.DamageTriggers.WeaponType.THUNDER);
+            }
 
             if (enemyData.type == EnemyType.FLYING) {
                 enemy.position.y -= enemy.getHeight() / 2;

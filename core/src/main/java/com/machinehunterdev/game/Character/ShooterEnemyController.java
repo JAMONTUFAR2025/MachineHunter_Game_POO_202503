@@ -52,12 +52,13 @@ public class ShooterEnemyController extends CharacterController {
         if (shotsToFire > 0) {
             shotDelayTimer -= delta;
             if (shotDelayTimer <= 0) {
-                character.shoot(bullets, com.machinehunterdev.game.DamageTriggers.WeaponType.THUNDER);
+                character.shoot(bullets, com.machinehunterdev.game.DamageTriggers.WeaponType.THUNDER); // Usar la lógica de disparo del enemigo sin comprobación de cooldown
                 shotsToFire--;
-                shotDelayTimer = 0.15f; // Pequeño retraso entre disparos
+                shotDelayTimer = 0.5f; // Pequeño retraso entre disparos
             }
         } else {
             character.stopMoving(); // Asegurar que el enemigo esté en IDLE cuando no dispara
+            character.stopAttacking(); // Detener la animación de ataque cuando la ráfaga termina
         }
 
         // Hacer que el enemigo mire hacia el jugador
