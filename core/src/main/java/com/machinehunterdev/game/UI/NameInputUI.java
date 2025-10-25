@@ -1,6 +1,7 @@
 package com.machinehunterdev.game.UI;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -19,6 +20,16 @@ import com.machinehunterdev.game.Gameplay.GlobalSettings;
  * @author MachineHunterDev
  */
 public class NameInputUI implements InputProcessor {
+
+    private enum State {
+        NAME_INPUT,
+        TUTORIAL_CONFIRM,
+        SKIP_TUTORIAL_CONFIRM
+    }
+
+    private State currentState = State.NAME_INPUT;
+    private int tutorialConfirmSelection = 0;
+    private int skipTutorialConfirmSelection = 0;
 
     /** Fuente para el texto de la interfaz */
     private BitmapFont font;
@@ -71,34 +82,87 @@ public class NameInputUI implements InputProcessor {
     public void draw(Character playerCharacter) {
         batch.begin();
 
-        // Dibujar el personaje animado
-        playerCharacter.draw(batch);
+        switch (currentState) {
+            case NAME_INPUT:
+                // Dibujar el personaje animado
+                playerCharacter.draw(batch);
 
-        GlyphLayout layout = new GlyphLayout();
-        String prompt = "Ingresa tu nombre";
-        font.getData().setScale(2);
-        layout.setText(font, prompt);
-        float promptX = (Gdx.graphics.getWidth() - layout.width) / 2f;
-        float promptY = Gdx.graphics.getHeight() - 50;
-        font.draw(batch, prompt, promptX, promptY);
+                GlyphLayout layout = new GlyphLayout();
+                String prompt = "Ingresa tu nombre";
+                font.getData().setScale(2);
+                layout.setText(font, prompt);
+                float promptX = (Gdx.graphics.getWidth() - layout.width) / 2f;
+                float promptY = Gdx.graphics.getHeight() - 50;
+                font.draw(batch, prompt, promptX, promptY);
 
-        font.getData().setScale(1.5f);
-        String nameText = playerName.toString();
-        layout.setText(font, nameText);
-        float nameX = (Gdx.graphics.getWidth() - layout.width) / 2f;
-        float nameY = Gdx.graphics.getHeight() / 4f;
-        font.draw(batch, nameText, nameX, nameY);
+                font.getData().setScale(1.5f);
+                String nameText = playerName.toString();
+                layout.setText(font, nameText);
+                float nameX = (Gdx.graphics.getWidth() - layout.width) / 2f;
+                float nameY = Gdx.graphics.getHeight() / 4f;
+                font.draw(batch, nameText, nameX, nameY);
 
-        batch.end();
+                String controls = "Teclado: Escribir nombre | Enter: Aceptar";
+                font.getData().setScale(1);
+                layout.setText(font, controls);
+                float controlsX = (Gdx.graphics.getWidth() - layout.width) / 2f;
+                font.draw(batch, controls, controlsX, 50);
 
-        // Dibujar cursor parpadeante
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        elapsedTime += Gdx.graphics.getDeltaTime();
-        if ((int)(elapsedTime * 2) % 2 == 0) {
-            float cursorX = nameX + layout.width;
-            shapeRenderer.rect(cursorX, nameY - font.getCapHeight(), 20, font.getCapHeight() + 10);
+                batch.end();
+
+                // Dibujar cursor parpadeante
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                elapsedTime += Gdx.graphics.getDeltaTime();
+                if ((int)(elapsedTime * 2) % 2 == 0) {
+                    shapeRenderer.setColor(Color.WHITE);
+                    float cursorX = nameX + layout.width;
+                    layout.setText(font, " "); // Usar un espacio para medir el ancho
+                    shapeRenderer.rect(cursorX, nameY - font.getCapHeight(), layout.width, font.getCapHeight() + 10);
+                }
+                shapeRenderer.end();
+                break;
+
+            case TUTORIAL_CONFIRM:
+                drawDialog("Quieres jugar el tutorial?", new String[]{"Sí", "No"}, tutorialConfirmSelection);
+                break;
+
+            case SKIP_TUTORIAL_CONFIRM:
+                drawDialog("Saltar directamente a la partida?", new String[]{"Sí", "No"}, skipTutorialConfirmSelection);
+                break;
         }
-        shapeRenderer.end();
+
+        if (currentState != State.NAME_INPUT) {
+            String dialogControls = "E: Aceptar | Q: Retroceder | W/S: Cambiar selección.";
+            GlyphLayout layout = new GlyphLayout();
+            font.getData().setScale(1);
+            layout.setText(font, dialogControls);
+            float controlsX = (Gdx.graphics.getWidth() - layout.width) / 2f;
+            font.draw(batch, dialogControls, controlsX, 50);
+            batch.end();
+        }
+    }
+
+    private void drawDialog(String title, String[] options, int selection) {
+        GlyphLayout layout = new GlyphLayout();
+        font.getData().setScale(1.5f);
+        layout.setText(font, title);
+        float titleX = (Gdx.graphics.getWidth() - layout.width) / 2f;
+        float titleY = Gdx.graphics.getHeight() / 2f + 100;
+        font.draw(batch, title, titleX, titleY);
+
+        float optionY = Gdx.graphics.getHeight() / 2f;
+        for (int i = 0; i < options.length; i++) {
+            if (i == selection) {
+                font.setColor(Color.RED);
+            } else {
+                font.setColor(Color.WHITE);
+            }
+            layout.setText(font, options[i]);
+            float optionX = (Gdx.graphics.getWidth() - layout.width) / 2f;
+            font.draw(batch, options[i], optionX, optionY);
+            optionY -= 80;
+        }
+        font.setColor(Color.WHITE);
     }
 
     // === Manejo de entrada ===
@@ -109,17 +173,50 @@ public class NameInputUI implements InputProcessor {
      */
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == GlobalSettings.CONTROL_CONFIRM) {
-            if (playerName.length() > 0) {
-                GlobalSettings.playerName = playerName.toString();
-                // Cargar nivel 1
-                GameplayState level1 = GameplayState.createForLevel("Levels/level1.json");
-                gameController.stateMachine.changeState(level1);
-            }
-        } else if (keycode == GlobalSettings.CONTROL_BACKSPACE) {
-            if (playerName.length() > 0) {
-                playerName.setLength(playerName.length() - 1);
-            }
+        switch (currentState) {
+            case NAME_INPUT:
+                if (keycode == GlobalSettings.CONTROL_CONFIRM) {
+                    if (playerName.length() > 0) {
+                        GlobalSettings.playerName = playerName.toString();
+                        currentState = State.TUTORIAL_CONFIRM;
+                    }
+                } else if (keycode == GlobalSettings.CONTROL_BACKSPACE) {
+                    if (playerName.length() > 0) {
+                        playerName.setLength(playerName.length() - 1);
+                    }
+                }
+                break;
+            case TUTORIAL_CONFIRM:
+                if (keycode == GlobalSettings.CONTROL_JUMP || keycode == GlobalSettings.CONTROL_CROUCH) {
+                    tutorialConfirmSelection = 1 - tutorialConfirmSelection;
+                } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
+                    if (tutorialConfirmSelection == 0) { // Sí
+                        // Cargar nivel 0 (tutorial)
+                        GameplayState tutorial = GameplayState.createForLevel("Levels/level0.json");
+                        gameController.stateMachine.changeState(tutorial);
+                    } else { // No
+                        currentState = State.SKIP_TUTORIAL_CONFIRM;
+                    }
+                } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
+                    currentState = State.NAME_INPUT;
+                }
+                break;
+
+            case SKIP_TUTORIAL_CONFIRM:
+                if (keycode == GlobalSettings.CONTROL_JUMP || keycode == GlobalSettings.CONTROL_CROUCH) {
+                    skipTutorialConfirmSelection = 1 - skipTutorialConfirmSelection;
+                } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
+                    if (skipTutorialConfirmSelection == 0) { // Sí
+                        // Cargar nivel 1
+                        GameplayState level1 = GameplayState.createForLevel("Levels/level1.json");
+                        gameController.stateMachine.changeState(level1);
+                    } else { // No
+                        currentState = State.TUTORIAL_CONFIRM;
+                    }
+                } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
+                    currentState = State.TUTORIAL_CONFIRM;
+                }
+                break;
         }
         return true;
     }
@@ -131,8 +228,10 @@ public class NameInputUI implements InputProcessor {
      */
     @Override
     public boolean keyTyped(char character) {
-        if (playerName.length() < 15 && (java.lang.Character.isLetterOrDigit(character) || character == ' ')) {
-            playerName.append(character);
+        if (currentState == State.NAME_INPUT) {
+            if (playerName.length() < 15 && (java.lang.Character.isLetterOrDigit(character) || character == ' ')) {
+                playerName.append(character);
+            }
         }
         return true;
     }

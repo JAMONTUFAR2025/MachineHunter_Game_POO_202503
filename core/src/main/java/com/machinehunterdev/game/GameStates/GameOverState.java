@@ -1,6 +1,7 @@
 package com.machinehunterdev.game.GameStates;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.GameController;
@@ -23,6 +24,7 @@ public class GameOverState implements IState<GameController> {
     private SpriteBatch batch;
     private GameOverUI gameOverUI;
     public static CharacterAnimator playerAnimator;
+    private Texture backgroundTexture;
 
     private float gameOverTextTimer;
     private float dialogueTimer;
@@ -54,6 +56,7 @@ public class GameOverState implements IState<GameController> {
         this.batch = owner.batch;
         this.gameOverUI = new GameOverUI(batch, owner, playerAnimator);
         Gdx.input.setInputProcessor(gameOverUI);
+        backgroundTexture = new Texture("Fondos/GameOverBackground.png");
 
         // Inicializar temporizadores y estados
         gameOverTextTimer = 0f;
@@ -70,6 +73,10 @@ public class GameOverState implements IState<GameController> {
      */
     @Override
     public void execute() {
+        batch.begin();
+        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+
         float deltaTime = Gdx.graphics.getDeltaTime();
 
         if (playerAnimator != null) {
@@ -114,6 +121,9 @@ public class GameOverState implements IState<GameController> {
     public void exit() {
         if (gameOverUI != null) {
             gameOverUI.dispose();
+        }
+        if (backgroundTexture != null) {
+            backgroundTexture.dispose();
         }
         if (playerAnimator != null) {
             playerAnimator.dispose();

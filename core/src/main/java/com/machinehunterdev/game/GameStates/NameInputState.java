@@ -30,6 +30,7 @@ public class NameInputState implements IState<GameController> {
     private NameInputUI nameInputUI;
     private SpriteBatch batch;
     private Character playerCharacter;
+    private Texture backgroundTexture;
 
     /**
      * Constructor privado para implementar el patrón Singleton.
@@ -48,6 +49,7 @@ public class NameInputState implements IState<GameController> {
         this.batch = owner.batch;
         this.nameInputUI = new NameInputUI(batch, owner);
         Gdx.input.setInputProcessor(nameInputUI);
+        backgroundTexture = new Texture("Fondos/NameInputBackground.png");
 
         // Cargar animación del personaje para la pantalla de nombre
         List<Sprite> playerIdleFrames = loadSpriteFrames("Player/PlayerIdle", 4);
@@ -73,6 +75,10 @@ public class NameInputState implements IState<GameController> {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        batch.begin();
+        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+
         float deltaTime = Gdx.graphics.getDeltaTime();
         playerCharacter.update(deltaTime);
         playerCharacter.onGround = true;
@@ -90,6 +96,9 @@ public class NameInputState implements IState<GameController> {
     public void exit() {
         if (nameInputUI != null) {
             nameInputUI.dispose();
+        }
+        if (backgroundTexture != null) {
+            backgroundTexture.dispose();
         }
         Gdx.input.setInputProcessor(null);
     }
