@@ -16,8 +16,9 @@ public class PatrollerEnemy extends BaseEnemy {
      * @param character El personaje del enemigo patrullero.
      * @param patrolPoints Puntos de patrullaje.
      * @param waitTime Tiempo de espera en cada punto.
+     * @param type El tipo de enemigo.
      */
-    public PatrollerEnemy(Character character, ArrayList<Vector2> patrolPoints, float waitTime) {
-        super(character, new PatrollerEnemyController(character, patrolPoints, waitTime));
+    public PatrollerEnemy(Character character, ArrayList<Vector2> patrolPoints, float waitTime, EnemyType type) {
+        super(character, new PatrollerEnemyController(character, patrolPoints, waitTime), type);
     }
 }

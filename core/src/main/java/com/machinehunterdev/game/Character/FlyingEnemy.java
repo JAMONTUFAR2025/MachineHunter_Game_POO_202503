@@ -16,8 +16,9 @@ public class FlyingEnemy extends BaseEnemy {
      * @param character El personaje asociado al enemigo.
      * @param patrolPoints Puntos de patrullaje para el enemigo.
      * @param waitTime Tiempo de espera entre patrullas.
+     * @param type El tipo de enemigo.
      */
-    public FlyingEnemy(Character character, ArrayList<Vector2> patrolPoints, float waitTime) {
-        super(character, new FlyingEnemyController(character, patrolPoints, waitTime));
+    public FlyingEnemy(Character character, ArrayList<Vector2> patrolPoints, float waitTime, EnemyType type) {
+        super(character, new FlyingEnemyController(character, patrolPoints, waitTime), type);
     }
 }

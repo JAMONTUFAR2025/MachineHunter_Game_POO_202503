@@ -16,4 +16,5 @@ public interface IEnemy {
     void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullet); // Para actualizar el estado del enemigo
     void draw(SpriteBatch batch); // Para dibujar el enemigo
     Character getCharacter(); // Para acceder a la lógica de CharacterController
+    EnemyType getType(); // Para obtener el tipo de enemigo
 }

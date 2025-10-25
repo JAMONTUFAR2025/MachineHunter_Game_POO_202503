@@ -24,8 +24,10 @@ import com.machinehunterdev.game.Character.NPCController;
 import com.machinehunterdev.game.Character.PlayerController;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.DamageSystem;
+import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
+import com.machinehunterdev.game.Character.EnemyType;
 import com.machinehunterdev.game.Environment.SolidObject;
 import com.machinehunterdev.game.FX.ImpactEffectManager;
 import com.machinehunterdev.game.GameController;
@@ -497,6 +499,32 @@ public class GameplayState implements IState<GameController> {
                             playerCharacter.position.x += overlapX;
                         }
                         DamageSystem.applyContactDamage(playerCharacter, enemyCharacter, 1);
+
+                        /* Animación de impacto al contacto */
+                        // Calcula la intersección de las cajas de colisión
+                        Rectangle intersection = new Rectangle(playerBounds);
+                        intersection.set(intersection.x, intersection.y, intersection.width, intersection.height);
+                        intersection.x = Math.max(playerBounds.x, enemyBounds.x);
+                        intersection.width = Math.min(playerBounds.x + playerBounds.width, enemyBounds.x + enemyBounds.width) - intersection.x;
+                        intersection.y = Math.max(playerBounds.y, enemyBounds.y);
+                        intersection.height = Math.min(playerBounds.y + playerBounds.height, enemyBounds.y + enemyBounds.height) - intersection.y;
+
+                        // Calcula el punto central de la intersección
+                        float impactX = intersection.x + intersection.width / 2;
+                        float impactY = intersection.y + intersection.height / 2;
+
+                        // Crea el efecto de impacto en el punto de colisión
+                        switch (enemy.getType()) {
+                            case PATROLLER:
+                                impactEffectManager.createImpact(impactX, impactY, WeaponType.ELECTRIC);
+                                break;
+                            case SHOOTER:
+                                impactEffectManager.createImpact(impactX, impactY, WeaponType.THUNDER);
+                                break;
+                            case FLYING:
+                                impactEffectManager.createImpact(impactX, impactY, WeaponType.ION);
+                                break;
+                        }
                     }
                     break; 
                 }

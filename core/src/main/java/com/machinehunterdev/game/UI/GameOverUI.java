@@ -162,10 +162,10 @@ public class GameOverUI implements InputProcessor {
     }
 
     /**
-     * Dibuja el texto "ELIMINATED" con animación de escritura.
+     * Dibuja el texto "ELIMINADO" con animación de escritura.
      */
     private void drawGameOverText() {
-        String gameOverText = "ELIMINATED";
+        String gameOverText = "ELIMINADO";
         float animationPerCharDuration = 0.1f; // Increased speed
         float normalScale = 4.0f; // Reduced the size
         float startScale = 20.0f; // Adjusted for a more dramatic effect

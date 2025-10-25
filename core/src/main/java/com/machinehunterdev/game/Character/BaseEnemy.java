@@ -17,15 +17,17 @@ public abstract class BaseEnemy implements IEnemy {
     /* Características del enemigo */
     protected Character character;
     protected CharacterController controller;
+    protected EnemyType enemyType;
 
     /**
      * Constructor de BaseEnemy.
      * @param character El personaje asociado al enemigo.
      * @param controller El controlador de comportamiento del enemigo.
      */
-    public BaseEnemy(Character character, CharacterController controller) {
+    public BaseEnemy(Character character, CharacterController controller, EnemyType enemyType) {
         this.character = character;
         this.controller = controller;
+        this.enemyType = enemyType;
     }
 
     /**
@@ -63,5 +65,14 @@ public abstract class BaseEnemy implements IEnemy {
      */
     public CharacterController getController() {
         return controller;
+    }
+
+    /**
+     * Obtiene el tipo de enemigo.
+     * @return El tipo de enemigo.
+     */
+    @Override
+    public EnemyType getType() {
+        return enemyType;
     }
 }

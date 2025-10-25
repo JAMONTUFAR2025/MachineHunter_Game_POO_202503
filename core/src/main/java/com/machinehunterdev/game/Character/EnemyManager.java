@@ -36,13 +36,13 @@ public class EnemyManager {
     public void addEnemy(EnemyType type, Character character, ArrayList<Vector2> patrolPoints, float waitTime, float shootInterval, float shootTime) {
         switch (type) {
             case PATROLLER:
-                enemies.add(new PatrollerEnemy(character, patrolPoints, waitTime));
+                enemies.add(new PatrollerEnemy(character, patrolPoints, waitTime, type));
                 break;
             case SHOOTER:
-                enemies.add(new ShooterEnemy(character, shootInterval, shootTime));
+                enemies.add(new ShooterEnemy(character, shootInterval, shootTime, type));
                 break;
             case FLYING:
-                enemies.add(new FlyingEnemy(character, patrolPoints, waitTime));
+                enemies.add(new FlyingEnemy(character, patrolPoints, waitTime, type));
                 break;
         }
     }
