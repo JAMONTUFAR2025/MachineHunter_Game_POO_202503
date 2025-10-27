@@ -1,7 +1,6 @@
 package com.machinehunterdev.game.UI;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -192,7 +191,7 @@ public class NameInputUI implements InputProcessor {
                 } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
                     if (tutorialConfirmSelection == 0) { // Sí
                         // Cargar nivel 0 (tutorial)
-                        GameplayState tutorial = GameplayState.createForLevel("Levels/level0.json");
+                        GameplayState tutorial = GameplayState.createForLevel("Levels/Level 0 - Tutorial.json");
                         gameController.stateMachine.changeState(tutorial);
                     } else { // No
                         currentState = State.SKIP_TUTORIAL_CONFIRM;
@@ -208,7 +207,7 @@ public class NameInputUI implements InputProcessor {
                 } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
                     if (skipTutorialConfirmSelection == 0) { // Sí
                         // Cargar nivel 1
-                        GameplayState level1 = GameplayState.createForLevel("Levels/level1.json");
+                        GameplayState level1 = GameplayState.createForLevel("Levels/Level 1.json");
                         gameController.stateMachine.changeState(level1);
                     } else { // No
                         currentState = State.TUTORIAL_CONFIRM;

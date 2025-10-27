@@ -1,0 +1,47 @@
+{
+  "backgroundTexture": "Fondos/FondoJuego.png",
+  "groundTexture": "Environment/FloorWhite320.png",
+  "levelWidth": 480,
+  "playerStartX": 50,
+  "playerStartY": 100,
+  "nextLevel": "Levels/Level 4.json",
+  "solidObjectsData": [
+    {
+      "x": 32,
+      "y": 80,
+      "walkable": true,
+      "type": "Platform_White_Small"
+    },
+    {
+      "x": 32,
+      "y": 144,
+      "walkable": true,
+      "type": "Platform_White_Small"
+    },
+    {
+      "x": 352,
+      "y": 80,
+      "walkable": true,
+      "type": "Platform_White_Small"
+    },
+    {
+      "x": 352,
+      "y": 144,
+      "walkable": true,
+      "type": "Platform_White_Small"
+    }
+  ],
+  "enemies": [
+    {
+      "type": "PATROLLER",
+      "x": 200,
+      "y": 300,
+      "health": 50,
+      "patrolPoints": [
+        { "x": 100, "y": 300 },
+        { "x": 700, "y": 300 }
+      ],
+      "waitTime": 2.0
+    }
+  ]
+}

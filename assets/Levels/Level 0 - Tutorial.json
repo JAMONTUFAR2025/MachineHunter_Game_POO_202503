@@ -1,82 +1,41 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
+  "groundTexture": "Environment/FloorWhite320.png",
   "levelWidth": 960,
   "playerStartX": 50,
   "playerStartY": 100,
-  "nextLevel": "Levels/level1.json",
+  "nextLevel": "Levels/Level 1.json",
   "solidObjectsData": [
     {
-        "x": 0,
-        "y": 0,
-        "width": 480,
-        "height": 32,
-        "texture": "suelo.png",
-        "walkable": true
-        },
-        {
-        "x": 480,
-        "y": 0,
-        "width": 480,
-        "height": 32,
-        "texture": "suelo.png",
-        "walkable": true
-      },
-      {
-        "x": 960,
-        "y": 0,
-        "width": 480,
-        "height": 32,
-        "texture": "suelo.png",
-        "walkable": true
-      },
-      {
-      "x": 100,
-      "y": 64,
-      "walkable": true,
-      "type": "Platform_White_Huge"
-      },
-      {
-      "x": 100,
-      "y": 128,
-      "walkable": true,
-      "type": "Platform_White_Huge"
-      },
-      {
-      "x": 100,
-      "y": 192,
-      "walkable": true,
-      "type": "Platform_White_Huge"
-      },
-      {
-      "x": 800,
-      "y": 64,
-      "walkable": true,
-      "type": "Platform_Red_Huge"
-      },
-      {
-        "x": 500,
-        "y": 50,
-        "walkable": true,
-        "type": "Platform_Gray_Medium"
-      },
-      {
-      "type": "Chain_White",
       "x": 100,
       "y": 80,
+      "walkable": true,
+      "type": "Platform_White_Huge"
+    },
+    {
+      "x": 100,
+      "y": 144,
+      "walkable": true,
+      "type": "Platform_White_Huge"
+    },
+    {
+      "x": 100,
+      "y": 208,
+      "walkable": true,
+      "type": "Platform_White_Huge"
+    },
+    {
+      "type": "Chain_White",
+      "x": 100,
+      "y": 96,
       "walkable": false
-      },
-      {
+    },
+    {
       "type": "Chain_White",
       "x": 380,
-      "y": 80,
+      "y": 96,
       "walkable": false
-      },
-      {
-      "type": "Chain_Gray",
-      "x": 600,
-      "y": 32,
-      "walkable": false
-      }
+    }
   ],
   "enemies": [
     {
@@ -86,7 +45,7 @@
       "health": 50,
       "patrolPoints": [
         { "x": 100, "y": 300 },
-        { "x": 200, "y": 300 }
+        { "x": 700, "y": 300 }
       ],
       "waitTime": 2.0
     }

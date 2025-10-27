@@ -27,7 +27,6 @@ import com.machinehunterdev.game.DamageTriggers.DamageSystem;
 import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
-import com.machinehunterdev.game.Character.EnemyType;
 import com.machinehunterdev.game.Environment.SolidObject;
 import com.machinehunterdev.game.FX.ImpactEffectManager;
 import com.machinehunterdev.game.GameController;
@@ -56,6 +55,7 @@ public class GameplayState implements IState<GameController> {
     private OrthographicCamera camera;
     private Texture backgroundTexture;
     private Texture blackTexture;
+    private Texture groundTexture;
 
     // === SISTEMAS DE INTERFAZ ===
     private DialogManager dialogManager;
@@ -127,6 +127,7 @@ public class GameplayState implements IState<GameController> {
         bullets = new ArrayList<>();
         interactionFont = new BitmapFont(Gdx.files.internal("fonts/OrangeKid32.fnt"));
         impactEffectManager = new ImpactEffectManager(0.1f);
+        groundTexture = new Texture(currentLevel.groundTexture);
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(0, 0, 0, 0.7f);
@@ -149,7 +150,7 @@ public class GameplayState implements IState<GameController> {
             if (objData.type != null && !objData.type.isEmpty()) {
                 // Crear objeto basado en el "type"
                 newObject = new SolidObject(objData.x, objData.y, objData.type, objData.walkable);
-            } else if (objData.texture != null) {
+            } else if (objData.texture != null && !objData.texture.equals(currentLevel.groundTexture)) {
                 // Crear objeto con definición explícita (sistema antiguo)
                 newObject = new SolidObject(objData.x, objData.y, objData.width, objData.height, new Texture(objData.texture), objData.walkable);
             }
@@ -425,12 +426,14 @@ public class GameplayState implements IState<GameController> {
 
         gameBatch.setColor(1, 1, 1, 0.5f);
         int backgroundWidth = GlobalSettings.VIRTUAL_WIDTH;
-        int mapWidth = 1440;
+        int mapWidth = GlobalSettings.levelWidth;
         int backgroundCount = (int) Math.ceil((float) mapWidth / backgroundWidth) + 1;
         for (int i = 0; i < backgroundCount; i++) {
             gameBatch.draw(backgroundTexture, i * backgroundWidth, 0);
         }
         gameBatch.setColor(1, 1, 1, 1);
+
+        drawGround();
 
         for (SolidObject obj : solidObjects) {
             obj.render(gameBatch);
@@ -469,6 +472,14 @@ public class GameplayState implements IState<GameController> {
         float textY = boxY + layout.height + 5;
         interactionFont.draw(gameBatch, layout, textX, textY);
         interactionFont.getData().setScale(1.0f);
+    }
+
+    private void drawGround() {
+        int groundWidth = 320; // The user specified 320 pixels
+        int groundCount = (int) Math.ceil((float) GlobalSettings.levelWidth / groundWidth);
+        for (int i = 0; i < groundCount; i++) {
+            gameBatch.draw(groundTexture, i * groundWidth, 0);
+        }
     }
 
     private void handleDialogInput() {
@@ -532,11 +543,11 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    private void updateBullets(float deltaTime) {
+        private void updateBullets(float deltaTime) {
         for (int i = bullets.size() - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
             
-            if (bullet.update(deltaTime) || bullet.position.x < -100 || bullet.position.x > 1540) {
+            if (bullet.update(deltaTime) || bullet.position.x < camera.position.x - GlobalSettings.VIRTUAL_WIDTH / 2 - 100 || bullet.position.x > camera.position.x + GlobalSettings.VIRTUAL_WIDTH / 2 + 100) {
                 bullets.remove(i);
                 bullet.dispose();
             }
@@ -613,6 +624,7 @@ public class GameplayState implements IState<GameController> {
     public void exit() {
         disposeTexture(backgroundTexture);
         disposeTexture(blackTexture);
+        disposeTexture(groundTexture);
         
         for (SolidObject obj : solidObjects) {
             obj.dispose();
