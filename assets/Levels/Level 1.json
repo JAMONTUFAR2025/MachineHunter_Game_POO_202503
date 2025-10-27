@@ -1,6 +1,6 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
-  "groundTexture": "Environment/FloorWhite320.png",
+  "groundTexture": "Environment/FloorBlue320.png",
   "levelWidth": 2240,
   "playerStartX": 50,
   "playerStartY": 100,
@@ -16,7 +16,7 @@
       "x": 100,
       "y": 144,
       "walkable": true,
-      "type": "Platform_White_Huge"
+      "type": "Platform_Blue_Huge"
     },
     {
       "x": 100,

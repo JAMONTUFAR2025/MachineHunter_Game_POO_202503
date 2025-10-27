@@ -494,7 +494,6 @@ public class GameplayState implements IState<GameController> {
     }
 
     private void checkPlayerEnemyCollision() {
-        playerCharacter.isOverlappingEnemy = false;
         for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
             Character enemyCharacter = enemy.getCharacter();
             if (enemyCharacter.isAlive()) {
@@ -502,16 +501,8 @@ public class GameplayState implements IState<GameController> {
                 Rectangle enemyBounds = enemyCharacter.getBounds();
 
                 if (playerBounds.overlaps(enemyBounds)) {
-                    playerCharacter.isOverlappingEnemy = true;
-
                     if (DamageSystem.canTakeDamage(playerCharacter)) {
-                        float overlapX = Math.min(playerBounds.x + playerBounds.width, enemyBounds.x + enemyBounds.width) -
-                                    Math.max(playerBounds.x, enemyBounds.x);
-                        if (playerCharacter.getX() < enemyCharacter.getX()) {
-                            playerCharacter.position.x -= overlapX;
-                        } else {
-                            playerCharacter.position.x += overlapX;
-                        }
+                        
                         DamageSystem.applyContactDamage(playerCharacter, enemyCharacter, 1);
 
                         /* Animación de impacto al contacto */

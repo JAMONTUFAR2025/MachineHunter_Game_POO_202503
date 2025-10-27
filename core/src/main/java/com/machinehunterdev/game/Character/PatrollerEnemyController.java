@@ -111,6 +111,22 @@ public class PatrollerEnemyController extends CharacterController {
         waitTimer += delta;
         character.stopMoving();
         if (waitTimer >= waitTime) {
+            // Decidir qué hacer a continuación
+            double random = Math.random();
+            if (random < 0.5) {
+                // 50% de probabilidad: No hacer nada
+            } else if (random < 0.75) {
+                // 25% de probabilidad: Saltar
+                if (character.onGround) { // Solo puede saltar si está en el suelo
+                    character.jump();
+                }
+            } else {
+                // 25% de probabilidad: Bajar de una plataforma
+                if (character.onGround) { // Solo puede bajar si está en el suelo
+                    character.fallThroughPlatform();
+                }
+            }
+
             // Avanzar al siguiente punto (cíclico)
             currentTargetIndex = (currentTargetIndex + 1) % patrolPoints.size();
             currentTarget = patrolPoints.get(currentTargetIndex);

@@ -68,7 +68,6 @@ public class Character
     public boolean isAttacking;                 // Está atacando
     public boolean isAlive;                     // Está vivo
     public boolean onGround;                    // Está en contacto con el suelo
-    public boolean isOverlappingEnemy;          // Está superpuesto con un enemigo (para evitar daño continuo)
     public boolean isCrouching;                 // Está agachado
     public boolean isFallingThroughPlatform = false; // Estado para ignorar plataformas temporalmente
     public boolean readyForGameOverTransition = false; // Indica si el personaje está listo para la pantalla de Game Over
@@ -304,10 +303,8 @@ public class Character
         if (invulnerable) {
             invulnerabilityTimer -= delta;
             if (invulnerabilityTimer <= 0) {
-                if (!isOverlappingEnemy) {
-                    invulnerable = false;
-                    invulnerabilityTimer = 0;
-                }
+                invulnerable = false;
+                invulnerabilityTimer = 0;
             }
         }
 
