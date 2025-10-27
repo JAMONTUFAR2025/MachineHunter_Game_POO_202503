@@ -164,9 +164,9 @@ public class GameplayState implements IState<GameController> {
     private void initializePlayer() {
         List<Sprite> playerIdleFrames = loadSpriteFrames("Player/PlayerIdle", 4);
         List<Sprite> playerRunFrames = loadSpriteFrames("Player/PlayerRun", 8);
-        List<Sprite> playerJumpFrames = loadSpriteFrames("Player/PlayerJump", 2);
-        List<Sprite> playerFallFrames = loadSpriteFrames("Player/PlayerFall", 2);
-        List<Sprite> playerHurtFrames = loadSpriteFrames("Player/PlayerHurt", 2);
+        List<Sprite> playerJumpFrames = loadSpriteFrames("Player/PlayerJump", 1);
+        List<Sprite> playerFallFrames = loadSpriteFrames("Player/PlayerFall", 1);
+        List<Sprite> playerHurtFrames = loadSpriteFrames("Player/PlayerHurt", 1);
         List<Sprite> playerCrouchFrames = loadSpriteFrames("Player/PlayerCrouch", 4);
         List<Sprite> playerLaserAttackFrames = loadSpriteFrames("Player/PlayerLaserAttack", 2);
         List<Sprite> playerIonAttackFrames = loadSpriteFrames("Player/PlayerIonAttack", 2);
@@ -197,7 +197,15 @@ public class GameplayState implements IState<GameController> {
         for (LevelData.EnemyData enemyData : currentLevel.enemies) {
             EnemySkin skin = EnemySkin.getSkin(enemyData.type);
 
-            List<Sprite> enemyIdleFrames = loadSpriteFrames(skin.idleFrames, 4);
+            List<Sprite> enemyIdleFrames;
+
+            // Nuevos frames de animación para enemigos voladores, cuatro para los demás
+            if (enemyData.type == EnemyType.FLYING) {
+                enemyIdleFrames = loadSpriteFrames(skin.idleFrames, 9);
+            } else {
+                enemyIdleFrames = loadSpriteFrames(skin.idleFrames, 4);
+            }
+
             List<Sprite> enemyRunFrames = loadSpriteFrames(skin.runFrames, 4);
             List<Sprite> enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 4);
             List<Sprite> enemyJumpFrames = loadSpriteFrames(skin.jumpFrames, 1);
@@ -246,16 +254,11 @@ public class GameplayState implements IState<GameController> {
         LevelData.NPCData npcData = currentLevel.npcs.get(0);
         
         List<Sprite> npcIdleFrames = loadSpriteFrames(npcData.idleFrames, 4);
-        List<Sprite> npcRunFrames = loadSpriteFrames(npcData.runFrames, 8);
-        List<Sprite> npcJumpFrames = loadSpriteFrames(npcData.jumpFrames, 2);
-        List<Sprite> npcFallFrames = loadSpriteFrames(npcData.fallFrames, 2);
-        List<Sprite> npcHurtFrames = loadSpriteFrames(npcData.hurtFrames, 2);
-        List<Sprite> npcCrouchFrames = loadSpriteFrames(npcData.crouchFrames, 4);
 
         CharacterAnimator npcAnimator = new CharacterAnimator(
-            npcIdleFrames, npcRunFrames, null,
-            npcJumpFrames, npcFallFrames, null,
-            npcHurtFrames, npcCrouchFrames, null,
+            npcIdleFrames, null, null,
+            null, null, null,
+            null, null, null,
             null, null
         );
         

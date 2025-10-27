@@ -20,9 +20,6 @@ public class SpriteAnimator
     
     /** Indica si la animación debe repetirse indefinidamente */
     private boolean loop;
-    
-    /** Indica si se debe excluir el último frame en la animación normal */
-    private boolean excludeLastFrame;
 
     /** Frame actual que se está mostrando */
     private int currentFrame;
@@ -38,40 +35,28 @@ public class SpriteAnimator
      * @param frames Lista de fotogramas de la animación
      * @param frameRate Tiempo entre frames en segundos
      * @param loop Indica si la animación debe repetirse
-     * @param excludeLastFrame Indica si se excluye el último frame
      */
-    public SpriteAnimator(List<Sprite> frames, float frameRate, boolean loop, boolean excludeLastFrame) {
+    public SpriteAnimator(List<Sprite> frames, float frameRate, boolean loop) {
         this.frames = frames;
         this.frameRate = frameRate;
         this.loop = loop;
-        this.excludeLastFrame = excludeLastFrame;
     }
 
     /**
-     * Constructor sin parámetro excludeLastFrame (por defecto false).
-     * @param frames Lista de fotogramas de la animación
-     * @param frameRate Tiempo entre frames en segundos
-     * @param loop Indica si la animación debe repetirse
-     */
-    public SpriteAnimator(List<Sprite> frames, float frameRate, boolean loop) {
-        this(frames, frameRate, loop, false);
-    }
-
-    /**
-     * Constructor con valores por defecto para loop (true) y excludeLastFrame (false).
+     * Constructor con valores por defecto para loop (true)
      * @param frames Lista de fotogramas de la animación
      * @param frameRate Tiempo entre frames en segundos
      */
     public SpriteAnimator(List<Sprite> frames, float frameRate) {
-        this(frames, frameRate, true, false);
+        this(frames, frameRate, true);
     }
 
     /**
-     * Constructor con valores por defecto para frameRate (0.16f), loop (true) y excludeLastFrame (false).
+     * Constructor con valores por defecto para frameRate (0.16f) y loop (true).
      * @param frames Lista de fotogramas de la animación
      */
     public SpriteAnimator(List<Sprite> frames) {
-        this(frames, 0.16f, true, false);
+        this(frames, 0.16f, true);
     }
 
     /**
@@ -93,7 +78,7 @@ public class SpriteAnimator
         timer += deltaTime;
         if (timer > frameRate) {
             // Determinar el límite de frames a animar
-            int frameLimit = excludeLastFrame ? frames.size() - 1 : frames.size();
+            int frameLimit = frames.size();
             if (frameLimit <= 0) frameLimit = 1; // Evitar división por cero o negativo
 
             if (loop) {

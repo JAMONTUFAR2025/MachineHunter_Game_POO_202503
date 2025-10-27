@@ -73,13 +73,13 @@ public class CharacterAnimator {
             this.animators.put(AnimationState.RUN, new SpriteAnimator(runFrames));
         }
         if (deadFrames != null && !deadFrames.isEmpty()) {
-            this.animators.put(AnimationState.DEAD, new SpriteAnimator(deadFrames, 0.15f, false, false));
+            this.animators.put(AnimationState.DEAD, new SpriteAnimator(deadFrames, 0.15f, false));
         }
         if (jumpFrames != null && !jumpFrames.isEmpty()) {
-            this.animators.put(AnimationState.JUMP, new SpriteAnimator(jumpFrames, 0.16f, false, false));
+            this.animators.put(AnimationState.JUMP, new SpriteAnimator(jumpFrames, 0.16f, false));
         }
         if (fallFrames != null && !fallFrames.isEmpty()) {
-            this.animators.put(AnimationState.FALL, new SpriteAnimator(fallFrames, 0.16f, false, true));
+            this.animators.put(AnimationState.FALL, new SpriteAnimator(fallFrames, 0.16f, false));
         }
         if (attackFrames != null && !attackFrames.isEmpty()) {
             this.animators.put(AnimationState.ATTACK, new SpriteAnimator(attackFrames, 0.15f));
@@ -94,7 +94,7 @@ public class CharacterAnimator {
             this.animators.put(AnimationState.RAILGUN_ATTACK, new SpriteAnimator(attackRailgunFrames, 0.15f));
         }
         if (hurtFrames != null && !hurtFrames.isEmpty()) {
-            this.animators.put(AnimationState.HURT, new SpriteAnimator(hurtFrames, 0.1f, false, true));
+            this.animators.put(AnimationState.HURT, new SpriteAnimator(hurtFrames, 0.1f, false));
         }
         if (crouchFrames != null && !crouchFrames.isEmpty()) {
             this.animators.put(AnimationState.CROUCH, new SpriteAnimator(crouchFrames));

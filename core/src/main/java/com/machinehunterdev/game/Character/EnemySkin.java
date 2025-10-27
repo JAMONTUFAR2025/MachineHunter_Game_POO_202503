@@ -11,7 +11,7 @@ public enum EnemySkin {
      * Skin del enemigo patrullero
      * Idle, Run, Dead, Hurt
     */
-    PATROLLER("Enemy/Patroller/PatrollerIdle", "Enemy/Patroller/PatrollerRun", "Enemy/Explosion", "Enemy/Patroller/PatrollerHurt", null, null, null),
+    PATROLLER("Enemy/Patroller/PatrollerIdle", "Enemy/Patroller/PatrollerRun", "Enemy/Explosion", "Enemy/Patroller/PatrollerHurt", "Enemy/Patroller/PatrollerJump", "Enemy/Patroller/PatrollerFall", null),
     /**
      * Skin del enemigo tirador
      * Idle, Run, Dead, Hurt, Attack
