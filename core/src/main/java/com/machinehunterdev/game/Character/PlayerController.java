@@ -63,8 +63,13 @@ public class PlayerController extends CharacterController {
             character.switchWeapon(WeaponType.RAILGUN);
         }
 
-        // Ataque con arma actual (solo si está en el suelo y no está invulnerable ni agachado)
-        if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_ATTACK) && character.onGround && !character.isInvulnerable() && !character.isCrouching) {
+        // Ataque con arma actual (solo si está en el suelo y no está invulnerable)
+        if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_ATTACK) && character.onGround && !character.isInvulnerable()) {
+            // Si esta agachado, caer a través de la plataforma
+            if (character.isCrouching) {
+                character.fallThroughPlatform();
+            }
+            
             character.shoot(bullets);
             character.stopMoving();
 
@@ -104,11 +109,7 @@ public class PlayerController extends CharacterController {
 
         // Salto
         if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_JUMP)) {
-            if (character.isCrouching && character.onGround) {
-                character.fallThroughPlatform();
-            } else {
-                character.jump();
-            }
+            character.jump();
         }
     }
 

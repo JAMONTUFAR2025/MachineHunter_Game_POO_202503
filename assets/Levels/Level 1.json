@@ -59,8 +59,8 @@
     },
     {
       "type": "FLYING",
-      "x": 300,
-      "y": 200,
+      "x": 50,
+      "y": 50,
       "health": 20,
       "patrolPoints": [
         { "x": 300, "y": 64 },

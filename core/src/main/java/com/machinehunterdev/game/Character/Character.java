@@ -312,6 +312,12 @@ public class Character
         if (isHurt) {
             hurtTimer -= delta;
             velocity.x = 0; // Detener movimiento horizontal
+            
+            // Si no es el jugador
+            if(!isPlayer) {
+                velocity.y = 0; // Detener movimiento vertical
+            }
+
             if (hurtTimer <= 0) {
                 isHurt = false;
                 hurtTimer = 0;

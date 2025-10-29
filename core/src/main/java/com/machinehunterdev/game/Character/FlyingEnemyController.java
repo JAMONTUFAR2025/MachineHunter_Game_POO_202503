@@ -17,7 +17,7 @@ public class FlyingEnemyController extends CharacterController {
     /* Puntos de patrullaje */
     private ArrayList<Vector2> patrolPoints;
     /* Estado del enemigo volador */
-    private enum State { PATROLLING, WAITING }
+    private enum State { PATROLLING, WAITING, HURT }
     /* Estado actual del enemigo */
     private State currentState;
 
@@ -62,6 +62,10 @@ public class FlyingEnemyController extends CharacterController {
         character.update(delta);
         // No se necesitan colisiones para enemigos voladores
 
+        if (character.isHurt()) {
+            currentState = State.HURT;
+        }
+
         if (patrolPoints == null || patrolPoints.isEmpty()) {
             character.stopMoving();
             return;
@@ -74,6 +78,9 @@ public class FlyingEnemyController extends CharacterController {
             case WAITING:
                 handleWaitingState(delta);
                 break;
+            case HURT:
+                handleHurtState(delta);
+                break;
         }
     }
 
@@ -82,23 +89,19 @@ public class FlyingEnemyController extends CharacterController {
      * @param delta Tiempo transcurrido desde la última actualización.
      */
     private void handlePatrollingState(float delta) {
-        float tolerance = 5.0f; // Aumentar la tolerancia para evitar oscilaciones verticales
-        if (Math.abs(character.position.y - currentTarget.y) <= tolerance) {
+        float tolerance = 5.0f;
+        if (character.position.dst(currentTarget) <= tolerance) {
+            character.velocity.set(0, 0);
             character.stopMoving();
-            character.velocity.y = 0; // Detener el movimiento vertical
             currentState = State.WAITING;
             waitTimer = 0f;
             return;
         }
 
-        // Moverse unicamente en vertical
-        character.velocity.x = 0;
-        if (character.position.y < currentTarget.y) {
-            character.velocity.y = character.speed;
-        } else {
-            character.velocity.y = -character.speed;
-        }
+        Vector2 direction = new Vector2(currentTarget).sub(character.position).nor();
+        character.velocity.set(direction.scl(character.speed));
     }
+
 
     /**
      * Maneja el estado de espera.
@@ -106,10 +109,18 @@ public class FlyingEnemyController extends CharacterController {
      */
     private void handleWaitingState(float delta) {
         waitTimer += delta;
+        character.velocity.set(0, 0);
         character.stopMoving();
         if (waitTimer >= waitTime) {
             currentTargetIndex = (currentTargetIndex + 1) % patrolPoints.size();
             currentTarget = patrolPoints.get(currentTargetIndex);
+            currentState = State.PATROLLING;
+        }
+    }
+
+    private void handleHurtState(float delta) {
+        character.stopMoving();
+        if (!character.isHurt()) {
             currentState = State.PATROLLING;
         }
     }
