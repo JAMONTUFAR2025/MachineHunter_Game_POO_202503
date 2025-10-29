@@ -19,6 +19,12 @@
       "type": "Platform_White_Small"
     },
     {
+      "x": 192,
+      "y": 80,
+      "walkable": true,
+      "type": "Platform_White_Small"
+    },
+    {
       "x": 352,
       "y": 80,
       "walkable": true,
