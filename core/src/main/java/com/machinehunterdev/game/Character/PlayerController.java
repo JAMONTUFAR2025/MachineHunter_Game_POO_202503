@@ -33,8 +33,8 @@ public class PlayerController extends CharacterController {
      */
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
-        checkDistanceToGround(solidObjects);
         handleInput(bullets);
+        checkDistanceToGround(solidObjects);
 
         // Aplicar límites horizontales del mapa
         float playerWidth = character.getWidth();
@@ -62,21 +62,26 @@ public class PlayerController extends CharacterController {
             character.switchWeapon(WeaponType.RAILGUN);
         }
 
-        // Ataque con arma actual (solo si está en el suelo y no está invulnerable)
-        if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_ATTACK) && character.onGround && !character.isInvulnerable()) {
+        // Ejecucion al presionar la barra espaciadora mientras este en el suelo
+        if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_ATTACK) && character.onGround) {
+
             // Si esta agachado, caer a través de la plataforma
             if (character.isCrouching) {
                 character.fallThroughPlatform();
             }
             
-            character.shoot(bullets);
-            character.stopMoving();
+            // Si no esta invulnerable, disparar
+            if(!character.isInvulnerable())
+            {
+                character.shoot(bullets);
+                character.stopMoving();
 
-            // Permitir girar durante ataque
-            if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_LEFT)) {
-                character.setSeeingRight(false);
-            } else if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_RIGHT)) {
-                character.setSeeingRight(true);
+                // Permitir girar durante ataque
+                if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_LEFT)) {
+                    character.setSeeingRight(false);
+                } else if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_RIGHT)) {
+                    character.setSeeingRight(true);
+                }
             }
         } else {
             character.stopAttacking();
@@ -106,7 +111,7 @@ public class PlayerController extends CharacterController {
             }
         }
 
-        // Salto
+         // Salto
         if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_JUMP)) {
             character.jump();
         }

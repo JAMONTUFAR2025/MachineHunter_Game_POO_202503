@@ -72,6 +72,7 @@ public class Character
     public boolean isFallingThroughPlatform = false; // Estado para ignorar plataformas temporalmente
     public boolean readyForGameOverTransition = false; // Indica si el personaje está listo para la pantalla de Game Over
     public boolean isPlayer = false;
+    public boolean isPaused = false;
 
     // === SISTEMA DE INVULNERABILIDAD ===
     
@@ -192,7 +193,14 @@ public class Character
      * @param delta Tiempo transcurrido desde el último frame
      */
     public void update(float delta) {
-        System.out.println("velocity.y at start of update: " + velocity.y);
+        if (isPaused) {
+            if (characterAnimator != null) {
+                characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE);
+                characterAnimator.update(delta);
+            }
+            return;
+        }
+
         // --- MANEJO DE EMPUJE POR DAÑO ---
         if (isKnockedBack) {
             velocity.x = isSeeingRight ? -knockbackSpeed : knockbackSpeed;
@@ -313,12 +321,7 @@ public class Character
         if (isHurt) {
             hurtTimer -= delta;
             velocity.x = 0; // Detener movimiento horizontal
-            
-            // Si no es el jugador
-            if(!isPlayer) {
-                velocity.y = 0; // Detener movimiento vertical
-            }
-
+        
             if (hurtTimer <= 0) {
                 isHurt = false;
                 hurtTimer = 0;
@@ -568,7 +571,6 @@ public class Character
      * @param groundY Posición Y de la superficie
      */
     public void landOn(float groundY) {
-        System.out.println("landOn method called");
         position.y = groundY;
         velocity.y = 0;
         onGround = true;
@@ -620,6 +622,7 @@ public class Character
         if (onGround && !isCrouching && !isAttacking) {
             velocity.y = jumpForce;
             onGround = false;
+            System.out.println("Jump executed, velocity.y: " + velocity.y);
         }
     }
 

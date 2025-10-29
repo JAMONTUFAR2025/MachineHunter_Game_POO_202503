@@ -22,7 +22,6 @@ public class BossEnemyController extends CharacterController {
 
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
-        character.update(delta);
         character.velocity.set(0, 0);
         character.stopMoving();
 

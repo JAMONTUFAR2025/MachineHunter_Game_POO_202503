@@ -360,6 +360,13 @@ public class GameplayState implements IState<GameController> {
             dialogManager.update(deltaTime);
             if (!dialogManager.isDialogActive()) {
                 isDialogActive = false;
+                playerCharacter.isPaused = false;
+                for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+                    enemy.getCharacter().isPaused = false;
+                }
+                if (npcController != null) {
+                    npcController.character.isPaused = false;
+                }
             }
             handleDialogInput();
         } else {
@@ -413,6 +420,14 @@ public class GameplayState implements IState<GameController> {
                 if (dialogues != null && !dialogues.isEmpty()) {
                     dialogManager.showDialog(dialogues.get(0));
                     isDialogActive = true;
+
+                    playerCharacter.isPaused = true;
+                    for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+                        enemy.getCharacter().isPaused = true;
+                    }
+                    if (npcController != null) {
+                        npcController.character.isPaused = true;
+                    }
                 }
             }
         }

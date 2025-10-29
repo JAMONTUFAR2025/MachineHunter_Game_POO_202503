@@ -34,8 +34,7 @@ public class NameInputUI implements InputProcessor {
     /** SpriteBatch para renderizado */
     private SpriteBatch batch;
     
-    /** Renderizador de formas para el cursor */
-    private ShapeRenderer shapeRenderer;
+
     
     /** Controlador del juego para gestión de estados */
     private GameController gameController;
@@ -55,7 +54,7 @@ public class NameInputUI implements InputProcessor {
         this.batch = batch;
         this.gameController = gameController;
         this.playerName = new StringBuilder();
-        this.shapeRenderer = new ShapeRenderer();
+
         loadCustomBitmapFont();
     }
 
@@ -95,9 +94,13 @@ public class NameInputUI implements InputProcessor {
                 font.getData().setScale(1.5f);
                 String nameText = playerName.toString();
                 layout.setText(font, nameText);
-                float nameX = (Gdx.graphics.getWidth() - layout.width) / 2f;
+
+                // Adjust to center the text and cursor together
+                float totalInputWidth = layout.width + 2; // Width of text + cursor
+                float centeredStartX = (Gdx.graphics.getWidth() - totalInputWidth) / 2f;
+
                 float nameY = Gdx.graphics.getHeight() / 4f;
-                font.draw(batch, nameText, nameX, nameY);
+                font.draw(batch, nameText, centeredStartX, nameY);
 
                 String controls = "Teclado: Escribir nombre | Enter: Aceptar";
                 font.getData().setScale(1);
@@ -107,15 +110,7 @@ public class NameInputUI implements InputProcessor {
 
                 batch.end();
 
-                // Dibujar cursor parpadeante
-                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-                elapsedTime += Gdx.graphics.getDeltaTime();
-                if ((int)(elapsedTime * 2) % 2 == 0) {
-                    shapeRenderer.setColor(Color.WHITE);
-                    float cursorX = nameX + layout.width;
-                    shapeRenderer.rect(cursorX + 2, nameY - font.getCapHeight(), 2, font.getCapHeight() + 10);
-                }
-                shapeRenderer.end();
+
                 break;
 
             case TUTORIAL_CONFIRM:
@@ -221,7 +216,7 @@ public class NameInputUI implements InputProcessor {
         if (font != null) {
             font.dispose();
         }
-        shapeRenderer.dispose();
+
     }
 
     // === Métodos de InputProcessor no utilizados ===

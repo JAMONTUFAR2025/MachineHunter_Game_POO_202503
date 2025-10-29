@@ -42,7 +42,7 @@ public abstract class CharacterController {
         float feetRight = charX + charWidth;
 
         // Verificar colisión con el suelo principal
-        if(feetY <= GlobalSettings.GROUND_LEVEL) {
+        if(feetY <= GlobalSettings.GROUND_LEVEL && character.velocity.y <= 0) {
             character.landOn(GlobalSettings.GROUND_LEVEL);
             return;
         }

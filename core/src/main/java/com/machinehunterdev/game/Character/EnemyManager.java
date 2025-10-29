@@ -60,6 +60,13 @@ public class EnemyManager {
         }
     }
 
+    public void pause() {
+        for (IEnemy enemy : enemies) {
+            enemy.getCharacter().stopMoving();
+            enemy.getCharacter().velocity.set(0, 0);
+        }
+    }
+
     /**
      * Actualiza las animaciones de todos los enemigos gestionados.
      * @param delta Tiempo transcurrido desde el último frame.

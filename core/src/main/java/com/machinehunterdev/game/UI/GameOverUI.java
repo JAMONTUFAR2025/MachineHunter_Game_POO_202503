@@ -64,7 +64,8 @@ public class GameOverUI implements InputProcessor {
     private String randomDeathMessage;
     private String[] confirmationOptions = {"Sí", "No"};
     private int confirmationSelected = 0;
-    private boolean isRetryConfirmationVisible = false;
+    private boolean isExitConfirmationVisible = false;
+
     
     /**
      * Constructor de la interfaz de fin de juego.
@@ -157,8 +158,8 @@ public class GameOverUI implements InputProcessor {
             }
 
             if (showOptions) {
-                if (isRetryConfirmationVisible) {
-                    drawRetryConfirmation();
+                if (isExitConfirmationVisible) {
+                    drawExitConfirmation();
                 } else {
                     drawOptions();
                 }
@@ -279,22 +280,29 @@ public class GameOverUI implements InputProcessor {
         }
     }
 
-    private void drawRetryConfirmation() {
-        float startY = Gdx.graphics.getHeight() * 0.35f;
+
+
+    private void drawExitConfirmation() {
+        String confirmationText = "¿Seguro que quieres salir?";
+        GlyphLayout confirmationLayout = new GlyphLayout(font, confirmationText);
+        float confirmationX = (Gdx.graphics.getWidth() - confirmationLayout.width) / 2f;
+        float confirmationY = Gdx.graphics.getHeight() * 0.30f;
+        font.setColor(Color.WHITE);
+        font.draw(batch, confirmationText, confirmationX, confirmationY);
+
+        float startY = Gdx.graphics.getHeight() * 0.20f;
         float lineHeight = 110f;
 
-        for (int i = 0; i < options.length; i++) {
-            String text = (i == selected ? "> " : "  ") + options[i];
+        for (int i = 0; i < confirmationOptions.length; i++) {
+            String text = (i == confirmationSelected ? "> " : "  ") + confirmationOptions[i];
             GlyphLayout layout = new GlyphLayout(font, text);
             float x = (Gdx.graphics.getWidth() - layout.width) / 2f;
             float y = startY - i * lineHeight;
 
-            font.setColor(i == selected ? Color.RED : Color.WHITE);
+            font.setColor(i == confirmationSelected ? Color.RED : Color.WHITE);
             font.draw(batch, text, x, y);
         }
     }
-
-    // === Manejo de entrada ===
     /**
      * Maneja la entrada del teclado para navegar y seleccionar opciones.
      * @param keycode Código de la tecla presionada.
@@ -302,17 +310,16 @@ public class GameOverUI implements InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         if (showOptions) {
-            if (isRetryConfirmationVisible) {
+            if (isExitConfirmationVisible) {
                 if (keycode == GlobalSettings.CONTROL_JUMP) {
                     confirmationSelected = (confirmationSelected - 1 + confirmationOptions.length) % confirmationOptions.length;
                 } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
                     confirmationSelected = (confirmationSelected + 1) % confirmationOptions.length;
                 } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
                     if (confirmationSelected == 0) { // Sí
-                        GameplayState currentLevel = GameplayState.createForLevel(com.machinehunterdev.game.Gameplay.GlobalSettings.currentLevelFile);
-                        gameController.stateMachine.changeState(currentLevel);
+                        gameController.stateMachine.changeState(MainMenuState.instance);
                     } else { // No
-                        isRetryConfirmationVisible = false;
+                        isExitConfirmationVisible = false;
                     }
                 }
             } else {
@@ -322,10 +329,11 @@ public class GameOverUI implements InputProcessor {
                     selected = (selected + 1) % options.length;
                 } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
                     if (selected == 0) { // Reintentar
-                        isRetryConfirmationVisible = true;
-                        confirmationSelected = 0;
+                        GameplayState currentLevel = GameplayState.createForLevel(com.machinehunterdev.game.Gameplay.GlobalSettings.currentLevelFile);
+                        gameController.stateMachine.changeState(currentLevel);
                     } else if (selected == 1) { // Salir
-                        gameController.stateMachine.changeState(MainMenuState.instance);
+                        isExitConfirmationVisible = true;
+                        confirmationSelected = 0;
                     }
                 }
             }
