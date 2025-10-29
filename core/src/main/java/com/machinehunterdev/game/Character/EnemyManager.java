@@ -61,6 +61,16 @@ public class EnemyManager {
     }
 
     /**
+     * Actualiza las animaciones de todos los enemigos gestionados.
+     * @param delta Tiempo transcurrido desde el último frame.
+     */
+    public void updateCharacterAnimations(float delta) {
+        for (IEnemy enemy : enemies) {
+            enemy.getCharacter().update(delta);
+        }
+    }
+
+    /**
      * Dibuja todos los enemigos gestionados.
      * @param batch El SpriteBatch utilizado para dibujar.
      */

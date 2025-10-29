@@ -22,13 +22,11 @@ public class NameInputUI implements InputProcessor {
 
     private enum State {
         NAME_INPUT,
-        TUTORIAL_CONFIRM,
-        SKIP_TUTORIAL_CONFIRM
+        TUTORIAL_CONFIRM
     }
 
     private State currentState = State.NAME_INPUT;
     private int tutorialConfirmSelection = 0;
-    private int skipTutorialConfirmSelection = 0;
 
     /** Fuente para el texto de la interfaz */
     private BitmapFont font;
@@ -115,18 +113,13 @@ public class NameInputUI implements InputProcessor {
                 if ((int)(elapsedTime * 2) % 2 == 0) {
                     shapeRenderer.setColor(Color.WHITE);
                     float cursorX = nameX + layout.width;
-                    layout.setText(font, " "); // Usar un espacio para medir el ancho
-                    shapeRenderer.rect(cursorX, nameY - font.getCapHeight(), layout.width, font.getCapHeight() + 10);
+                    shapeRenderer.rect(cursorX + 2, nameY - font.getCapHeight(), 2, font.getCapHeight() + 10);
                 }
                 shapeRenderer.end();
                 break;
 
             case TUTORIAL_CONFIRM:
                 drawDialog("Quieres jugar el tutorial?", new String[]{"Sí", "No"}, tutorialConfirmSelection);
-                break;
-
-            case SKIP_TUTORIAL_CONFIRM:
-                drawDialog("Saltar directamente a la partida?", new String[]{"Sí", "No"}, skipTutorialConfirmSelection);
                 break;
         }
 
@@ -194,26 +187,12 @@ public class NameInputUI implements InputProcessor {
                         GameplayState tutorial = GameplayState.createForLevel("Levels/Level 0 - Tutorial.json");
                         gameController.stateMachine.changeState(tutorial);
                     } else { // No
-                        currentState = State.SKIP_TUTORIAL_CONFIRM;
-                    }
-                } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
-                    currentState = State.NAME_INPUT;
-                }
-                break;
-
-            case SKIP_TUTORIAL_CONFIRM:
-                if (keycode == GlobalSettings.CONTROL_JUMP || keycode == GlobalSettings.CONTROL_CROUCH) {
-                    skipTutorialConfirmSelection = 1 - skipTutorialConfirmSelection;
-                } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
-                    if (skipTutorialConfirmSelection == 0) { // Sí
                         // Cargar nivel 1
                         GameplayState level1 = GameplayState.createForLevel("Levels/Level 1.json");
                         gameController.stateMachine.changeState(level1);
-                    } else { // No
-                        currentState = State.TUTORIAL_CONFIRM;
                     }
                 } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
-                    currentState = State.TUTORIAL_CONFIRM;
+                    currentState = State.NAME_INPUT;
                 }
                 break;
         }

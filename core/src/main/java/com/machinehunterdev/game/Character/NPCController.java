@@ -46,7 +46,6 @@ public class NPCController extends CharacterController {
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
         if (character != null) {
-            character.update(delta);
             checkCollisions(solidObjects);
         }
 

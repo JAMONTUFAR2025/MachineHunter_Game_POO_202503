@@ -62,6 +62,9 @@ public class GameOverUI implements InputProcessor {
 
     private List<String> deathMessages;
     private String randomDeathMessage;
+    private String[] confirmationOptions = {"Sí", "No"};
+    private int confirmationSelected = 0;
+    private boolean isRetryConfirmationVisible = false;
     
     /**
      * Constructor de la interfaz de fin de juego.
@@ -154,7 +157,11 @@ public class GameOverUI implements InputProcessor {
             }
 
             if (showOptions) {
-                drawOptions();
+                if (isRetryConfirmationVisible) {
+                    drawRetryConfirmation();
+                } else {
+                    drawOptions();
+                }
             }
         }
 
@@ -254,8 +261,26 @@ public class GameOverUI implements InputProcessor {
     /**
      * Dibuja las opciones de reinicio/salida con resaltado de selección.
      */
+    /**
+     * Dibuja las opciones de reinicio/salida con resaltado de selección.
+     */
     private void drawOptions() {
         float startY = Gdx.graphics.getHeight() * 0.25f;
+        float lineHeight = 110f;
+
+        for (int i = 0; i < options.length; i++) {
+            String text = (i == selected ? "> " : "  ") + options[i];
+            GlyphLayout layout = new GlyphLayout(font, text);
+            float x = (Gdx.graphics.getWidth() - layout.width) / 2f;
+            float y = startY - i * lineHeight;
+
+            font.setColor(i == selected ? Color.RED : Color.WHITE);
+            font.draw(batch, text, x, y);
+        }
+    }
+
+    private void drawRetryConfirmation() {
+        float startY = Gdx.graphics.getHeight() * 0.35f;
         float lineHeight = 110f;
 
         for (int i = 0; i < options.length; i++) {
@@ -277,16 +302,31 @@ public class GameOverUI implements InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         if (showOptions) {
-            if (keycode == GlobalSettings.CONTROL_JUMP) {
-                selected = (selected - 1 + options.length) % options.length;
-            } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
-                selected = (selected + 1) % options.length;
-            } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
-                if (selected == 0) {
-                    GameplayState currentLevel = GameplayState.createForLevel(com.machinehunterdev.game.Gameplay.GlobalSettings.currentLevelFile);
-                    gameController.stateMachine.changeState(currentLevel);
-                } else if (selected == 1) {
-                    gameController.stateMachine.changeState(MainMenuState.instance);
+            if (isRetryConfirmationVisible) {
+                if (keycode == GlobalSettings.CONTROL_JUMP) {
+                    confirmationSelected = (confirmationSelected - 1 + confirmationOptions.length) % confirmationOptions.length;
+                } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
+                    confirmationSelected = (confirmationSelected + 1) % confirmationOptions.length;
+                } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
+                    if (confirmationSelected == 0) { // Sí
+                        GameplayState currentLevel = GameplayState.createForLevel(com.machinehunterdev.game.Gameplay.GlobalSettings.currentLevelFile);
+                        gameController.stateMachine.changeState(currentLevel);
+                    } else { // No
+                        isRetryConfirmationVisible = false;
+                    }
+                }
+            } else {
+                if (keycode == GlobalSettings.CONTROL_JUMP) {
+                    selected = (selected - 1 + options.length) % options.length;
+                } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
+                    selected = (selected + 1) % options.length;
+                } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
+                    if (selected == 0) { // Reintentar
+                        isRetryConfirmationVisible = true;
+                        confirmationSelected = 0;
+                    } else if (selected == 1) { // Salir
+                        gameController.stateMachine.changeState(MainMenuState.instance);
+                    }
                 }
             }
         }

@@ -33,7 +33,7 @@ public class PauseUI implements InputProcessor {
     private Texture backgroundTexture;
 
     /** Estados del menú de pausa */
-    private enum MenuState { MAIN, CONFIRM_EXIT }
+    private enum MenuState { MAIN, CONFIRM_EXIT, CONFIRM_RETRY }
     private MenuState currentState = MenuState.MAIN;
 
     /** Opciones para cada estado del menú */
@@ -93,6 +93,8 @@ public class PauseUI implements InputProcessor {
             drawMenu(mainOptions, Gdx.graphics.getHeight() / 2f + 80);
         } else if (currentState == MenuState.CONFIRM_EXIT) {
             drawConfirmationMenu();
+        } else if (currentState == MenuState.CONFIRM_RETRY) {
+            drawRetryConfirmationMenu();
         }
         drawControls();
         batch.end();
@@ -136,6 +138,17 @@ public class PauseUI implements InputProcessor {
         }
     }
 
+    private void drawRetryConfirmationMenu() {
+        float startY = Gdx.graphics.getHeight() / 2f + 80;
+
+        drawText("¿Desea reintentar?", startY, false);
+        
+        for (int i = 0; i < confirmOptions.length; i++) {
+            float optionY = startY - ((i + 1) * 80);
+            drawText(confirmOptions[i], optionY, i == selectedOption);
+        }
+    }
+
     /**
      * Dibuja un texto individual con resaltado de selección.
      * @param text Texto a dibujar
@@ -161,6 +174,8 @@ public class PauseUI implements InputProcessor {
             handleMainMenuInput(keycode);
         } else if (currentState == MenuState.CONFIRM_EXIT) {
             handleConfirmExitInput(keycode);
+        } else if (currentState == MenuState.CONFIRM_RETRY) {
+            handleConfirmRetryInput(keycode);
         }
         return true;
     }
@@ -178,7 +193,8 @@ public class PauseUI implements InputProcessor {
             if (selectedOption == 0) { // Reanudar
                 gameplayState.resumeGame();
             } else if (selectedOption == 1) { // Reintentar
-                gameplayState.restartLevel();
+                currentState = MenuState.CONFIRM_RETRY;
+                selectedOption = 0;
             } else if (selectedOption == 2) { // Salir
                 currentState = MenuState.CONFIRM_EXIT;
                 selectedOption = 0;
@@ -200,6 +216,24 @@ public class PauseUI implements InputProcessor {
         } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
             if (selectedOption == 0) { // Si
                 gameplayState.exitToMainMenu();
+            } else if (selectedOption == 1) { // No
+                currentState = MenuState.MAIN;
+                selectedOption = 0;
+            }
+        } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
+            currentState = MenuState.MAIN;
+            selectedOption = 0;
+        }
+    }
+
+    private void handleConfirmRetryInput(int keycode) {
+        if (keycode == GlobalSettings.CONTROL_JUMP) {
+            selectedOption = (selectedOption - 1 + confirmOptions.length) % confirmOptions.length;
+        } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
+            selectedOption = (selectedOption + 1) % confirmOptions.length;
+        } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
+            if (selectedOption == 0) { // Si
+                gameplayState.restartLevel();
             } else if (selectedOption == 1) { // No
                 currentState = MenuState.MAIN;
                 selectedOption = 0;

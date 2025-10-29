@@ -69,7 +69,7 @@ public class GameplayUI {
      * @param playerHealth Salud actual del jugador
      * @param currentWeapon Arma actual del jugador
      */
-    public void draw(int playerHealth, WeaponType currentWeapon) {
+    public void draw(int playerHealth, WeaponType currentWeapon, boolean isPlayerInvulnerable) {
         shapeRenderer.setProjectionMatrix(uiCamera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
@@ -109,29 +109,76 @@ public class GameplayUI {
         float totalWidth = (3 * squareSize) + (2 * padding);
         float startX = (uiCamera.viewportWidth - totalWidth) / 2;
 
-        // Cuadrado para LASER (J)
-        if (currentWeapon == WeaponType.LASER) {
-            batch.setColor(Color.WHITE);
-        } else {
-            batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
-        }
-        batch.draw(laserIcon, startX, padding, squareSize, squareSize);
+                float iconSize = squareSize; // Usar float para el tamaño
 
-        // Cuadrado para ION (K)
-        if (currentWeapon == WeaponType.ION) {
-            batch.setColor(Color.WHITE);
-        } else {
-            batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
-        }
-        batch.draw(ionIcon, startX + squareSize + padding, padding, squareSize, squareSize);
+        
 
-        // Cuadrado para RAILGUN (L)
-        if (currentWeapon == WeaponType.RAILGUN) {
-            batch.setColor(Color.WHITE);
-        } else {
-            batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
-        }
-        batch.draw(railgunIcon, startX + (2 * (squareSize + padding)), padding, squareSize, squareSize);
+                if (isPlayerInvulnerable) {
+
+                    batch.setColor(1, 1, 1, 0.3f); // Todas las armas transparentes
+
+                    batch.draw(laserIcon, startX, (float)padding, iconSize, iconSize);
+
+                    batch.draw(ionIcon, startX + iconSize + padding, (float)padding, iconSize, iconSize);
+
+                    batch.draw(railgunIcon, startX + (2 * (iconSize + padding)), (float)padding, iconSize, iconSize);
+
+                } else {
+
+                    // Lógica original
+
+                    // Cuadrado para LASER (J)
+
+                    if (currentWeapon == WeaponType.LASER) {
+
+                        batch.setColor(Color.WHITE);
+
+                    } else {
+
+                        batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+
+                    }
+
+                    batch.draw(laserIcon, startX, (float)padding, iconSize, iconSize);
+
+        
+
+                    // Cuadrado para ION (K)
+
+                    if (currentWeapon == WeaponType.ION) {
+
+                        batch.setColor(Color.WHITE);
+
+                    }
+
+                    else {
+
+                        batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+
+                    }
+
+                    batch.draw(ionIcon, startX + iconSize + padding, (float)padding, iconSize, iconSize);
+
+        
+
+                    // Cuadrado para RAILGUN (L)
+
+                    if (currentWeapon == WeaponType.RAILGUN) {
+
+                        batch.setColor(Color.WHITE);
+
+                    }
+
+                    else {
+
+                        batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+
+                    }
+
+                    batch.draw(railgunIcon, startX + (2 * (iconSize + padding)), (float)padding, iconSize, iconSize);
+
+                }
+
         batch.setColor(Color.WHITE); // Reset color
         batch.end();
     }

@@ -35,7 +35,6 @@ public class PlayerController extends CharacterController {
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
         checkDistanceToGround(solidObjects);
         handleInput(bullets);
-        character.update(delta);
 
         // Aplicar límites horizontales del mapa
         float playerWidth = character.getWidth();
@@ -122,10 +121,15 @@ public class PlayerController extends CharacterController {
         float playerWidth = character.getWidth();
 
         float distanceToGround = Float.MAX_VALUE;
+        float groundY = -1;
 
         // Distancia al suelo principal
         if (playerY >= GlobalSettings.GROUND_LEVEL) {
-            distanceToGround = playerY - GlobalSettings.GROUND_LEVEL;
+            float dist = playerY - GlobalSettings.GROUND_LEVEL;
+            if (dist < distanceToGround) {
+                distanceToGround = dist;
+                groundY = GlobalSettings.GROUND_LEVEL;
+            }
         }
 
         // Distancia a plataformas
@@ -134,7 +138,7 @@ public class PlayerController extends CharacterController {
                 com.badlogic.gdx.math.Rectangle platform = obj.getBounds();
                 float platformTop = platform.y + platform.height;
 
-                if (playerY > platformTop) {
+                if (playerY >= platformTop) {
                     float overlapLeft = Math.max(playerX, platform.x);
                     float overlapRight = Math.min(playerX + playerWidth, platform.x + platform.width);
 
@@ -142,6 +146,7 @@ public class PlayerController extends CharacterController {
                         float distance = playerY - platformTop;
                         if (distance < distanceToGround) {
                             distanceToGround = distance;
+                            groundY = platformTop;
                         }
                     }
                 }
@@ -149,6 +154,10 @@ public class PlayerController extends CharacterController {
         }
 
         character.setDistanceToGround(distanceToGround);
+
+        if (distanceToGround < 0.1f && character.velocity.y <= 0) {
+            character.landOn(groundY);
+        }
     }
 
     /**

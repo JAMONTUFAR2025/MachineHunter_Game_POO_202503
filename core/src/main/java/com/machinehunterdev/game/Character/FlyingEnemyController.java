@@ -59,7 +59,6 @@ public class FlyingEnemyController extends CharacterController {
      */
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
-        character.update(delta);
         // No se necesitan colisiones para enemigos voladores
 
         if (patrolPoints == null || patrolPoints.isEmpty()) {

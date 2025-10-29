@@ -70,7 +70,6 @@ public class MainMenuUI implements InputProcessor {
             this.font = new BitmapFont(Gdx.files.internal("fonts/OrangeKid64.fnt"));
             this.font.setColor(Color.WHITE);
         } catch (Exception e) {
-            System.err.println("Error al cargar la fuente personalizada. Usando fuente por defecto.");
             this.font = new BitmapFont();
         }
     }
@@ -157,7 +156,6 @@ public class MainMenuUI implements InputProcessor {
      * Inicia una nueva partida.
      */
     private void starGame() {
-        System.out.println("Juego iniciado");
         Gdx.input.setInputProcessor(null);
         gameController.stateMachine.changeState(com.machinehunterdev.game.GameStates.NameInputState.instance);
     }
@@ -166,7 +164,6 @@ public class MainMenuUI implements InputProcessor {
      * Sale del juego.
      */
     private void exitGame() {
-        System.out.println("Saliendo del juego");
         Gdx.app.exit();
     }
 

@@ -331,7 +331,7 @@ public class GameplayState implements IState<GameController> {
                 dialogManager.render();
             }
             if (gameplayUI != null) {
-                gameplayUI.draw(playerCharacter.getHealth(), playerCharacter.getCurrentWeapon());
+                gameplayUI.draw(playerCharacter.getHealth(), playerCharacter.getCurrentWeapon(), playerCharacter.isInvulnerable());
             }
         }
 
@@ -346,8 +346,15 @@ public class GameplayState implements IState<GameController> {
 
     private void updateGameLogic() {
         if (levelCompleted) return;
-        
+
         float deltaTime = Gdx.graphics.getDeltaTime();
+
+        // Actualizar animaciones de todos los personajes siempre
+        playerCharacter.update(deltaTime);
+        enemyManager.updateCharacterAnimations(deltaTime);
+        if (npcController != null) {
+            npcController.character.update(deltaTime);
+        }
 
         if (isDialogActive) {
             dialogManager.update(deltaTime);
@@ -355,26 +362,22 @@ public class GameplayState implements IState<GameController> {
                 isDialogActive = false;
             }
             handleDialogInput();
-            return;
-        }
+        } else {
+            // El resto de la lógica del juego solo se ejecuta si no hay diálogo
+            playerController.update(deltaTime, solidObjects, bullets, playerCharacter);
+            updateEnemies(deltaTime);
+            checkLevelCompletion();
+            updateNPC(deltaTime);
 
-        playerController.update(deltaTime, solidObjects, bullets, playerCharacter);
-        
-        updateEnemies(deltaTime);
-        
-        checkLevelCompletion();
-        
-        updateNPC(deltaTime);
-        
-        if (!ignoreInputOnFirstFrame) {
-            handleNPCInteraction();
-        }
-        
-        updateCombatSystems(deltaTime);
-        
-        playerController.centerCameraOnPlayer(camera);
+            if (!ignoreInputOnFirstFrame) {
+                handleNPCInteraction();
+            }
 
-        ignoreInputOnFirstFrame = false;
+            updateCombatSystems(deltaTime);
+            playerController.centerCameraOnPlayer(camera);
+
+            ignoreInputOnFirstFrame = false;
+        }
     }
 
     private void updateEnemies(float deltaTime) {

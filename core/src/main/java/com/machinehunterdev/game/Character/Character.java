@@ -192,6 +192,7 @@ public class Character
      * @param delta Tiempo transcurrido desde el último frame
      */
     public void update(float delta) {
+        System.out.println("velocity.y at start of update: " + velocity.y);
         // --- MANEJO DE EMPUJE POR DAÑO ---
         if (isKnockedBack) {
             velocity.x = isSeeingRight ? -knockbackSpeed : knockbackSpeed;
@@ -561,6 +562,7 @@ public class Character
      * @param groundY Posición Y de la superficie
      */
     public void landOn(float groundY) {
+        System.out.println("landOn method called");
         position.y = groundY;
         velocity.y = 0;
         onGround = true;
