@@ -22,9 +22,29 @@ public class BossEnemyController extends CharacterController {
     private int lightningFlashCount = 0;
 
     public boolean isLightningAttackActive() { return lightningAttackActive; }
-    public float getLightningAttackTimer() { return lightningAttackTimer; }
     public float getLightningPlayerX() { return lightningPlayerX; }
-    public int getLightningFlashCount() { return lightningFlashCount; }
+
+    public boolean isLightningWarning() {
+        if (!lightningAttackActive) return false;
+
+        boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
+        float warningDuration = isPhaseTwo ? 1.2f : 1.6f;
+
+        if (lightningAttackTimer < warningDuration) {
+            int flashCount = (int) (lightningAttackTimer / 0.2f);
+            return flashCount % 2 == 0;
+        }
+        return false;
+    }
+
+    public boolean isLightningStriking() {
+        if (!lightningAttackActive) return false;
+
+        boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
+        float warningDuration = isPhaseTwo ? 1.2f : 1.6f;
+
+        return lightningAttackTimer >= warningDuration;
+    }
 
     public BossEnemyController(Character enemyCharacter, EnemyType type) {
         super(enemyCharacter);
@@ -60,7 +80,11 @@ public class BossEnemyController extends CharacterController {
 
         if (lightningAttackActive) {
             lightningAttackTimer += delta;
-            if (lightningAttackTimer >= 1.7f) { // 3 flashes (0.4s each) + 0.5s strike
+
+            boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
+            float lightningDuration = isPhaseTwo ? 1.7f : 2.1f; // 3 flashes (1.2s) + 0.5s strike OR 4 flashes (1.6s) + 0.5s strike
+
+            if (lightningAttackTimer >= lightningDuration) {
                 lightningAttackActive = false;
             }
         }
@@ -90,18 +114,19 @@ public class BossEnemyController extends CharacterController {
                 attackType1(bullets, playerCharacter);
                 break;
             case 1: 
-                attackType1(bullets, playerCharacter);
-                break;
-            case 2:
                 attackType2(bullets, playerCharacter);
                 break;
-            case 3:
+            case 2:
                 attackType3(bullets, playerCharacter);
+                break;
+            case 3:
+                attackType4(bullets, playerCharacter);
                 break;
         }
     }
 
-    private void attackType0(ArrayList<Bullet> bullets, Character playerCharacter) {
+    private void attackType1(ArrayList<Bullet> bullets, Character playerCharacter) {
+        System.out.println("Boss Attack 1");
         if (playerCharacter != null) {
             lightningAttackActive = true;
             lightningAttackTimer = 0f;
@@ -110,7 +135,7 @@ public class BossEnemyController extends CharacterController {
         }
     }
 
-    private void attackType1(ArrayList<Bullet> bullets, Character playerCharacter) {
+    private void attackType2(ArrayList<Bullet> bullets, Character playerCharacter) {
         System.out.println("Boss Attack 2");
         if (playerCharacter == null) return;
 
@@ -138,11 +163,11 @@ public class BossEnemyController extends CharacterController {
         }
     }
 
-    private void attackType2(ArrayList<Bullet> bullets, Character playerCharacter) {
+    private void attackType3(ArrayList<Bullet> bullets, Character playerCharacter) {
         System.out.println("Boss Attack 3 (Phase 2)");
     }
 
-    private void attackType3(ArrayList<Bullet> bullets, Character playerCharacter) {
+    private void attackType4(ArrayList<Bullet> bullets, Character playerCharacter) {
         System.out.println("Boss Attack 4 (Phase 2)");
     }
 }

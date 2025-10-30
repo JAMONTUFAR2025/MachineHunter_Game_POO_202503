@@ -6,6 +6,7 @@ import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -496,6 +497,8 @@ public class GameplayState implements IState<GameController> {
 
         gameBatch.end();
 
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
@@ -503,16 +506,11 @@ public class GameplayState implements IState<GameController> {
             if (enemy instanceof com.machinehunterdev.game.Character.BossEnemy) {
                 BossEnemyController controller = (BossEnemyController) ((BaseEnemy) enemy).getController();
                 if (controller.isLightningAttackActive()) {
-                    float timer = controller.getLightningAttackTimer();
-                    int flashCount = (int) (timer / 0.2f);
-
-                    if (flashCount < 6) { // 3 flashes (on/off)
-                        if (flashCount % 2 == 0) { // Flash on
-                            shapeRenderer.setColor(Color.RED);
-                            float x = controller.getLightningPlayerX();
-                            shapeRenderer.rect(x, 32, 40, 448);
-                        }
-                    } else { // Strike
+                    if (controller.isLightningWarning()) {
+                        shapeRenderer.setColor(1, 0, 0, 0.8f);
+                        float x = controller.getLightningPlayerX();
+                        shapeRenderer.rect(x, 32, 40, 448);
+                    } else if (controller.isLightningStriking()) {
                         shapeRenderer.setColor(Color.YELLOW);
                         float x = controller.getLightningPlayerX();
                         shapeRenderer.rect(x, 32, 40, 448);
@@ -522,6 +520,7 @@ public class GameplayState implements IState<GameController> {
         }
 
         shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     private void drawNPCInteractionPrompt() {
@@ -665,15 +664,12 @@ public class GameplayState implements IState<GameController> {
         for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
             if (enemy instanceof com.machinehunterdev.game.Character.BossEnemy) {
                 BossEnemyController controller = (BossEnemyController) ((BaseEnemy) enemy).getController();
-                if (controller.isLightningAttackActive()) {
-                    float timer = controller.getLightningAttackTimer();
-                    if (timer >= 1.2f) { // Strike phase
-                        Rectangle lightningBounds = new Rectangle(controller.getLightningPlayerX(), 32, 40, 448);
-                        if (DamageSystem.canTakeDamage(playerCharacter) && playerCharacter.isAlive() && lightningBounds.overlaps(playerCharacter.getBounds())) {
-                            DamageSystem.applyContactDamage(playerCharacter, enemy.getCharacter(), 1);
-                        }
-                    }
-                }
+                if (controller.isLightningStriking()) {
+                    Rectangle lightningBounds = new Rectangle(controller.getLightningPlayerX(), 32, 40, 448);
+                                            if (DamageSystem.canTakeDamage(playerCharacter) && playerCharacter.isAlive() && lightningBounds.overlaps(playerCharacter.getBounds())) {
+                                                DamageSystem.applyContactDamage(playerCharacter, enemy.getCharacter(), 1);
+                                                impactEffectManager.createImpact(playerCharacter.position.x + playerCharacter.getWidth() / 2, playerCharacter.position.y + playerCharacter.getHeight() / 2, WeaponType.PATROLLER);
+                                            }                }
             }
         }
     }
