@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
+import com.machinehunterdev.game.Character.Character;
 
 /**
  * Interfaz de usuario que se muestra durante el gameplay.
@@ -17,6 +18,8 @@ import com.machinehunterdev.game.Gameplay.GlobalSettings;
  * 
  * @author MachineHunterDev
  */
+import com.machinehunterdev.game.Character.EnemyType;
+
 public class GameplayUI {
 
     /** Renderizador de formas para la barra de salud */
@@ -66,8 +69,8 @@ public class GameplayUI {
 
     private BossHealthBar bossHealthBar;
 
-    public void setBoss(com.machinehunterdev.game.Character.Character boss, String bossName) {
-        this.bossHealthBar = new BossHealthBar(boss, bossName);
+    public void setBoss(Character boss, String bossName, EnemyType enemyType) {
+        this.bossHealthBar = new BossHealthBar(boss, bossName, enemyType);
     }
 
     /**

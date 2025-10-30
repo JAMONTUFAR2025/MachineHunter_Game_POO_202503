@@ -14,7 +14,7 @@ public class BossEnemy extends BaseEnemy
      * @param type El tipo de enemigo.
      */
     public BossEnemy(Character character, CharacterController controller, EnemyType type) {
-        super(character, controller, type);
+        super(character, new BossEnemyController(character), type);
     }
     
 }

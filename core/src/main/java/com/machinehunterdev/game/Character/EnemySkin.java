@@ -26,7 +26,12 @@ public enum EnemySkin {
      * Skin del jefe
      * Idle, Dead, Hurt
      */
-    BOSS_GEMINI("Enemy/GeminiEXE/GeminiEXEIdle", null, "Enemy/GeminiEXE/GeminiEXEDeath", "Enemy/GeminiEXE/GeminiEXEHurt", null, null, null);
+    BOSS_GEMINI("Enemy/GeminiEXE/GeminiEXEIdle", null, "Enemy/GeminiEXE/GeminiEXEDeath", "Enemy/GeminiEXE/GeminiEXEHurt", null, null, null),
+    /**
+     * Skin del jefe ChatGPT
+     * Idle, Dead, Hurt
+     */
+    BOSS_CHATGPT("Enemy/ChatGPTEXE/ChatGPTEXEIdle", null, "Enemy/ChatGPTEXE/ChatGPTEXEDeath", "Enemy/ChatGPTEXE/ChatGPTEXEHurt", null, null, null);
 
     /** Rutas de los frames de animación */
     public final String idleFrames;
@@ -87,8 +92,10 @@ public enum EnemySkin {
                 return SHOOTER;
             case FLYING:
                 return FLYING;
-            case BOSS:
+            case BOSS_GEMINI:
                 return BOSS_GEMINI;
+            case BOSS_CHATGPT:
+                return BOSS_CHATGPT;
             default:
                 throw new IllegalArgumentException("No skin found for enemy type: " + enemyType);
         }

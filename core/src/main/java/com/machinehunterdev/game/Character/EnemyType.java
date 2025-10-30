@@ -9,5 +9,6 @@ public enum EnemyType {
     PATROLLER,
     SHOOTER,
     FLYING,
-    BOSS
+    BOSS_GEMINI,
+    BOSS_CHATGPT
 }

@@ -39,10 +39,11 @@
   ],
   "enemies": [
     {
-      "type": "BOSS",
+      "type": "BOSS_GEMINI",
+      "name": "GEMINI.EXE",
       "x": 200,
       "y": 300,
-      "health": 100
+      "health": 500
     }
   ]
 }

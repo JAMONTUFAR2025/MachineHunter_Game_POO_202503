@@ -44,8 +44,11 @@ public class EnemyManager {
             case FLYING:
                 enemies.add(new FlyingEnemy(character, patrolPoints, waitTime, type));
                 break;
-            case BOSS:
-                enemies.add(new BossEnemy(character, new BossEnemyController(character), EnemyType.BOSS));
+            case BOSS_GEMINI:
+                enemies.add(new BossEnemy(character, new BossEnemyController(character), EnemyType.BOSS_GEMINI));
+                break;
+            case BOSS_CHATGPT:
+                enemies.add(new BossEnemy(character, new BossEnemyController(character), EnemyType.BOSS_CHATGPT));
         }
     }
 
