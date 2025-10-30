@@ -199,7 +199,7 @@ public class GameplayState implements IState<GameController> {
 
             List<Sprite> enemyIdleFrames;
 
-            // Nuevos frames de animación para enemigos voladores, cuatro para los demás
+            // Nuevos frames de animación de reposo para enemigos voladores, cuatro para los demás
             if (enemyData.type == EnemyType.FLYING) {
                 enemyIdleFrames = loadSpriteFrames(skin.idleFrames, 9);
             } else {
@@ -207,7 +207,15 @@ public class GameplayState implements IState<GameController> {
             }
 
             List<Sprite> enemyRunFrames = loadSpriteFrames(skin.runFrames, 4);
-            List<Sprite> enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 4);
+            List<Sprite> enemyDeadFrames;
+
+            // Nuevos frames de animación de muerte para jefes, cuatro para los demás
+            if (enemyData.type == EnemyType.BOSS) {
+                enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 15);
+            } else {
+                enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 4);
+            }
+
             List<Sprite> enemyJumpFrames = loadSpriteFrames(skin.jumpFrames, 1);
             List<Sprite> enemyFallFrames = loadSpriteFrames(skin.fallFrames, 1);
             List<Sprite> enemyHurtFrames = loadSpriteFrames(skin.hurtFrames, 1);
@@ -222,7 +230,7 @@ public class GameplayState implements IState<GameController> {
 
             Character enemy = new Character(enemyData.health, enemyAnimator, null, enemyData.x, enemyData.y, false);
             if (enemyData.type == EnemyType.SHOOTER) {
-                enemy.switchWeapon(com.machinehunterdev.game.DamageTriggers.WeaponType.THUNDER);
+                enemy.switchWeapon(com.machinehunterdev.game.DamageTriggers.WeaponType.SHOOTER);
             }
 
             if (enemyData.type == EnemyType.FLYING) {
@@ -539,14 +547,15 @@ public class GameplayState implements IState<GameController> {
                         // Crea el efecto de impacto en el punto de colisión
                         switch (enemy.getType()) {
                             case PATROLLER:
-                                impactEffectManager.createImpact(impactX, impactY, WeaponType.ELECTRIC);
+                                impactEffectManager.createImpact(impactX, impactY, WeaponType.PATROLLER);
                                 break;
                             case SHOOTER:
-                                impactEffectManager.createImpact(impactX, impactY, WeaponType.THUNDER);
+                                impactEffectManager.createImpact(impactX, impactY, WeaponType.SHOOTER);
                                 break;
                             case FLYING:
-                                impactEffectManager.createImpact(impactX, impactY, WeaponType.ION);
+                                impactEffectManager.createImpact(impactX, impactY, WeaponType.FLYING);
                                 break;
+                            default:
                         }
                     }
                     break; 

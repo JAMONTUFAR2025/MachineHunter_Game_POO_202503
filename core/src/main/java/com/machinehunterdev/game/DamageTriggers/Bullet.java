@@ -78,11 +78,12 @@ public class Bullet
                 piercing = true;
                 textureName = "Railgun";
                 break;
-            case THUNDER:
+            case SHOOTER:
                 speed = 100f;
                 maxDistance = 350f;
                 textureName = "Thunder";
                 break;
+            default:
         }
 
         this.velocity = new Vector2(seeingRight ? speed : -speed, 0);

@@ -21,7 +21,12 @@ public enum EnemySkin {
      * Skin del enemigo volador
      * Idle, Dead, Hurt
      */
-    FLYING("Enemy/Flying/FlyingIdle", null, "Enemy/Explosion", "Enemy/Flying/FlyingHurt", null, null, null);
+    FLYING("Enemy/Flying/FlyingIdle", null, "Enemy/Explosion", "Enemy/Flying/FlyingHurt", null, null, null),
+    /**
+     * Skin del jefe
+     * Idle, Dead, Hurt
+     */
+    BOSS_GEMINI("Enemy/GeminiEXE/GeminiEXEIdle", null, "Enemy/GeminiEXE/GeminiEXEDeath", "Enemy/GeminiEXE/GeminiEXEHurt", null, null, null);
 
     /** Rutas de los frames de animación */
     public final String idleFrames;
@@ -82,6 +87,8 @@ public enum EnemySkin {
                 return SHOOTER;
             case FLYING:
                 return FLYING;
+            case BOSS:
+                return BOSS_GEMINI;
             default:
                 throw new IllegalArgumentException("No skin found for enemy type: " + enemyType);
         }

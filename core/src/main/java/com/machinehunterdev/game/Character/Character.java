@@ -255,9 +255,10 @@ public class Character
                             case RAILGUN:
                                 shootSniper(pendingBulletsList);
                                 break;
-                            case THUNDER:
+                            case SHOOTER:
                                 shootThunder(pendingBulletsList);
                                 break;
+                            default:
                         }
                         bulletInvocationPending = false;
                                         }
@@ -321,7 +322,12 @@ public class Character
         if (isHurt) {
             hurtTimer -= delta;
             velocity.x = 0; // Detener movimiento horizontal
-        
+            
+            // Si no es el jugador
+            if(!isPlayer) {
+                velocity.y = 0; // Detener movimiento vertical
+            }
+
             if (hurtTimer <= 0) {
                 isHurt = false;
                 hurtTimer = 0;
@@ -434,7 +440,7 @@ public class Character
                 return shotgunCooldown <= 0f;
             case RAILGUN:
                 return sniperCooldown <= 0f;
-            case THUNDER:
+            case SHOOTER:
                 return thunderCooldown <= 0f;
             default:
                 return true;
@@ -464,9 +470,10 @@ public class Character
             case RAILGUN:
                 sniperCooldown = RAILGUN_COOLDOWN_TIME;
                 break;
-            case THUNDER:
+            case SHOOTER:
                 thunderCooldown = THUNDER_COOLDOWN_TIME;
                 break;
+            default:
         }
     }
 
@@ -475,7 +482,7 @@ public class Character
     private void shootThunder(ArrayList<Bullet> bullets) {
         float bulletX = position.x + (isSeeingRight ? getWidth() + ENEMY_BULLET_SPAWN_OFFSET.x - 8: 0 - ENEMY_BULLET_SPAWN_OFFSET.x);
         float bulletY = position.y + getHeight() - ENEMY_BULLET_SPAWN_OFFSET.y;
-        bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.THUNDER, this));
+        bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.SHOOTER, this));
     }
 
     /**
@@ -622,7 +629,6 @@ public class Character
         if (onGround && !isCrouching && !isAttacking) {
             velocity.y = jumpForce;
             onGround = false;
-            System.out.println("Jump executed, velocity.y: " + velocity.y);
         }
     }
 

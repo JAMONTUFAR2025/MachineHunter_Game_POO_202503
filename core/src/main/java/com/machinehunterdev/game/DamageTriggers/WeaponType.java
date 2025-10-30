@@ -9,8 +9,9 @@ public enum WeaponType {
     LASER(15),      // Bala a larga distancia
     ION(10),        // Disparo múltiple a corta distancia
     RAILGUN(5),     // Bala perforante de impacto
-    THUNDER(1),     // Proyectil enemigo predeterminado
-    ELECTRIC(1);    // Daño por contacto patrullero
+    SHOOTER(1),     // Daño del Disparador
+    PATROLLER(1),   // Daño del Patrullero
+    FLYING(1);      // Daño del Volador
 
     private final int damage; // Daño asociado al tipo de arma
 

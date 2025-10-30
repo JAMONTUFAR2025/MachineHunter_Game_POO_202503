@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.machinehunterdev.game.Character.Character;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.GameStates.GameplayState;
@@ -41,9 +40,6 @@ public class NameInputUI implements InputProcessor {
     
     /** Nombre del jugador en construcción */
     private StringBuilder playerName;
-    
-    /** Temporizador para el parpadeo del cursor */
-    private float elapsedTime = 0;
 
     /**
      * Constructor de la interfaz de entrada de nombre.
