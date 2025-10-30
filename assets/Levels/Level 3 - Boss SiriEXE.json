@@ -39,15 +39,11 @@
   ],
   "enemies": [
     {
-      "type": "PATROLLER",
+      "type": "BOSS",
+      "name": "SiriEXE",
       "x": 200,
       "y": 300,
-      "health": 50,
-      "patrolPoints": [
-        { "x": 100, "y": 300 },
-        { "x": 700, "y": 300 }
-      ],
-      "waitTime": 2.0
+      "health": 100
     }
   ]
 }

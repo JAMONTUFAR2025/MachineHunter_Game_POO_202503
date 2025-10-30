@@ -72,6 +72,7 @@ public class LevelData {
      */
     public static class EnemyData {
         public EnemyType type = EnemyType.PATROLLER;
+        public String name;
         public float x, y;
         public List<Point> patrolPoints = new ArrayList<>();
         public float waitTime = 3.0f;
