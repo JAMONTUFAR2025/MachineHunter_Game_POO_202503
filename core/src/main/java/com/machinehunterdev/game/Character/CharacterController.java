@@ -83,5 +83,5 @@ public abstract class CharacterController {
      * @param solidObjects Lista de objetos sólidos para colisiones.
      * @param bullets Lista de balas activas para colisiones.
      */
-    public abstract void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter);
+    public abstract void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount);
 }

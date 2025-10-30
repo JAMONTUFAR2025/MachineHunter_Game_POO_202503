@@ -43,7 +43,7 @@ public class ShooterEnemyController extends CharacterController {
      * @param playerCharacter El personaje jugador.
      */
     @Override
-    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
+    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         checkCollisions(solidObjects);
 
         switch (currentState) {

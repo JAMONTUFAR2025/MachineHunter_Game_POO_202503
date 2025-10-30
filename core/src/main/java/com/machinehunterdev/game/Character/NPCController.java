@@ -44,7 +44,7 @@ public class NPCController extends CharacterController {
      * @param playerCharacter El personaje jugador.
      */
     @Override
-    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
+    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         if (character != null) {
             checkCollisions(solidObjects);
         }

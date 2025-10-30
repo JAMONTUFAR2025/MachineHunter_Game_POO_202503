@@ -55,7 +55,7 @@ public class PatrollerEnemyController extends CharacterController {
      * @param bullets Lista de balas en el juego
      */
     @Override
-    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
+    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         checkCollisions(solidObjects);
 
         if (patrolPoints == null || patrolPoints.isEmpty() || !character.onGround) {

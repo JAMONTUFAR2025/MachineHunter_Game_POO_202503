@@ -31,17 +31,6 @@ public abstract class BaseEnemy implements IEnemy {
     }
 
     /**
-     * Actualiza el estado del enemigo.
-     * @param delta Tiempo transcurrido desde la última actualización.
-     * @param solidObjects Lista de objetos sólidos en el entorno.
-     * @param bullets Lista de balas en el entorno.
-     */
-    @Override
-    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets) {
-        controller.update(delta, solidObjects, bullets, null);
-    }
-
-    /**
      * Dibuja el enemigo en la pantalla.
      * @param batch El SpriteBatch utilizado para el dibujo.
      */

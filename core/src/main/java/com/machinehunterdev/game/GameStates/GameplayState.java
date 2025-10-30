@@ -392,7 +392,7 @@ public class GameplayState implements IState<GameController> {
             handleDialogInput();
         } else {
             // El resto de la lógica del juego solo se ejecuta si no hay diálogo
-            playerController.update(deltaTime, solidObjects, bullets, playerCharacter);
+            playerController.update(deltaTime, solidObjects, bullets, playerCharacter, enemyManager.getEnemies().size());
             updateEnemies(deltaTime);
             checkLevelCompletion();
             updateNPC(deltaTime);
@@ -411,6 +411,22 @@ public class GameplayState implements IState<GameController> {
     private void updateEnemies(float deltaTime) {
         enemyManager.update(deltaTime, solidObjects, bullets, playerCharacter);
 
+        ArrayList<EnemyType> enemiesToSummon = new ArrayList<>();
+        for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+            if (enemy instanceof com.machinehunterdev.game.Character.BossEnemy) {
+                BossEnemyController controller = (BossEnemyController) ((BaseEnemy) enemy).getController();
+                EnemyType enemyToSummon = controller.getEnemyToSummon();
+                if (enemyToSummon != null) {
+                    enemiesToSummon.add(enemyToSummon);
+                    controller.clearSummonRequest();
+                }
+            }
+        }
+
+        for (EnemyType type : enemiesToSummon) {
+            summonEnemy(type);
+        }
+
         ArrayList<com.machinehunterdev.game.Character.IEnemy> enemies = enemyManager.getEnemies();
         for (int i = enemies.size() - 1; i >= 0; i--) {
             com.machinehunterdev.game.Character.IEnemy enemy = enemies.get(i);
@@ -419,6 +435,58 @@ public class GameplayState implements IState<GameController> {
                 enemies.remove(i);
             }
         }
+    }
+
+    private void summonEnemy(EnemyType type) {
+        EnemySkin skin = EnemySkin.getSkin(type);
+
+        List<Sprite> enemyIdleFrames;
+        if (type == EnemyType.FLYING) {
+            enemyIdleFrames = loadSpriteFrames(skin.idleFrames, 9);
+        } else {
+            enemyIdleFrames = loadSpriteFrames(skin.idleFrames, 4);
+        }
+
+        List<Sprite> enemyRunFrames = loadSpriteFrames(skin.runFrames, 4);
+        List<Sprite> enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 4);
+        List<Sprite> enemyJumpFrames = loadSpriteFrames(skin.jumpFrames, 1);
+        List<Sprite> enemyFallFrames = loadSpriteFrames(skin.fallFrames, 1);
+        List<Sprite> enemyHurtFrames = loadSpriteFrames(skin.hurtFrames, 1);
+        List<Sprite> enemyAttackFrames = loadSpriteFrames(skin.attackFrames, 2);
+
+        CharacterAnimator enemyAnimator = new CharacterAnimator(
+            enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
+            enemyJumpFrames, enemyFallFrames, enemyAttackFrames,
+            null, null, null,
+            enemyHurtFrames, null
+        );
+
+        Character enemy = new Character(1, enemyAnimator, null, 80, 480, false);
+        if (type == EnemyType.SHOOTER) {
+            enemy.switchWeapon(com.machinehunterdev.game.DamageTriggers.WeaponType.SHOOTER);
+        }
+
+        ArrayList<Vector2> patrolPoints = new ArrayList<>();
+        float waitTime = 0, shootInterval = 0, shootTime = 0;
+
+        switch (type) {
+            case PATROLLER:
+                patrolPoints.add(new Vector2(80, 32));
+                patrolPoints.add(new Vector2(210, 32));
+                waitTime = 2.0f;
+                break;
+            case SHOOTER:
+                shootInterval = 2.0f;
+                shootTime = 1.0f;
+                break;
+            case FLYING:
+                patrolPoints.add(new Vector2(90, 238));
+                patrolPoints.add(new Vector2(90, 32));
+                waitTime = 2.0f;
+                break;
+        }
+
+        enemyManager.addEnemy(type, enemy, patrolPoints, waitTime, shootInterval, shootTime);
     }
 
     private void checkLevelCompletion() {
@@ -430,7 +498,7 @@ public class GameplayState implements IState<GameController> {
 
     private void updateNPC(float deltaTime) {
         if (npcController != null) {
-            npcController.update(deltaTime, solidObjects, bullets, playerCharacter);
+            npcController.update(deltaTime, solidObjects, bullets, playerCharacter, enemyManager.getEnemies().size());
         }
     }
 
