@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,10 +13,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.machinehunterdev.game.Character.BaseEnemy;
+import com.machinehunterdev.game.Character.BossEnemy;
+import com.machinehunterdev.game.Character.BossEnemyController;
 import com.machinehunterdev.game.Character.Character;
 import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.Character.EnemyManager;
@@ -72,6 +78,7 @@ public class GameplayState implements IState<GameController> {
     // === SISTEMA DE COMBATE ===
     private ArrayList<Bullet> bullets;
     private ImpactEffectManager impactEffectManager;
+    private ShapeRenderer shapeRenderer;
 
     // === CONTROL DE ESTADO ===
     private GameController owner;
@@ -127,6 +134,7 @@ public class GameplayState implements IState<GameController> {
         bullets = new ArrayList<>();
         interactionFont = new BitmapFont(Gdx.files.internal("fonts/OrangeKid32.fnt"));
         impactEffectManager = new ImpactEffectManager(0.1f);
+        shapeRenderer = new ShapeRenderer();
         groundTexture = new Texture(currentLevel.groundTexture);
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -451,6 +459,7 @@ public class GameplayState implements IState<GameController> {
         checkPlayerEnemyCollision();
         checkBulletEnemyCollision();
         checkBulletPlayerCollision();
+        checkLightningCollisions();
     }
 
     private void drawGameWorld() {
@@ -486,6 +495,33 @@ public class GameplayState implements IState<GameController> {
         impactEffectManager.draw(gameBatch);
 
         gameBatch.end();
+
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+            if (enemy instanceof com.machinehunterdev.game.Character.BossEnemy) {
+                BossEnemyController controller = (BossEnemyController) ((BaseEnemy) enemy).getController();
+                if (controller.isLightningAttackActive()) {
+                    float timer = controller.getLightningAttackTimer();
+                    int flashCount = (int) (timer / 0.2f);
+
+                    if (flashCount < 6) { // 3 flashes (on/off)
+                        if (flashCount % 2 == 0) { // Flash on
+                            shapeRenderer.setColor(Color.RED);
+                            float x = controller.getLightningPlayerX();
+                            shapeRenderer.rect(x, 32, 40, 448);
+                        }
+                    } else { // Strike
+                        shapeRenderer.setColor(Color.YELLOW);
+                        float x = controller.getLightningPlayerX();
+                        shapeRenderer.rect(x, 32, 40, 448);
+                    }
+                }
+            }
+        }
+
+        shapeRenderer.end();
     }
 
     private void drawNPCInteractionPrompt() {
@@ -625,6 +661,23 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
+    private void checkLightningCollisions() {
+        for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+            if (enemy instanceof com.machinehunterdev.game.Character.BossEnemy) {
+                BossEnemyController controller = (BossEnemyController) ((BaseEnemy) enemy).getController();
+                if (controller.isLightningAttackActive()) {
+                    float timer = controller.getLightningAttackTimer();
+                    if (timer >= 1.2f) { // Strike phase
+                        Rectangle lightningBounds = new Rectangle(controller.getLightningPlayerX(), 32, 40, 448);
+                        if (DamageSystem.canTakeDamage(playerCharacter) && playerCharacter.isAlive() && lightningBounds.overlaps(playerCharacter.getBounds())) {
+                            DamageSystem.applyContactDamage(playerCharacter, enemy.getCharacter(), 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private List<Sprite> loadSpriteFrames(String basePath, int frameCount) {
         if (basePath == null) {
             return null;
@@ -664,6 +717,7 @@ public class GameplayState implements IState<GameController> {
         if (pauseUI != null) pauseUI.dispose();
         if (nextLevelUI != null) nextLevelUI.dispose();
         if (impactEffectManager != null) impactEffectManager.dispose();
+        if (shapeRenderer != null) shapeRenderer.dispose();
         
         for (Bullet bullet : bullets) {
             bullet.dispose();

@@ -37,17 +37,29 @@ public class Bullet
      * @param seeingRight Dirección de disparo
      * @param weaponType Tipo de arma que disparó la bala
      */
-    public Bullet(float x, float y, boolean seeingRight, WeaponType weaponType, Character owner) {
+    public Bullet(float x, float y, Vector2 velocity, WeaponType weaponType, Character owner) {
         this.position = new Vector2(x, y);
+        this.velocity = velocity;
         this.weaponType = weaponType;
         this.hitEnemies = new ArrayList<>();
         this.owner = owner;
 
         // Configurar propiedades según el tipo de arma
-        configureBullet(seeingRight);
+        configureBullet(velocity.x > 0);
 
         // Inicializar el rectángulo de colisión
         this.bounds = new Rectangle(x, y, animator.getCurrentSprite().getWidth(), animator.getCurrentSprite().getHeight());
+    }
+
+    /**
+     * Constructor de la bala.
+     * @param x Posición inicial en X
+     * @param y Posición inicial en Y
+     * @param seeingRight Dirección de disparo
+     * @param weaponType Tipo de arma que disparó la bala
+     */
+    public Bullet(float x, float y, boolean seeingRight, WeaponType weaponType, Character owner) {
+        this(x, y, new Vector2(seeingRight ? 200f : -200f, 0), weaponType, owner);
     }
 
     /**
@@ -86,7 +98,7 @@ public class Bullet
             default:
         }
 
-        this.velocity = new Vector2(seeingRight ? speed : -speed, 0);
+
 
         // Cargar las texturas de la bala según el tipo de arma
         List<Sprite> frames = loadBulletFrames(basePath + textureName, 2, !seeingRight);
@@ -133,7 +145,8 @@ public class Bullet
      */
     public boolean update(float delta) {
         position.x += velocity.x * delta;
-        distanceTraveled += Math.abs(velocity.x * delta);
+        position.y += velocity.y * delta;
+        distanceTraveled += velocity.len() * delta;
         bounds.setPosition(position.x, position.y);
         
         animator.handleUpdate(delta); // Update the animation

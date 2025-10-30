@@ -10,11 +10,10 @@ public class BossEnemy extends BaseEnemy
     /**
      * Constructor del Jefe.
      * @param character El personaje del jefe.
-     * @param controller Controlador.
      * @param type El tipo de enemigo.
      */
-    public BossEnemy(Character character, CharacterController controller, EnemyType type) {
-        super(character, new BossEnemyController(character), type);
+    public BossEnemy(Character character, EnemyType type) {
+        super(character, new BossEnemyController(character, type), type);
     }
     
 }

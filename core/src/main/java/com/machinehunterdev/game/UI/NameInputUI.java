@@ -26,6 +26,7 @@ public class NameInputUI implements InputProcessor {
 
     private State currentState = State.NAME_INPUT;
     private int tutorialConfirmSelection = 0;
+    private boolean ignoreInput = false;
 
     /** Fuente para el texto de la interfaz */
     private BitmapFont font;
@@ -179,11 +180,12 @@ public class NameInputUI implements InputProcessor {
                         gameController.stateMachine.changeState(tutorial);
                     } else { // No
                         // Cargar nivel 1
-                        GameplayState level1 = GameplayState.createForLevel("Levels/Level 1.json");
+                        GameplayState level1 = GameplayState.createForLevel("Levels/Level 3 - Boss GeminiEXE.json");
                         gameController.stateMachine.changeState(level1);
                     }
                 } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
                     currentState = State.NAME_INPUT;
+                    ignoreInput = true;
                 }
                 break;
         }
@@ -197,6 +199,10 @@ public class NameInputUI implements InputProcessor {
      */
     @Override
     public boolean keyTyped(char character) {
+        if (ignoreInput) {
+            ignoreInput = false;
+            return true;
+        }
         if (currentState == State.NAME_INPUT) {
             if (playerName.length() < 15 && (java.lang.Character.isLetterOrDigit(character) || character == ' ')) {
                 playerName.append(character);
