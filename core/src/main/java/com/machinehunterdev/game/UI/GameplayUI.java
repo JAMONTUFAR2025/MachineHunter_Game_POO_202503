@@ -64,120 +64,93 @@ public class GameplayUI {
         }
     }
 
+    private BossHealthBar bossHealthBar;
+
+    public void setBoss(com.machinehunterdev.game.Character.Character boss, String bossName) {
+        this.bossHealthBar = new BossHealthBar(boss, bossName);
+    }
+
     /**
      * Renderiza la interfaz de gameplay.
      * @param playerHealth Salud actual del jugador
      * @param currentWeapon Arma actual del jugador
      */
     public void draw(int playerHealth, WeaponType currentWeapon, boolean isPlayerInvulnerable) {
+        // === Shape Drawing ===
         shapeRenderer.setProjectionMatrix(uiCamera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
+        // Draw player health squares
         int totalHealth = 3;
         int squareSize = 64;
         int padding = 10;
-
-        // Dibujar cuadrados de salud (rojos = vida, blancos = perdida)
         for (int i = 0; i < totalHealth; i++) {
             if (i < playerHealth) {
                 shapeRenderer.setColor(Color.RED);
             } else {
                 shapeRenderer.setColor(Color.WHITE);
             }
-
             float x = padding + (i * (squareSize + padding));
             float y = padding;
             shapeRenderer.rect(x, y, squareSize, squareSize);
         }
 
+        // Draw boss health bar shapes
+        if (bossHealthBar != null) {
+            bossHealthBar.drawShapes(shapeRenderer, uiCamera.viewportWidth, uiCamera.viewportHeight);
+        }
+
         shapeRenderer.end();
 
-        // Dibujar nombre del jugador y arma actual
+        // === Sprite & Text Drawing ===
         batch.setProjectionMatrix(uiCamera.combined);
         batch.begin();
+
+        // Draw player name
         GlyphLayout layout = new GlyphLayout();
-        
         String text = "Player: " + GlobalSettings.playerName;
         layout.setText(font, text);
         float x = uiCamera.viewportWidth - layout.width - 10;
         float y = layout.height + 10;
         font.draw(batch, text, x, y);
-        batch.end();
 
-        // Dibujar cuadrados de seleccion de arma
-        batch.begin();
+        // Draw boss name text
+        if (bossHealthBar != null) {
+            bossHealthBar.drawText(batch, font, uiCamera.viewportWidth, uiCamera.viewportHeight);
+        }
+
+        // Draw weapon selection icons
         float totalWidth = (3 * squareSize) + (2 * padding);
         float startX = (uiCamera.viewportWidth - totalWidth) / 2;
+        float iconSize = squareSize;
 
-                float iconSize = squareSize; // Usar float para el tamaño
+        if (isPlayerInvulnerable) {
+            batch.setColor(1, 1, 1, 0.3f);
+            batch.draw(laserIcon, startX, (float)padding, iconSize, iconSize);
+            batch.draw(ionIcon, startX + iconSize + padding, (float)padding, iconSize, iconSize);
+            batch.draw(railgunIcon, startX + (2 * (iconSize + padding)), (float)padding, iconSize, iconSize);
+        } else {
+            if (currentWeapon == WeaponType.LASER) {
+                batch.setColor(Color.WHITE);
+            } else {
+                batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+            }
+            batch.draw(laserIcon, startX, (float)padding, iconSize, iconSize);
 
-        
+            if (currentWeapon == WeaponType.ION) {
+                batch.setColor(Color.WHITE);
+            } else {
+                batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+            }
+            batch.draw(ionIcon, startX + iconSize + padding, (float)padding, iconSize, iconSize);
 
-                if (isPlayerInvulnerable) {
-
-                    batch.setColor(1, 1, 1, 0.3f); // Todas las armas transparentes
-
-                    batch.draw(laserIcon, startX, (float)padding, iconSize, iconSize);
-
-                    batch.draw(ionIcon, startX + iconSize + padding, (float)padding, iconSize, iconSize);
-
-                    batch.draw(railgunIcon, startX + (2 * (iconSize + padding)), (float)padding, iconSize, iconSize);
-
-                } else {
-
-                    // Lógica original
-
-                    // Cuadrado para LASER (J)
-
-                    if (currentWeapon == WeaponType.LASER) {
-
-                        batch.setColor(Color.WHITE);
-
-                    } else {
-
-                        batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
-
-                    }
-
-                    batch.draw(laserIcon, startX, (float)padding, iconSize, iconSize);
-
-        
-
-                    // Cuadrado para ION (K)
-
-                    if (currentWeapon == WeaponType.ION) {
-
-                        batch.setColor(Color.WHITE);
-
-                    }
-
-                    else {
-
-                        batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
-
-                    }
-
-                    batch.draw(ionIcon, startX + iconSize + padding, (float)padding, iconSize, iconSize);
-
-        
-
-                    // Cuadrado para RAILGUN (L)
-
-                    if (currentWeapon == WeaponType.RAILGUN) {
-
-                        batch.setColor(Color.WHITE);
-
-                    }
-
-                    else {
-
-                        batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
-
-                    }
-
-                    batch.draw(railgunIcon, startX + (2 * (iconSize + padding)), (float)padding, iconSize, iconSize);
-
-                }
+            if (currentWeapon == WeaponType.RAILGUN) {
+                batch.setColor(Color.WHITE);
+            } else {
+                batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+            }
+            batch.draw(railgunIcon, startX + (2 * (iconSize + padding)), (float)padding, iconSize, iconSize);
+        }
 
         batch.setColor(Color.WHITE); // Reset color
         batch.end();

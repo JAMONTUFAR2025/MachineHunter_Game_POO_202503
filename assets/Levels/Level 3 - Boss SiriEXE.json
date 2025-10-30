@@ -42,7 +42,7 @@
       "type": "BOSS",
       "x": 200,
       "y": 300,
-      "health": 50
+      "health": 100
     }
   ]
 }

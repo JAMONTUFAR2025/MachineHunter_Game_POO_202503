@@ -129,7 +129,7 @@ public class NextLevelUI implements InputProcessor {
      */
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == GlobalSettings.CONTROL_INTERACT || keycode == GlobalSettings.CONTROL_PAUSE) {
+        if (keycode == GlobalSettings.CONTROL_INTERACT) {
             if (selectedOption == 0) { // Siguiente Nivel
                 com.machinehunterdev.game.Levels.LevelData currentLevel = gameplayState.getCurrentLevel();
                 if (currentLevel != null && currentLevel.nextLevel != null && !currentLevel.nextLevel.isEmpty()) {

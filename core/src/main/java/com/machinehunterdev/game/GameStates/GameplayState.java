@@ -33,6 +33,7 @@ import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.Levels.LevelData;
 import com.machinehunterdev.game.Levels.LevelLoader;
+import com.machinehunterdev.game.UI.BossHealthBar;
 import com.machinehunterdev.game.UI.GameplayUI;
 import com.machinehunterdev.game.UI.NextLevelUI;
 import com.machinehunterdev.game.UI.PauseUI;
@@ -61,6 +62,7 @@ public class GameplayState implements IState<GameController> {
     private DialogManager dialogManager;
     private boolean isDialogActive = false;
     private GameplayUI gameplayUI;
+    private BossHealthBar bossHealthBar;
 
     // === SISTEMA DE PAUSA ===
     private boolean isPaused = false;
@@ -250,6 +252,10 @@ public class GameplayState implements IState<GameController> {
             }
 
             enemyManager.addEnemy(enemyData.type, enemy, patrolPoints, enemyData.waitTime, enemyData.shootInterval, enemyData.shootTime);
+
+            if (enemyData.type == EnemyType.BOSS) {
+                gameplayUI.setBoss((com.machinehunterdev.game.Character.Character) enemy, enemyData.name);
+            }
         }
     }
 
