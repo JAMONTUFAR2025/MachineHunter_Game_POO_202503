@@ -1,86 +1,24 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
-  "groundTexture": "Environment/FloorWhite320.png",
+  "groundTexture": "Environment/FloorBlue320.png",
   "levelWidth": 2240,
   "playerStartX": 50,
   "playerStartY": 100,
-  "nextLevel": "Levels/Level 3 - Boss GeminiEXE.json",
+  "nextLevel": "Levels/Level 3.json",
+  "flashbackDialogueSection": "Flashback1",
   "solidObjectsData": [
-    {
-      "x": 100,
-      "y": 80,
-      "walkable": true,
-      "type": "Platform_White_Huge"
-    },
-    {
-      "x": 100,
-      "y": 144,
-      "walkable": true,
-      "type": "Platform_White_Huge"
-    },
-    {
-      "x": 100,
-      "y": 208,
-      "walkable": true,
-      "type": "Platform_White_Huge"
-    },
-    {
-      "type": "Chain_White",
-      "x": 100,
-      "y": 96,
-      "walkable": false
-    },
-    {
-      "type": "Chain_White",
-      "x": 380,
-      "y": 96,
-      "walkable": false
-    }
+    {"type":"Platform_White_Huge", "x": 100, "y": 80 },
+    {"type": "Platform_Blue_Huge", "x": 100, "y": 144 },
+    {"type": "Platform_White_Huge", "x": 100, "y": 208 },
+    {"type": "Chain_White", "x": 100, "y": 96, "walkable": false },
+    {"type": "Chain_White", "x": 380, "y": 96, "walkable": false }
   ],
   "enemies": [
-    {
-      "type": "PATROLLER",
-      "x": 200,
-      "y": 300,
-      "health": 50,
-      "patrolPoints": [
-        { "x": 100, "y": 300 },
-        { "x": 200, "y": 300 }
-      ],
-      "waitTime": 2.0
-    },
-    {
-      "type": "SHOOTER",
-      "x": 800,
-      "y": 0,
-      "health": 30,
-      "shootInterval": 3.0,
-      "shootTime": 1.0
-    },
-    {
-      "type": "FLYING",
-      "x": 300,
-      "y": 200,
-      "health": 20,
-      "patrolPoints": [
-        { "x": 300, "y": 64 },
-        { "x": 300, "y": 270 }
-      ],
-      "waitTime": 1.0
-    }
-  ],  "npcs": [
-    {
-      "idleFrames": "Player/PlayerIdle",
-      "runFrames": "Player/PlayerRun",
-      "hurtFrames": "Player/PlayerHurt",
-      "jumpFrames": "Player/PlayerJump",
-      "fallFrames": "Player/PlayerFall",
-      "crouchFrames": "Player/PlayerCrouch",
-      "x": 100,
-      "y": 100,
-      "interactionRadius": 50,
-      "dialogues": ["Dialogos_acto2"]
-    }
+    {"type": "PATROLLER", "x": 200, "y": 300, "patrolPoints": [{"x": 100, "y": 300}, {"x": 200, "y": 300}]},
+    {"type": "SHOOTER", "x": 800, "y": 0 },
+    {"type": "FLYING", "x": 100, "y": 50, "patrolPoints": [{"x": 300, "y": 64}, {"x": 300, "y": 270}]}
   ],
-  "flashbackDialogueSection": "Flashback2"
+  "npcs": [
+    {"idleFrames": "NPC/Doctor/DoctorIdle", "x": 100, "y": 100, "dialogues": ["Dialogos_acto2"]}
+  ]
 }

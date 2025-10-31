@@ -237,7 +237,28 @@ public class GameplayState implements IState<GameController> {
                 enemyHurtFrames, null
             );
 
-            Character enemy = new Character(enemyData.health, enemyAnimator, null, enemyData.x, enemyData.y, false);
+            int health = 0;
+            switch (enemyData.type) {
+                case PATROLLER:
+                    health = com.machinehunterdev.game.Gameplay.GlobalSettings.PATROLLER_HEALTH;
+                    break;
+                case SHOOTER:
+                    health = com.machinehunterdev.game.Gameplay.GlobalSettings.SHOOTER_HEALTH;
+                    break;
+                case FLYING:
+                    health = com.machinehunterdev.game.Gameplay.GlobalSettings.FLYING_HEALTH;
+                    break;
+                case BOSS_GEMINI:
+                    health = com.machinehunterdev.game.Gameplay.GlobalSettings.BOSS_GEMINI_HEALTH;
+                    break;
+                case BOSS_CHATGPT:
+                    health = com.machinehunterdev.game.Gameplay.GlobalSettings.BOSS_CHATGPT_HEALTH;
+                    break;
+                default:
+                    health = 50; // Default health if type is not recognized
+            }
+
+            Character enemy = new Character(health, enemyAnimator, null, enemyData.x, enemyData.y, false);
             if (enemyData.type == EnemyType.SHOOTER) {
                 enemy.switchWeapon(com.machinehunterdev.game.DamageTriggers.WeaponType.SHOOTER);
             }
@@ -458,25 +479,69 @@ public class GameplayState implements IState<GameController> {
         List<Sprite> enemyHurtFrames = loadSpriteFrames(skin.hurtFrames, 1);
         List<Sprite> enemyAttackFrames = loadSpriteFrames(skin.attackFrames, 2);
 
-        CharacterAnimator enemyAnimator = new CharacterAnimator(
+        CharacterAnimator enemyAnimator1 = new CharacterAnimator(
             enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
             enemyJumpFrames, enemyFallFrames, enemyAttackFrames,
             null, null, null,
             enemyHurtFrames, null
         );
 
-        Character enemy = new Character(1, enemyAnimator, null, 80, 480, false);
-        if (type == EnemyType.SHOOTER) {
-            enemy.switchWeapon(com.machinehunterdev.game.DamageTriggers.WeaponType.SHOOTER);
+        CharacterAnimator enemyAnimator2 = new CharacterAnimator(
+            enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
+            enemyJumpFrames, enemyFallFrames, enemyAttackFrames,
+            null, null, null,
+            enemyHurtFrames, null
+        );
+
+        int health = 1;
+        switch (type) {
+            case PATROLLER:
+                health = com.machinehunterdev.game.Gameplay.GlobalSettings.PATROLLER_HEALTH;
+                break;
+            case SHOOTER:
+                health = com.machinehunterdev.game.Gameplay.GlobalSettings.SHOOTER_HEALTH;
+                break;
+            case FLYING:
+                health = com.machinehunterdev.game.Gameplay.GlobalSettings.FLYING_HEALTH;
+                break;
+            default:
+                health = 1;
+                break;
         }
 
-        ArrayList<Vector2> patrolPoints = new ArrayList<>();
+        Character enemy1 = new Character(health, enemyAnimator1, null, 60, 480, false);
+        Character enemy2 = new Character(health, enemyAnimator2, null, 380, 480, false);
+
+        if (type == EnemyType.FLYING) {
+            enemy1.position.y = 200; 
+            enemy2.position.y = 200;
+        } else {
+            float adjustedY1 = findGroundY(enemy1.position.x, 480, enemy1.getWidth());
+            enemy1.position.y = adjustedY1;
+            enemy1.onGround = true;
+            enemy1.velocity.y = 0;
+
+            float adjustedY2 = findGroundY(enemy2.position.x, 480, enemy2.getWidth());
+            enemy2.position.y = adjustedY2;
+            enemy2.onGround = true;
+            enemy2.velocity.y = 0;
+        }
+
+        if (type == EnemyType.SHOOTER) {
+            enemy1.switchWeapon(com.machinehunterdev.game.DamageTriggers.WeaponType.SHOOTER);
+            enemy2.switchWeapon(com.machinehunterdev.game.DamageTriggers.WeaponType.SHOOTER);
+        }
+
+        ArrayList<Vector2> patrolPoints1 = new ArrayList<>();
+        ArrayList<Vector2> patrolPoints2 = new ArrayList<>();
         float waitTime = 0, shootInterval = 0, shootTime = 0;
 
         switch (type) {
             case PATROLLER:
-                patrolPoints.add(new Vector2(80, 32));
-                patrolPoints.add(new Vector2(210, 32));
+                patrolPoints1.add(new Vector2(400, 32));
+                patrolPoints1.add(new Vector2(80, 32));
+                patrolPoints2.add(new Vector2(80, 32));
+                patrolPoints2.add(new Vector2(400, 32));
                 waitTime = 2.0f;
                 break;
             case SHOOTER:
@@ -484,13 +549,18 @@ public class GameplayState implements IState<GameController> {
                 shootTime = 1.0f;
                 break;
             case FLYING:
-                patrolPoints.add(new Vector2(90, 238));
-                patrolPoints.add(new Vector2(90, 32));
+                patrolPoints1.add(new Vector2(138, 144));
+                patrolPoints1.add(new Vector2(138, 80));
+                patrolPoints2.add(new Vector2(302, 80));
+                patrolPoints2.add(new Vector2(302, 138));
                 waitTime = 2.0f;
+                break;
+            default:
                 break;
         }
 
-        enemyManager.addEnemy(type, enemy, patrolPoints, waitTime, shootInterval, shootTime);
+        enemyManager.addEnemy(type, enemy1, patrolPoints1, waitTime, shootInterval, shootTime);
+        enemyManager.addEnemy(type, enemy2, patrolPoints2, waitTime, shootInterval, shootTime);
     }
 
     private void checkLevelCompletion() {
@@ -597,6 +667,12 @@ public class GameplayState implements IState<GameController> {
                         float x = controller.getLightningPlayerX();
                         shapeRenderer.rect(x, 32, 40, 448);
                     }
+                }
+
+                if (controller.isSummonWarning()) {
+                    shapeRenderer.setColor(Color.BLACK);
+                    shapeRenderer.rect(60, 32, 40, 448);
+                    shapeRenderer.rect(380, 32, 40, 448);
                 }
             }
         }

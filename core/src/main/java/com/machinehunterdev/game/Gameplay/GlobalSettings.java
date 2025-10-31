@@ -20,6 +20,15 @@ public class GlobalSettings
     /** Salud inicial del jugador */
     public static final int PLAYER_HEALTH = 3;
     
+    /** Salud inicial de enemigos */
+    public static final int PATROLLER_HEALTH = 150;
+    public static final int SHOOTER_HEALTH = 120;
+    public static final int FLYING_HEALTH = 210;
+
+    /** Salud de los jefes */
+    public static final int BOSS_GEMINI_HEALTH = 2000;
+    public static final int BOSS_CHATGPT_HEALTH = 3000;
+
     /** Controles para el jugador */
     public static final int CONTROL_MOVE_LEFT = Keys.A;
     public static final int CONTROL_MOVE_RIGHT = Keys.D;

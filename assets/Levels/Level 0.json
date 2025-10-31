@@ -1,0 +1,52 @@
+{
+  "backgroundTexture": "Fondos/FondoJuego.png",
+  "groundTexture": "Environment/FloorBlue320.png",
+  "levelWidth": 2500,
+  "playerStartX": 50,
+  "playerStartY": 32,
+  "nextLevel": "Levels/Level 1.json",
+  "solidObjectsData": [
+
+    { "type": "Platform_White_Small", "x": 150, "y": 80 },
+    { "type": "Platform_White_Tiny", "x": 250, "y": 144 },
+    { "type": "Platform_White_Small", "x": 350, "y": 208 },
+
+    { "type": "Platform_White_Huge", "x": 600, "y": 80 },
+
+    { "type": "Platform_White_Large", "x": 1100, "y": 80 },
+    { "type": "Platform_White_Huge", "x": 1200, "y": 144 },
+    { "type": "Platform_White_Medium", "x": 1300, "y": 208 },
+
+    { "type": "Platform_White_Large", "x": 1600, "y": 80 },
+    { "type": "Platform_White_Large", "x": 1700, "y": 144 },
+    { "type": "Platform_White_Large", "x": 1800, "y": 208 },
+
+    { "type": "Platform_White_Huge", "x": 2100, "y": 80 }
+  ],
+  "enemies": [
+    
+    { "type": "PATROLLER", "x": 700, "y": 112, "patrolPoints": [], "waitTime": 0 },
+    
+    { "type": "SHOOTER", "x": 1332, "y": 240 },
+
+    { "type": "FLYING", "x": 1900, "y": 120 },
+    { "type": "FLYING", "x": 1900, "y": 184 },
+    { "type": "FLYING", "x": 1900, "y": 248 },
+
+    { "type": "PATROLLER", "x": 2200, "y": 112, "patrolPoints": [], "waitTime": 0 },
+    { "type": "PATROLLER", "x": 2264, "y": 112, "patrolPoints": [], "waitTime": 0 },
+    { "type": "PATROLLER", "x": 2328, "y": 112, "patrolPoints": [], "waitTime": 0 }
+  ],
+  "npcs": [
+    
+    { "idleFrames": "NPC/Info-Bot/Info-BotIdle", "x": 32, "y": 72, "dialogues": ["TUTORIAL_1"] },
+
+    { "idleFrames": "NPC/Info-Bot/Info-BotIdle", "x": 532, "y": 72, "dialogues": ["TUTORIAL_2"] },
+
+    { "idleFrames": "NPC/Info-Bot/Info-BotIdle", "x": 1032, "y": 72, "dialogues": ["TUTORIAL_3"] },
+
+    { "idleFrames": "NPC/Info-Bot/Info-BotIdle", "x": 1532, "y": 72, "dialogues": ["TUTORIAL_4"] },
+
+    { "idleFrames": "NPC/Info-Bot/Info-BotIdle", "x": 2032, "y": 72, "dialogues": ["TUTORIAL_5"] }
+  ]
+}

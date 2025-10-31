@@ -78,7 +78,6 @@ public class LevelData {
         public float x, y;
         public List<Point> patrolPoints = new ArrayList<>();
         public float waitTime = 3.0f;
-        public int health = 50;
         public float shootInterval = 2.0f;
         public float shootTime = 1.0f;
     }
@@ -88,11 +87,6 @@ public class LevelData {
      */
     public static class NPCData {
         public String idleFrames = "Player/PlayerIdle";
-        public String runFrames = "Player/PlayerRun";
-        public String hurtFrames = "Player/PlayerHurt";
-        public String jumpFrames = "Player/PlayerJump";
-        public String fallFrames = "Player/PlayerFall";
-        public String crouchFrames = "Player/PlayerCrouch";
         public float x, y;
         public float interactionRadius = 50f;
         public List<String> dialogues;

@@ -1,0 +1,18 @@
+{
+  "backgroundTexture": "Fondos/FondoJuego.png",
+  "groundTexture": "Environment/FloorWhite320.png",
+  "levelWidth": 480,
+  "playerStartX": 50,
+  "playerStartY": 100,
+  "nextLevel": "Levels/Level 4.json",
+  "solidObjectsData": [
+    { "type":"Platform_White_Small","x": 32, "y": 80 },
+    { "type":"Platform_White_Small","x": 32, "y": 144 },
+    { "type":"Platform_White_Small","x": 192, "y": 80 },
+    { "type":"Platform_White_Small","x": 352, "y": 80 },
+    { "type":"Platform_White_Small","x": 352, "y": 144 }
+  ],
+  "enemies": [
+    {"type": "BOSS_GEMINI", "name": "CHATGPT.EXE", "x": 200, "y": 300 }
+  ]
+}

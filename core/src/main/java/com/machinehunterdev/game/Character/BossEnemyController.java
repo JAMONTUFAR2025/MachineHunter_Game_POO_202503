@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.Environment.SolidObject;
-import com.machinehunterdev.game.Character.EnemyType;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -19,7 +18,10 @@ public class BossEnemyController extends CharacterController {
     private boolean lightningAttackActive = false;
     private float lightningAttackTimer = 0f;
     private float lightningPlayerX = 0f;
-    private int lightningFlashCount = 0;
+
+    private boolean summonWarningActive = false;
+    private float summonWarningTimer = 0f;
+    private EnemyType pendingEnemyToSummon = null;
 
     private EnemyType enemyToSummon = null;
 
@@ -28,6 +30,18 @@ public class BossEnemyController extends CharacterController {
 
     public boolean isLightningAttackActive() { return lightningAttackActive; }
     public float getLightningPlayerX() { return lightningPlayerX; }
+
+    public boolean isSummonWarning() {
+        if (!summonWarningActive) return false;
+
+        float warningDuration = 1.2f; // 3 flashes
+
+        if (summonWarningTimer < warningDuration) {
+            int flashCount = (int) (summonWarningTimer / 0.2f);
+            return flashCount % 2 == 0;
+        }
+        return false;
+    }
 
     public boolean isLightningWarning() {
         if (!lightningAttackActive) return false;
@@ -94,6 +108,15 @@ public class BossEnemyController extends CharacterController {
             }
         }
 
+        if (summonWarningActive) {
+            summonWarningTimer += delta;
+            if (summonWarningTimer >= 1.2f) {
+                enemyToSummon = pendingEnemyToSummon;
+                summonWarningActive = false;
+                pendingEnemyToSummon = null;
+            }
+        }
+
         character.velocity.set(0, 0);
         character.stopMoving();
 
@@ -101,6 +124,10 @@ public class BossEnemyController extends CharacterController {
 
         boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
         float currentAttackInterval = isPhaseTwo ? attackIntervalPhase2 : attackInterval;
+
+        if (enemyCount > 1) {
+            currentAttackInterval *= 2;
+        }
 
         // Si esta vivo, atacar cada cierto intervalo
         if (attackTimer >= currentAttackInterval && character.getHealth() > 0) {
@@ -111,84 +138,84 @@ public class BossEnemyController extends CharacterController {
 
     private void performRandomAttack(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
-        int numberOfAttacks = isPhaseTwo ? 4 : 2;
+        int numberOfAttacks = isPhaseTwo ? 4 : 3;
         int attackType = random.nextInt(numberOfAttacks);
 
-                switch (attackType) {
-                    case 0:
-                        attackType1(bullets, playerCharacter, enemyCount);
-                        break;
-                    case 1:
-                        attackType2(bullets, playerCharacter, enemyCount);
-                        break;
-                    case 2:
-                        attackType3(bullets, playerCharacter, enemyCount);
-                        break;
-                    case 3:
-                        attackType4(bullets, playerCharacter, enemyCount);
-                        break;
-                }
-            }
-        
-            private void attackType1(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
-                System.out.println("Boss Attack 1");
-                if (playerCharacter != null) {
-                    lightningAttackActive = true;
-                    lightningAttackTimer = 0f;
-                    lightningPlayerX = playerCharacter.position.x;
-                    lightningFlashCount = 0;
-                }
-            }
-        
-            private void attackType2(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
-                System.out.println("Boss Attack 2");
-                if (playerCharacter == null) return;
-        
-                Vector2 bossTop = new Vector2(character.position.x + character.getWidth() / 2, character.position.y + character.getHeight());
-                Vector2 playerCenter = new Vector2(playerCharacter.position.x + playerCharacter.getWidth() / 2, playerCharacter.position.y + 35);
-        
-                Vector2 direction = playerCenter.sub(bossTop).nor();
-                float bulletSpeed = 100f; // From WeaponType.SHOOTER
-        
-                int bulletCount;
-                float angleIncrement;
-        
-                if ((float) character.getHealth() / maxHealth <= 0.5f) {
-                    bulletCount = 12;
-                    angleIncrement = 30f;
-                } else {
-                    bulletCount = 10;
-                    angleIncrement = 36f;
-                }
-        
-                for (int i = 0; i < bulletCount; i++) {
-                    Vector2 bulletVelocity = direction.cpy().rotateDeg(i * angleIncrement).scl(bulletSpeed);
-                    Bullet bullet = new Bullet(bossTop.x, bossTop.y, bulletVelocity, WeaponType.SHOOTER, character);
-                    bullets.add(bullet);
-                }
-            }
-        
-            private void attackType3(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
-                if (enemyCount > 1) {
-                    // Do nothing if there are other enemies
-                    return;
-                }
-        
-                int randomEnemy = random.nextInt(3);
-                switch (randomEnemy) {
-                    case 0:
-                        enemyToSummon = EnemyType.PATROLLER;
-                        break;
-                    case 1:
-                        enemyToSummon = EnemyType.SHOOTER;
-                        break;
-                    case 2:
-                        enemyToSummon = EnemyType.FLYING;
-                        break;
-                }
-            }
-        
-            private void attackType4(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
-                System.out.println("Boss Attack 4 (Phase 2)");
-            }
+        switch (attackType) {
+            case 0:
+                // Nada
+                break;
+            case 1:
+                attackType1(bullets, playerCharacter, enemyCount);
+            break;
+            case 2:
+                attackType2(bullets, playerCharacter, enemyCount);
+            break;
+            case 3:
+                attackType3(bullets, playerCharacter, enemyCount);
+                break;
+            default:
+                break;
         }
+    }
+        
+    private void attackType1(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
+        System.out.println("Boss Attack 1");
+        if (playerCharacter != null) {
+            lightningAttackActive = true;
+            lightningAttackTimer = 0f;
+            lightningPlayerX = playerCharacter.position.x;
+        }
+    }
+    
+    private void attackType2(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
+        System.out.println("Boss Attack 2");
+        if (playerCharacter == null) return;
+
+        Vector2 bossTop = new Vector2(character.position.x + character.getWidth() / 2, character.position.y + character.getHeight());
+        Vector2 playerCenter = new Vector2(playerCharacter.position.x + playerCharacter.getWidth() / 2, playerCharacter.position.y + 35);
+
+        Vector2 direction = playerCenter.sub(bossTop).nor();
+        float bulletSpeed = 100f; // From WeaponType.SHOOTER
+
+        int bulletCount;
+        float angleIncrement;
+
+        if ((float) character.getHealth() / maxHealth <= 0.5f) {
+            bulletCount = 12;
+            angleIncrement = 30f;
+        } else {
+            bulletCount = 10;
+            angleIncrement = 36f;
+        }
+
+        for (int i = 0; i < bulletCount; i++) {
+            Vector2 bulletVelocity = direction.cpy().rotateDeg(i * angleIncrement).scl(bulletSpeed);
+            Bullet bullet = new Bullet(bossTop.x, bossTop.y, bulletVelocity, WeaponType.SHOOTER, character);
+            bullets.add(bullet);
+        }
+    }
+
+    private void attackType3(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
+        if (enemyCount > 1) {
+            // Do nothing if there are other enemies
+            return;
+        }
+
+        summonWarningActive = true;
+        summonWarningTimer = 0f;
+
+        int randomEnemy = random.nextInt(3);
+        switch (randomEnemy) {
+            case 0:
+                pendingEnemyToSummon = EnemyType.PATROLLER;
+                break;
+            case 1:
+                pendingEnemyToSummon = EnemyType.SHOOTER;
+                break;
+            case 2:
+                pendingEnemyToSummon = EnemyType.FLYING;
+                break;
+        }
+    }
+}
