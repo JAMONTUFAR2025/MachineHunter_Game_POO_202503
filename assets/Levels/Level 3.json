@@ -5,6 +5,7 @@
   "playerStartX": 50,
   "playerStartY": 100,
   "nextLevel": "Levels/Level 4.json",
+  "flashbackDialogueSection": "Flashback3",
   "solidObjectsData": [
     { "type":"Platform_White_Small","x": 32, "y": 80 },
     { "type":"Platform_White_Small","x": 32, "y": 144 },
@@ -13,6 +14,6 @@
     { "type":"Platform_White_Small","x": 352, "y": 144 }
   ],
   "enemies": [
-    {"type": "BOSS_GEMINI", "name": "CHATGPT.EXE", "x": 200, "y": 300 }
+    {"type": "BOSS_GEMINI", "name": "GEMINI.EXE", "x": 200, "y": 300 }
   ]
 }

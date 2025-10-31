@@ -6,9 +6,9 @@ package com.machinehunterdev.game.DamageTriggers;
  * @author MachineHunterDev
  */
 public enum WeaponType {
-    LASER(15),      // Bala a larga distancia
+    LASER(20),      // Bala a larga distancia
     ION(10),        // Disparo múltiple a corta distancia
-    RAILGUN(5),     // Bala perforante de impacto
+    RAILGUN(15),     // Bala perforante de impacto
     SHOOTER(1),     // Daño del Disparador
     PATROLLER(1),   // Daño del Patrullero
     FLYING(1);      // Daño del Volador

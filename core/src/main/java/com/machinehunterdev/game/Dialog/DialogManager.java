@@ -105,7 +105,7 @@ public class DialogManager {
      */
     private void updateDialogPosition() {
         if (isFlashback) {
-            dialogBoxWidth = Gdx.graphics.getWidth() - 400;
+            dialogBoxWidth = Gdx.graphics.getWidth() - 700;
             dialogBoxX = (Gdx.graphics.getWidth() - dialogBoxWidth) / 2f;
             dialogBoxY = (Gdx.graphics.getHeight() - dialogBoxHeight) / 2f;
         } else {

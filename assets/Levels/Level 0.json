@@ -2,7 +2,7 @@
   "backgroundTexture": "Fondos/FondoJuego.png",
   "groundTexture": "Environment/FloorBlue320.png",
   "levelWidth": 2500,
-  "playerStartX": 50,
+  "playerStartX": 32,
   "playerStartY": 32,
   "nextLevel": "Levels/Level 1.json",
   "solidObjectsData": [
@@ -39,7 +39,7 @@
   ],
   "npcs": [
     
-    { "idleFrames": "NPC/Info-Bot/Info-BotIdle", "x": 32, "y": 72, "dialogues": ["TUTORIAL_1"] },
+    { "idleFrames": "NPC/Info-Bot/Info-BotIdle", "x": 80, "y": 72, "dialogues": ["TUTORIAL_1"] },
 
     { "idleFrames": "NPC/Info-Bot/Info-BotIdle", "x": 532, "y": 72, "dialogues": ["TUTORIAL_2"] },
 

@@ -179,7 +179,7 @@ public class NameInputUI implements InputProcessor {
                 } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
                     if (tutorialConfirmSelection == 0) { // Sí
                         // Cargar nivel 0 (tutorial)
-                        GameplayState tutorial = GameplayState.createForLevel("Levels/Level 0 - Tutorial.json");
+                        GameplayState tutorial = GameplayState.createForLevel("Levels/Level 0.json");
                         gameController.stateMachine.changeState(tutorial);
                     } else { // No
                         // Cargar nivel 1

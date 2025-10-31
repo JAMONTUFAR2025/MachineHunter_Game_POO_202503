@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
-import com.machinehunterdev.game.GameStates.LeaderboardState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 /**
@@ -22,7 +21,7 @@ import com.machinehunterdev.game.Gameplay.GlobalSettings;
 public class MainMenuUI implements InputProcessor {
     
     /** Opciones del menú principal */
-    private String[] options = {"Iniciar partida", "Clasificacion", "Salir"};
+    private String[] options = {"Iniciar partida", "Créditos", "Salir"};
     
     /** Índice de la opción seleccionada actualmente */
     private int selected = 0;
@@ -153,8 +152,8 @@ public class MainMenuUI implements InputProcessor {
         } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
             if (selected == 0) {
                 starGame();
-            } else if (selected == 1) {
-                gameController.stateMachine.changeState(LeaderboardState.instance);
+            }else if (selected == 1) {
+                // Mostrar créditos
             } else if (selected == 2) {
                 exitGame();
             }

@@ -5,7 +5,7 @@
   "playerStartX": 50,
   "playerStartY": 100,
   "nextLevel": "Levels/Level 5.json",
-  "flashbackDialogueSection": "Flashback1",
+  "flashbackDialogueSection": "Flashback4",
   "solidObjectsData": [
     {"type":"Platform_White_Huge", "x": 100, "y": 80 },
     {"type": "Platform_Blue_Huge", "x": 100, "y": 144 },
