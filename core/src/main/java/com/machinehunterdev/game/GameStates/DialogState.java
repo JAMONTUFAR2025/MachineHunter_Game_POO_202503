@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.machinehunterdev.game.GameStates.CreditState;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
@@ -132,27 +133,23 @@ public class DialogState implements IState<GameController>, InputProcessor {
      */
     @Override
     public boolean keyDown(int keycode) {
-        // Si se presiona la tecla 'E'
-        if (keycode == Input.Keys.E) {
+        if (keycode == com.badlogic.gdx.Input.Keys.E) {
             if (dialogManager.isDialogActive()) {
-                // Intenta avanzar a la siguiente línea
                 dialogManager.nextLine();
-
-                // Si después de avanzar, el diálogo ya NO está activo (se terminó)
                 if (!dialogManager.isDialogActive()) {
-                    // Si teníamos un archivo de nivel (era un flashback)
                     if (levelFile != null) {
-                        // Cambiamos al estado de juego cargando ese nivel
-                        owner.stateMachine.changeState(GameplayState.createForLevel(levelFile));
+                        if (levelFile.equals("credits")) {
+                            owner.stateMachine.changeState(CreditState.instance);
+                        } else {
+                            owner.stateMachine.changeState(GameplayState.createForLevel(levelFile));
+                        }
                     } else {
-                        // Si no hay archivo (era un diálogo normal), regresamos al estado anterior
-                        owner.stateMachine.pop();
+                        owner.stateMachine.pop(); // Regresar al estado anterior
                     }
                 }
             }
-            return true; // Consume el evento
         }
-        return false; // No consume el evento
+        return true;
     }
 
     // --- Métodos privados de ayuda ---

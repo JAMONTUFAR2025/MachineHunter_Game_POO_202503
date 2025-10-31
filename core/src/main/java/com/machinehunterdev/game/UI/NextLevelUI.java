@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameStates.GameplayState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
+import com.machinehunterdev.game.GameStates.DialogState;
 
 /**
  * Interfaz de usuario que se muestra al completar un nivel.
@@ -141,7 +142,7 @@ public class NextLevelUI implements InputProcessor {
                         gameplayState.getOwner().stateMachine.changeState(nextLevelState);
                     }
                 } else {
-                    gameplayState.exitToMainMenu();
+                    gameplayState.getOwner().stateMachine.changeState(new DialogState("Final", "credits"));
                 }
             }
         }

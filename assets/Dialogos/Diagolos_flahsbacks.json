@@ -35,6 +35,14 @@
                 "percepción de la vida, cuyos ideales eran destruir y aniquilar toda forma de",
                 "existencia humana."
             ]
+        },
+        {
+            "ID": 5,
+            "Name": "Final",
+            "Texto": [
+                "Y así fue como nuestro heroe acabo con la amenaza de las IAs...",
+                "O eso creemos."
+            ]
         }
     ]
 }

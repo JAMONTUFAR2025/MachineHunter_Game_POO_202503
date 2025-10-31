@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
+import com.machinehunterdev.game.GameStates.CreditState;
 
 /**
  * Interfaz de usuario para el menú principal del juego.
@@ -153,7 +154,7 @@ public class MainMenuUI implements InputProcessor {
             if (selected == 0) {
                 starGame();
             }else if (selected == 1) {
-                // Mostrar créditos
+                gameController.stateMachine.changeState(CreditState.instance);
             } else if (selected == 2) {
                 exitGame();
             }
