@@ -1,75 +1,431 @@
 package com.machinehunterdev.game.GameStates;
 
+
+
 import com.badlogic.gdx.Gdx;
+
 import com.machinehunterdev.game.GameController;
+
 import com.machinehunterdev.game.Dialog.DialogManager;
+
 import com.machinehunterdev.game.Dialog.Dialog;
+
 import com.machinehunterdev.game.Util.IState;
 
+
+
 /**
+
  * Estado del juego dedicado exclusivamente a mostrar diálogos.
+
  * Se utiliza para escenas cinemáticas o interacciones con NPCs.
+
  * 
+
  * @author MachineHunterDev
+
  */
+
+import com.badlogic.gdx.utils.JsonReader;
+
+import com.badlogic.gdx.utils.JsonValue;
+
+
+
+import java.util.ArrayList;
+
+import java.util.List;
+
+
+
 public class DialogState implements IState<GameController> {
-    /** Gestor de diálogos */
+
+
+
+
+
+
+
     private DialogManager dialogManager;
-    
-    /** Diálogo actual a mostrar */
+
+
+
     private Dialog currentDialog;
-    
-    /** Controlador del juego propietario */
+
+
+
     private GameController owner;
 
-    /**
-     * Constructor del estado de diálogo.
-     * @param dialog Diálogo a mostrar en este estado
-     */
+
+
+    private String levelFile;
+
+
+
+    private boolean isFlashback = false;
+
+
+
+    private boolean ignoreInputOnFirstFrame = true;
+
+
+
+
+
+
+
     public DialogState(Dialog dialog) {
-        currentDialog = dialog;
+
+
+
+        this.currentDialog = dialog;
+
+
+
+        this.levelFile = null;
+
+
+
+        this.isFlashback = false;
+
+
+
     }
 
-    /**
-     * Inicializa el estado al entrar.
-     * @param owner Controlador del juego propietario
-     */
-    @Override
-    public void enter(GameController owner) {
-        this.owner = owner;
-        this.dialogManager = new DialogManager(owner.batch);
-        dialogManager.showDialog(currentDialog);
+
+
+
+
+
+
+    public DialogState(String flashbackDialogueSection, String levelFile) {
+
+
+
+        this.levelFile = levelFile;
+
+
+
+        this.currentDialog = loadFlashbackDialog(flashbackDialogueSection);
+
+
+
+        this.isFlashback = true;
+
+
+
     }
 
-    /**
-     * Ejecuta la lógica del estado cada frame.
-     */
-    @Override
-    public void execute() {
-        handleInput();
-        if (dialogManager.isDialogActive()) {
-            dialogManager.render();
-        }
-    }
 
-    /**
-     * Limpia los recursos al salir del estado.
-     */
-    @Override
-    public void exit() {
-        dialogManager.dispose();
-    }
 
-    /**
-     * Maneja la entrada del usuario para avanzar en el diálogo.
-     */
-    private void handleInput() {
-        if (Gdx.input.justTouched()) {
-            if (dialogManager.isDialogActive()) {
-                dialogManager.nextLine();
-            } else {
-                owner.stateMachine.pop(); // Regresar al estado anterior
+
+
+
+
+    private Dialog loadFlashbackDialog(String sectionName) {
+
+
+
+        List<String> lines = new ArrayList<>();
+
+
+
+        try {
+
+
+
+            JsonReader jsonReader = new JsonReader();
+
+
+
+            JsonValue base = jsonReader.parse(Gdx.files.internal("Dialogos/Diagolos_flahsbacks.json"));
+
+
+
+            JsonValue flashbacks = base.get("Flashbacks");
+
+
+
+            for (JsonValue flashback : flashbacks) {
+
+
+
+                if (flashback.getString("Name").equals(sectionName)) {
+
+
+
+                    JsonValue texto = flashback.get("Texto");
+
+
+
+                    for (JsonValue line : texto) {
+
+
+
+                        lines.add(line.asString());
+
+
+
+                    }
+
+
+
+                    break;
+
+
+
+                }
+
+
+
             }
+
+
+
+        } catch (Exception e) {
+
+
+
+            Gdx.app.error("DialogState", "Error al cargar el diálogo de flashback", e);
+
+
+
         }
+
+
+
+        return new Dialog(lines);
+
+
+
     }
+
+
+
+
+
+
+
+    @Override
+
+
+
+    public void enter(GameController owner) {
+
+
+
+        this.owner = owner;
+
+
+
+        this.dialogManager = new DialogManager(owner.batch);
+
+
+
+        dialogManager.showDialog(currentDialog, isFlashback);
+
+
+
+        this.ignoreInputOnFirstFrame = true;
+
+
+
+    }
+
+
+
+
+
+
+
+    @Override
+
+
+
+    public void execute() {
+
+
+
+        handleInput();
+
+
+
+        if (dialogManager.isDialogActive()) {
+
+
+
+            dialogManager.update(Gdx.graphics.getDeltaTime());
+
+
+
+            dialogManager.render();
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+    @Override
+
+
+
+    public void exit() {
+
+
+
+        dialogManager.dispose();
+
+
+
+    }
+
+
+
+
+
+
+
+    private void handleInput() {
+
+
+
+        if (ignoreInputOnFirstFrame) {
+
+
+
+            ignoreInputOnFirstFrame = false;
+
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+
+
+        if (isFlashback) {
+
+
+
+            if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.E)) {
+
+
+
+                if (dialogManager.isDialogActive()) {
+
+
+
+                    dialogManager.nextLine();
+
+
+
+                    if (!dialogManager.isDialogActive()) {
+
+
+
+                        if (levelFile != null) {
+
+
+
+                            owner.stateMachine.changeState(GameplayState.createForLevel(levelFile));
+
+
+
+                        } else {
+
+
+
+                            owner.stateMachine.pop(); // Regresar al estado anterior
+
+
+
+                        }
+
+
+
+                    }
+
+
+
+                }
+
+
+
+            }
+
+
+
+        } else {
+
+
+
+            if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.E)) {
+
+
+
+                if (dialogManager.isDialogActive()) {
+
+
+
+                    dialogManager.nextLine();
+
+
+
+                    if (!dialogManager.isDialogActive()) {
+
+
+
+                        if (levelFile != null) {
+
+
+
+                            owner.stateMachine.changeState(GameplayState.createForLevel(levelFile));
+
+
+
+                        } else {
+
+
+
+                            owner.stateMachine.pop(); // Regresar al estado anterior
+
+
+
+                        }
+
+
+
+                    }
+
+
+
+                }
+
+
+
+            }
+
+
+
+        }
+
+
+
+    }
+
 }

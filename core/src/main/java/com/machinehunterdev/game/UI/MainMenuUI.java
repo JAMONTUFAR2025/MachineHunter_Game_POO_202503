@@ -29,6 +29,7 @@ public class MainMenuUI implements InputProcessor {
     
     /** Fuente para el texto del menú */
     private BitmapFont font;
+    private BitmapFont titleFont;
     
     /** SpriteBatch para renderizado */
     private SpriteBatch batch;
@@ -46,12 +47,11 @@ public class MainMenuUI implements InputProcessor {
      * Constructor de la interfaz del menú principal.
      * @param batch SpriteBatch para dibujar elementos
      * @param gameController Controlador del juego para manejar estados
-     * @param texture Textura de fondo del menú
      */
-    public MainMenuUI(SpriteBatch batch, GameController gameController, Texture texture) {
+    public MainMenuUI(SpriteBatch batch, GameController gameController) {
         this.batch = batch;
         this.gameController = gameController;
-        this.texture = texture;
+        this.texture = new Texture(Gdx.files.internal("Fondos/NameInputBackgroundShadowless.png"));
         loadCustomBitmapFont();
 
         // Crear textura blanca programáticamente para elementos de interfaz
@@ -69,8 +69,11 @@ public class MainMenuUI implements InputProcessor {
         try {
             this.font = new BitmapFont(Gdx.files.internal("fonts/OrangeKid64.fnt"));
             this.font.setColor(Color.WHITE);
+            this.titleFont = new BitmapFont(Gdx.files.internal("fonts/OrangeKid128.fnt"));
+            this.titleFont.setColor(Color.RED);
         } catch (Exception e) {
             this.font = new BitmapFont();
+            this.titleFont = new BitmapFont();
         }
     }
 
@@ -84,6 +87,12 @@ public class MainMenuUI implements InputProcessor {
 
         int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
+
+        // Draw title
+        layout.setText(titleFont, "MACHINE HUNTER");
+        float titleX = (screenWidth - layout.width) / 2f;
+        float titleY = screenHeight * 0.9f;
+        titleFont.draw(batch, layout, titleX, titleY);
 
         float startY = screenHeight * 0.6f;
         float lineHeight = 110f;

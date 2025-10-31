@@ -41,7 +41,7 @@ public class MainMenuState implements IState<GameController>{
         //this.owner = owner;
         //BitmapFont font = new BitmapFont();
         SpriteBatch batch = new SpriteBatch();
-        this.menuUI = new MainMenuUI(batch, owner, new Texture("FondoMenuPrincipal.png"));
+        this.menuUI = new MainMenuUI(batch, owner);
         Gdx.input.setInputProcessor(this.menuUI);
     }
 

@@ -41,6 +41,7 @@ public class NameInputUI implements InputProcessor {
     
     /** Nombre del jugador en construcción */
     private StringBuilder playerName;
+    private com.badlogic.gdx.graphics.Texture tutorialBackground;
 
     /**
      * Constructor de la interfaz de entrada de nombre.
@@ -51,6 +52,7 @@ public class NameInputUI implements InputProcessor {
         this.batch = batch;
         this.gameController = gameController;
         this.playerName = new StringBuilder();
+        this.tutorialBackground = new com.badlogic.gdx.graphics.Texture("Fondos/NameInputBackgroundShadowless.png");
 
         loadCustomBitmapFont();
     }
@@ -111,6 +113,7 @@ public class NameInputUI implements InputProcessor {
                 break;
 
             case TUTORIAL_CONFIRM:
+                batch.draw(tutorialBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
                 drawDialog("Quieres jugar el tutorial?", new String[]{"Sí", "No"}, tutorialConfirmSelection);
                 break;
         }
@@ -180,8 +183,13 @@ public class NameInputUI implements InputProcessor {
                         gameController.stateMachine.changeState(tutorial);
                     } else { // No
                         // Cargar nivel 1
-                        GameplayState level1 = GameplayState.createForLevel("Levels/Level 1.json");
-                        gameController.stateMachine.changeState(level1);
+                        com.machinehunterdev.game.Levels.LevelData level1Data = com.machinehunterdev.game.Levels.LevelLoader.loadLevel("Levels/Level 1.json");
+                        if (level1Data != null && level1Data.flashbackDialogueSection != null && !level1Data.flashbackDialogueSection.isEmpty()) {
+                            gameController.stateMachine.changeState(new com.machinehunterdev.game.GameStates.DialogState(level1Data.flashbackDialogueSection, "Levels/Level 1.json"));
+                        } else {
+                            GameplayState level1 = GameplayState.createForLevel("Levels/Level 1.json");
+                            gameController.stateMachine.changeState(level1);
+                        }
                     }
                 } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
                     currentState = State.NAME_INPUT;
@@ -218,6 +226,7 @@ public class NameInputUI implements InputProcessor {
         if (font != null) {
             font.dispose();
         }
+        tutorialBackground.dispose();
 
     }
 

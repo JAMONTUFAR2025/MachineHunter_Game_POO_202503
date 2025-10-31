@@ -35,6 +35,8 @@ public class LevelData {
     public String dialogueFile = "Dialogos/Dialogos_personajes.json";
     public String dialogueSection = "Dialogos_acto2";
     public String nextLevel = null;
+    public List<String> flashbackDialogues;
+    public String flashbackDialogueSection;
     
     /**
      * Constructor de LevelData.

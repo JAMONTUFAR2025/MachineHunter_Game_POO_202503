@@ -507,7 +507,7 @@ public class GameplayState implements IState<GameController> {
             if (npcController != null && npcController.isInRange() && playerCharacter.onGround) {
                 List<Dialog> dialogues = npcController.getDialogues();
                 if (dialogues != null && !dialogues.isEmpty()) {
-                    dialogManager.showDialog(dialogues.get(0));
+                    dialogManager.showDialog(dialogues.get(0), false);
                     isDialogActive = true;
 
                     playerCharacter.isPaused = true;

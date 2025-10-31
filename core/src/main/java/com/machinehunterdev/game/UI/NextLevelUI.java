@@ -133,8 +133,13 @@ public class NextLevelUI implements InputProcessor {
             if (selectedOption == 0) { // Siguiente Nivel
                 com.machinehunterdev.game.Levels.LevelData currentLevel = gameplayState.getCurrentLevel();
                 if (currentLevel != null && currentLevel.nextLevel != null && !currentLevel.nextLevel.isEmpty()) {
-                    GameplayState nextLevelState = GameplayState.createForLevel(currentLevel.nextLevel);
-                    gameplayState.getOwner().stateMachine.changeState(nextLevelState);
+                    com.machinehunterdev.game.Levels.LevelData nextLevelData = com.machinehunterdev.game.Levels.LevelLoader.loadLevel(currentLevel.nextLevel);
+                    if (nextLevelData != null && nextLevelData.flashbackDialogueSection != null && !nextLevelData.flashbackDialogueSection.isEmpty()) {
+                        gameplayState.getOwner().stateMachine.changeState(new com.machinehunterdev.game.GameStates.DialogState(nextLevelData.flashbackDialogueSection, currentLevel.nextLevel));
+                    } else {
+                        GameplayState nextLevelState = GameplayState.createForLevel(currentLevel.nextLevel);
+                        gameplayState.getOwner().stateMachine.changeState(nextLevelState);
+                    }
                 } else {
                     gameplayState.exitToMainMenu();
                 }

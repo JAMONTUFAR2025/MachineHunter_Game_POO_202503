@@ -51,8 +51,6 @@ public class DialogManager {
     private float textTimer = 0f;
     private float textSpeed = 0.05f;
     private boolean textFullyVisible = false;
-    //private float autoAdvanceTimer = 0f;
-    //private float autoAdvanceDelay = 0.5f;
 
     /** Sistema de paginación para textos largos */
     private List<String> pages;
@@ -64,6 +62,9 @@ public class DialogManager {
     /** Texturas para el fondo y borde del cuadro de diálogo */
     private Texture backgroundTexture;
     private Texture borderTexture;
+    private Texture flashbackBackground;
+
+    private boolean isFlashback = false;
 
     /**
      * Constructor del gestor de diálogos.
@@ -90,6 +91,8 @@ public class DialogManager {
         borderTexture = new Texture(borderPixmap);
         borderPixmap.dispose();
 
+        flashbackBackground = new Texture(Gdx.files.internal("Fondos/NameInputBackgroundShadowless.png"));
+
         uiViewport = new ScreenViewport();
         uiViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
@@ -101,19 +104,27 @@ public class DialogManager {
      * Actualiza la posición del cuadro de diálogo según el tamaño de la pantalla.
      */
     private void updateDialogPosition() {
-        dialogBoxWidth = Gdx.graphics.getWidth() - 40;
-        dialogBoxX = (Gdx.graphics.getWidth() - dialogBoxWidth) / 2f;
-        dialogBoxY = Gdx.graphics.getHeight() - dialogBoxHeight - 20;
+        if (isFlashback) {
+            dialogBoxWidth = Gdx.graphics.getWidth() - 400;
+            dialogBoxX = (Gdx.graphics.getWidth() - dialogBoxWidth) / 2f;
+            dialogBoxY = (Gdx.graphics.getHeight() - dialogBoxHeight) / 2f;
+        } else {
+            dialogBoxWidth = Gdx.graphics.getWidth() - 40;
+            dialogBoxX = (Gdx.graphics.getWidth() - dialogBoxWidth) / 2f;
+            dialogBoxY = Gdx.graphics.getHeight() - dialogBoxHeight - 20;
+        }
     }
 
     /**
      * Muestra un nuevo diálogo.
      * @param dialog Diálogo a mostrar
      */
-    public void showDialog(Dialog dialog) {
+    public void showDialog(Dialog dialog, boolean isFlashback) {
+        this.isFlashback = isFlashback;
         currentDialog = dialog;
         currentLineIndex = 0;
         dialogActive = true;
+        updateDialogPosition();
         startNewLine();
     }
 
@@ -127,29 +138,33 @@ public class DialogManager {
 
         GlyphLayout layout = new GlyphLayout();
         float targetWidth = dialogBoxWidth - 20;
-        float targetHeight = dialogBoxHeight - 20;
 
-        int start = 0;
-        while (start < fullText.length()) {
-            int end = start;
-            while (end < fullText.length()) {
-                end++;
-                layout.setText(font, fullText.substring(start, end), Color.WHITE, targetWidth, Align.left, true);
-                if (layout.height > targetHeight) {
-                    end = fullText.lastIndexOf(' ', end - 1);
-                    if (end == -1 || end <= start) {
-                        end = fullText.indexOf(' ', start);
-                        if (end == -1) {
-                            end = fullText.length();
+        if (isFlashback) {
+            pages.add(fullText);
+        } else {
+            float targetHeight = dialogBoxHeight - 20;
+            int start = 0;
+            while (start < fullText.length()) {
+                int end = start;
+                while (end < fullText.length()) {
+                    end++;
+                    layout.setText(font, fullText.substring(start, end), Color.WHITE, targetWidth, Align.left, true);
+                    if (layout.height > targetHeight) {
+                        end = fullText.lastIndexOf(' ', end - 1);
+                        if (end == -1 || end <= start) {
+                            end = fullText.indexOf(' ', start);
+                            if (end == -1) {
+                                end = fullText.length();
+                            }
                         }
+                        break;
                     }
-                    break;
                 }
-            }
-            pages.add(fullText.substring(start, end));
-            start = end;
-            if (start < fullText.length() && fullText.charAt(start) == ' ') {
-                start++;
+                pages.add(fullText.substring(start, end));
+                start = end;
+                if (start < fullText.length() && fullText.charAt(start) == ' ') {
+                    start++;
+                }
             }
         }
 
@@ -163,7 +178,6 @@ public class DialogManager {
         currentVisibleText = "";
         textTimer = 0f;
         textFullyVisible = false;
-        //autoAdvanceTimer = 0f;
     }
 
     /**
@@ -182,10 +196,11 @@ public class DialogManager {
                     dialogActive = false;
                 }
             }
-        } else {
+        }
+
+        else {
             currentVisibleText = pages.get(currentPage);
             textFullyVisible = true;
-            //autoAdvanceTimer = 0f;
         }
     }
 
@@ -231,19 +246,30 @@ public class DialogManager {
 
         batch.begin();
 
-        // Dibujar fondo del cuadro de diálogo
-        batch.draw(backgroundTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, dialogBoxHeight);
+        if (isFlashback) {
+            batch.draw(flashbackBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        } else {
+            // Dibujar fondo del cuadro de diálogo
+            batch.draw(backgroundTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, dialogBoxHeight);
 
-        // Dibujar borde del cuadro de diálogo
-        batch.draw(borderTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, 1); // Superior
-        batch.draw(borderTexture, dialogBoxX, dialogBoxY + dialogBoxHeight - 1, dialogBoxWidth, 1); // Inferior
-        batch.draw(borderTexture, dialogBoxX, dialogBoxY, 1, dialogBoxHeight); // Izquierdo
-        batch.draw(borderTexture, dialogBoxX + dialogBoxWidth - 1, dialogBoxY, 1, dialogBoxHeight); // Derecho
+            // Dibujar borde del cuadro de diálogo
+            batch.draw(borderTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, 1); // Superior
+            batch.draw(borderTexture, dialogBoxX, dialogBoxY + dialogBoxHeight - 1, dialogBoxWidth, 1); // Inferior
+            batch.draw(borderTexture, dialogBoxX, dialogBoxY, 1, dialogBoxHeight); // Izquierdo
+            batch.draw(borderTexture, dialogBoxX + dialogBoxWidth - 1, dialogBoxY, 1, dialogBoxHeight); // Derecho
+        }
 
-        glyphLayout.setText(font, currentVisibleText, Color.WHITE, dialogBoxWidth - 20, Align.left, true);
+        glyphLayout.setText(font, currentVisibleText, Color.WHITE, dialogBoxWidth - 20, Align.center, true);
 
         // Dibujar texto
-        font.draw(batch, glyphLayout, dialogBoxX + 10, dialogBoxY + dialogBoxHeight - 40);
+        float textY = dialogBoxY + dialogBoxHeight / 2 + glyphLayout.height / 2;
+        font.draw(batch, glyphLayout, dialogBoxX + 10, textY);
+
+        if (textFullyVisible) {
+            font.getData().setScale(0.5f);
+            font.draw(batch, "Presiona E para continuar...", 0, glyphLayout.height + 20, Gdx.graphics.getWidth(), Align.center, false);
+            font.getData().setScale(1.0f);
+        }
         
         batch.end();
     }
@@ -265,5 +291,6 @@ public class DialogManager {
         font.dispose();
         backgroundTexture.dispose();
         borderTexture.dispose();
+        flashbackBackground.dispose();
     }
 }

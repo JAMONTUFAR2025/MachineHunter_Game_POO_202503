@@ -81,5 +81,6 @@
       "interactionRadius": 50,
       "dialogues": ["Dialogos_acto2"]
     }
-  ]
+  ],
+  "flashbackDialogueSection": "Flashback2"
 }
