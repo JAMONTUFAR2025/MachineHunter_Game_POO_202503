@@ -180,7 +180,7 @@ public class NameInputUI implements InputProcessor {
                         gameController.stateMachine.changeState(tutorial);
                     } else { // No
                         // Cargar nivel 1
-                        GameplayState level1 = GameplayState.createForLevel("Levels/Level 3 - Boss GeminiEXE.json");
+                        GameplayState level1 = GameplayState.createForLevel("Levels/Level 1.json");
                         gameController.stateMachine.changeState(level1);
                     }
                 } else if (keycode == GlobalSettings.CONTROL_CANCEL) {

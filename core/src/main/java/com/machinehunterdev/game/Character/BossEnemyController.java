@@ -145,7 +145,7 @@ public class BossEnemyController extends CharacterController {
                 if (playerCharacter == null) return;
         
                 Vector2 bossTop = new Vector2(character.position.x + character.getWidth() / 2, character.position.y + character.getHeight());
-                Vector2 playerCenter = new Vector2(playerCharacter.position.x + playerCharacter.getWidth() / 2, playerCharacter.position.y + playerCharacter.getHeight() / 2);
+                Vector2 playerCenter = new Vector2(playerCharacter.position.x + playerCharacter.getWidth() / 2, playerCharacter.position.y + 35);
         
                 Vector2 direction = playerCenter.sub(bossTop).nor();
                 float bulletSpeed = 100f; // From WeaponType.SHOOTER
