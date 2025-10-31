@@ -248,6 +248,9 @@ public class DialogManager {
 
         if (isFlashback) {
             batch.draw(flashbackBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            glyphLayout.setText(font, currentVisibleText, Color.WHITE, dialogBoxWidth - 20, Align.center, true);
+            float textY = dialogBoxY + dialogBoxHeight / 2 + glyphLayout.height / 2;
+            font.draw(batch, glyphLayout, dialogBoxX + 10, textY);
         } else {
             // Dibujar fondo del cuadro de diálogo
             batch.draw(backgroundTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, dialogBoxHeight);
@@ -257,15 +260,13 @@ public class DialogManager {
             batch.draw(borderTexture, dialogBoxX, dialogBoxY + dialogBoxHeight - 1, dialogBoxWidth, 1); // Inferior
             batch.draw(borderTexture, dialogBoxX, dialogBoxY, 1, dialogBoxHeight); // Izquierdo
             batch.draw(borderTexture, dialogBoxX + dialogBoxWidth - 1, dialogBoxY, 1, dialogBoxHeight); // Derecho
+
+            glyphLayout.setText(font, currentVisibleText, Color.WHITE, dialogBoxWidth - 20, Align.left, true);
+            float textY = dialogBoxY + dialogBoxHeight - 20; // From the top
+            font.draw(batch, glyphLayout, dialogBoxX + 10, textY);
         }
 
-        glyphLayout.setText(font, currentVisibleText, Color.WHITE, dialogBoxWidth - 20, Align.center, true);
-
-        // Dibujar texto
-        float textY = dialogBoxY + dialogBoxHeight / 2 + glyphLayout.height / 2;
-        font.draw(batch, glyphLayout, dialogBoxX + 10, textY);
-
-        if (textFullyVisible) {
+        if (textFullyVisible && isFlashback) {
             font.getData().setScale(0.5f);
             font.draw(batch, "Presiona E para continuar...", 0, glyphLayout.height + 20, Gdx.graphics.getWidth(), Align.center, false);
             font.getData().setScale(1.0f);

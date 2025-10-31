@@ -1,66 +1,52 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
-  "groundTexture": "Environment/FloorWhite320.png",
-  "levelWidth": 960,
+  "groundTexture": "Environment/FloorBlue320.png",
+  "levelWidth": 2500,
   "playerStartX": 50,
   "playerStartY": 100,
   "nextLevel": "Levels/Level 1.json",
   "solidObjectsData": [
-    {
-      "x": 100,
-      "y": 80,
-      "walkable": true,
-      "type": "Platform_White_Huge"
-    },
-    {
-      "x": 100,
-      "y": 144,
-      "walkable": true,
-      "type": "Platform_White_Huge"
-    },
-    {
-      "x": 100,
-      "y": 208,
-      "walkable": true,
-      "type": "Platform_White_Huge"
-    },
-    {
-      "type": "Chain_White",
-      "x": 100,
-      "y": 96,
-      "walkable": false
-    },
-    {
-      "type": "Chain_White",
-      "x": 380,
-      "y": 96,
-      "walkable": false
-    }
+    
+    { "x": 150, "y": 80, "walkable": true, "type": "Platform_White_Small" },
+    { "x": 250, "y": 144, "walkable": true, "type": "Platform_White_Tiny" },
+    { "x": 350, "y": 208, "walkable": true, "type": "Platform_White_Small" },
+    
+    { "x": 600, "y": 80, "walkable": true, "type": "Platform_White_Huge" },
+    
+    { "x": 1100, "y": 80, "walkable": true, "type": "Platform_White_Large" },
+    { "x": 1200, "y": 144, "walkable": true, "type": "Platform_White_Huge" },
+    { "x": 1300, "y": 208, "walkable": true, "type": "Platform_White_Medium" },
+    
+    { "x": 1600, "y": 80, "walkable": true, "type": "Platform_White_Large" },
+    { "x": 1700, "y": 144, "walkable": true, "type": "Platform_White_Large" },
+    { "x": 1800, "y": 208, "walkable": true, "type": "Platform_White_Large" },
+    
+    { "x": 2100, "y": 80, "walkable": true, "type": "Platform_White_Huge" }
   ],
   "enemies": [
-    {
-      "type": "PATROLLER",
-      "x": 200,
-      "y": 300,
-      "health": 50,
-      "patrolPoints": [
-        { "x": 100, "y": 300 },
-        { "x": 700, "y": 300 }
-      ],
-      "waitTime": 2.0
-    }
-  ],  "npcs": [
-    {
-      "idleFrames": "Player/PlayerIdle",
-      "runFrames": "Player/PlayerRun",
-      "hurtFrames": "Player/PlayerHurt",
-      "jumpFrames": "Player/PlayerJump",
-      "fallFrames": "Player/PlayerFall",
-      "crouchFrames": "Player/PlayerCrouch",
-      "x": 100,
-      "y": 100,
-      "interactionRadius": 50,
-      "dialogues": ["Dialogos_acto2"]
-    }
+    
+    { "type": "PATROLLER", "x": 700, "y": 112, "health": 50, "patrolPoints": [], "waitTime": 0 },
+    
+    { "type": "SHOOTER", "x": 1332, "y": 240, "health": 50 },
+    
+    { "type": "FLYING", "x": 1900, "y": 120, "health": 30 },
+    { "type": "FLYING", "x": 1900, "y": 184, "health": 30 },
+    { "type": "FLYING", "x": 1900, "y": 248, "health": 30 },
+    
+    { "type": "PATROLLER", "x": 2200, "y": 112, "health": 50, "patrolPoints": [], "waitTime": 0 },
+    { "type": "PATROLLER", "x": 2264, "y": 112, "health": 50, "patrolPoints": [], "waitTime": 0 },
+    { "type": "PATROLLER", "x": 2328, "y": 112, "health": 50, "patrolPoints": [], "waitTime": 0 }
+  ],
+  "npcs": [
+    
+    { "x": 32, "y": 72, "interactionRadius": 50, "dialogues": ["TUTORIAL_1"] },
+    
+    { "x": 532, "y": 72, "interactionRadius": 50, "dialogues": ["TUTORIAL_2"] },
+    
+    { "x": 1032, "y": 72, "interactionRadius": 50, "dialogues": ["TUTORIAL_3"] },
+    
+    { "x": 1532, "y": 72, "interactionRadius": 50, "dialogues": ["TUTORIAL_4"] },
+    
+    { "x": 2032, "y": 72, "interactionRadius": 50, "dialogues": ["TUTORIAL_5"] }
   ]
 }

@@ -38,7 +38,7 @@ import java.util.List;
 
 
 
-public class DialogState implements IState<GameController> {
+public class DialogState implements IState<GameController>, com.badlogic.gdx.InputProcessor {
 
 
 
@@ -63,10 +63,6 @@ public class DialogState implements IState<GameController> {
 
 
     private boolean isFlashback = false;
-
-
-
-    private boolean ignoreInputOnFirstFrame = true;
 
 
 
@@ -159,13 +155,7 @@ public class DialogState implements IState<GameController> {
 
 
                     for (JsonValue line : texto) {
-
-
-
                         lines.add(line.asString());
-
-
-
                     }
 
 
@@ -207,9 +197,6 @@ public class DialogState implements IState<GameController> {
 
 
     @Override
-
-
-
     public void enter(GameController owner) {
 
 
@@ -223,10 +210,7 @@ public class DialogState implements IState<GameController> {
 
 
         dialogManager.showDialog(currentDialog, isFlashback);
-
-
-
-        this.ignoreInputOnFirstFrame = true;
+        Gdx.input.setInputProcessor(this);
 
 
 
@@ -239,17 +223,7 @@ public class DialogState implements IState<GameController> {
 
 
     @Override
-
-
-
     public void execute() {
-
-
-
-        handleInput();
-
-
-
         if (dialogManager.isDialogActive()) {
 
 
@@ -275,157 +249,69 @@ public class DialogState implements IState<GameController> {
 
 
     @Override
-
-
-
     public void exit() {
 
 
-
         dialogManager.dispose();
-
-
-
+        Gdx.input.setInputProcessor(null);
     }
 
 
 
-
-
-
-
-    private void handleInput() {
-
-
-
-        if (ignoreInputOnFirstFrame) {
-
-
-
-            ignoreInputOnFirstFrame = false;
-
-
-
-            return;
-
-
-
-        }
-
-
-
-
-
-
-
-        if (isFlashback) {
-
-
-
-            if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.E)) {
-
-
-
-                if (dialogManager.isDialogActive()) {
-
-
-
-                    dialogManager.nextLine();
-
-
-
-                    if (!dialogManager.isDialogActive()) {
-
-
-
-                        if (levelFile != null) {
-
-
-
-                            owner.stateMachine.changeState(GameplayState.createForLevel(levelFile));
-
-
-
-                        } else {
-
-
-
-                            owner.stateMachine.pop(); // Regresar al estado anterior
-
-
-
-                        }
-
-
-
+    @Override
+    public boolean keyDown(int keycode) {
+        if (keycode == com.badlogic.gdx.Input.Keys.E) {
+            if (dialogManager.isDialogActive()) {
+                dialogManager.nextLine();
+                if (!dialogManager.isDialogActive()) {
+                    if (levelFile != null) {
+                        owner.stateMachine.changeState(GameplayState.createForLevel(levelFile));
+                    } else {
+                        owner.stateMachine.pop(); // Regresar al estado anterior
                     }
-
-
-
                 }
-
-
-
             }
-
-
-
-        } else {
-
-
-
-            if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.E)) {
-
-
-
-                if (dialogManager.isDialogActive()) {
-
-
-
-                    dialogManager.nextLine();
-
-
-
-                    if (!dialogManager.isDialogActive()) {
-
-
-
-                        if (levelFile != null) {
-
-
-
-                            owner.stateMachine.changeState(GameplayState.createForLevel(levelFile));
-
-
-
-                        } else {
-
-
-
-                            owner.stateMachine.pop(); // Regresar al estado anterior
-
-
-
-                        }
-
-
-
-                    }
-
-
-
-                }
-
-
-
-            }
-
-
-
         }
-
-
-
+        return true;
     }
 
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        return false;
+    }
+
+    @Override
+    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
 }

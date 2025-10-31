@@ -55,7 +55,7 @@ public class GameplayState implements IState<GameController> {
     private Character playerCharacter;
     private PlayerController playerController;
     private EnemyManager enemyManager;
-    private NPCController npcController;
+    private List<NPCController> npcControllers;
 
     // === SISTEMAS DE RENDERIZADO ===
     private SpriteBatch gameBatch;
@@ -267,32 +267,32 @@ public class GameplayState implements IState<GameController> {
     }
 
     private void initializeNPCs() {
+        npcControllers = new ArrayList<>();
         if (currentLevel.npcs.isEmpty()) {
-            npcController = null;
             return;
         }
-        
-        LevelData.NPCData npcData = currentLevel.npcs.get(0);
-        
-        List<Sprite> npcIdleFrames = loadSpriteFrames(npcData.idleFrames, 4);
 
-        CharacterAnimator npcAnimator = new CharacterAnimator(
-            npcIdleFrames, null, null,
-            null, null, null,
-            null, null, null,
-            null, null
-        );
-        
-        Character npcCharacter = new Character(100, npcAnimator, null, npcData.x, npcData.y, false);
-        
-        float adjustedNpcY = findGroundY(npcCharacter.position.x, npcData.y, npcCharacter.getWidth());
-        npcCharacter.position.y = adjustedNpcY;
-        npcCharacter.onGround = true;
-        npcCharacter.velocity.y = 0;
-        
-        List<Dialog> npcDialogues = loadNPCCDialogues(npcData.dialogues);
-        
-        npcController = new NPCController(npcCharacter, npcData.interactionRadius, npcDialogues);
+        for (LevelData.NPCData npcData : currentLevel.npcs) {
+            List<Sprite> npcIdleFrames = loadSpriteFrames(npcData.idleFrames, 4);
+
+            CharacterAnimator npcAnimator = new CharacterAnimator(
+                npcIdleFrames, null, null,
+                null, null, null,
+                null, null, null,
+                null, null
+            );
+            
+            Character npcCharacter = new Character(100, npcAnimator, null, npcData.x, npcData.y, false);
+            
+            float adjustedNpcY = findGroundY(npcCharacter.position.x, npcData.y, npcCharacter.getWidth());
+            npcCharacter.position.y = adjustedNpcY;
+            npcCharacter.onGround = true;
+            npcCharacter.velocity.y = 0;
+            
+            List<Dialog> npcDialogues = loadNPCCDialogues(npcData.dialogues);
+            
+            npcControllers.add(new NPCController(npcCharacter, npcData.interactionRadius, npcDialogues));
+        }
     }
 
     private List<Dialog> loadNPCCDialogues(List<String> dialogueSections) {
@@ -373,8 +373,10 @@ public class GameplayState implements IState<GameController> {
         // Actualizar animaciones de todos los personajes siempre
         playerCharacter.update(deltaTime);
         enemyManager.updateCharacterAnimations(deltaTime);
-        if (npcController != null) {
-            npcController.character.update(deltaTime);
+        if (npcControllers != null) {
+            for (NPCController npcController : npcControllers) {
+                npcController.character.update(deltaTime);
+            }
         }
 
         if (isDialogActive) {
@@ -385,8 +387,10 @@ public class GameplayState implements IState<GameController> {
                 for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
                     enemy.getCharacter().isPaused = false;
                 }
-                if (npcController != null) {
-                    npcController.character.isPaused = false;
+                if (npcControllers != null) {
+                    for (NPCController npcController : npcControllers) {
+                        npcController.character.isPaused = false;
+                    }
                 }
             }
             handleDialogInput();
@@ -497,25 +501,33 @@ public class GameplayState implements IState<GameController> {
     }
 
     private void updateNPC(float deltaTime) {
-        if (npcController != null) {
-            npcController.update(deltaTime, solidObjects, bullets, playerCharacter, enemyManager.getEnemies().size());
+        if (npcControllers != null) {
+            for (NPCController npcController : npcControllers) {
+                npcController.update(deltaTime, solidObjects, bullets, playerCharacter, enemyManager.getEnemies().size());
+            }
         }
     }
 
     private void handleNPCInteraction() {
-        if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_INTERACT)) {
-            if (npcController != null && npcController.isInRange() && playerCharacter.onGround) {
-                List<Dialog> dialogues = npcController.getDialogues();
-                if (dialogues != null && !dialogues.isEmpty()) {
-                    dialogManager.showDialog(dialogues.get(0), false);
-                    isDialogActive = true;
+        if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_INTERACT) && !isDialogActive) {
+            if (npcControllers != null) {
+                for (NPCController npcController : npcControllers) {
+                    if (npcController.isInRange() && playerCharacter.onGround) {
+                        List<Dialog> dialogues = npcController.getDialogues();
+                        if (dialogues != null && !dialogues.isEmpty()) {
+                            dialogManager.showDialog(dialogues.get(0), false);
+                            isDialogActive = true;
 
-                    playerCharacter.isPaused = true;
-                    for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
-                        enemy.getCharacter().isPaused = true;
-                    }
-                    if (npcController != null) {
-                        npcController.character.isPaused = true;
+                            playerCharacter.isPaused = true;
+                            for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+                                enemy.getCharacter().isPaused = true;
+                            }
+                            if (npcControllers != null) {
+                                for (NPCController npc : npcControllers) {
+                                    npc.character.isPaused = true;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -553,10 +565,12 @@ public class GameplayState implements IState<GameController> {
         playerCharacter.draw(gameBatch);
         enemyManager.draw(gameBatch);
 
-        if (npcController != null) {
-            npcController.render(gameBatch);
-            if (npcController.isInRange()) {
-                drawNPCInteractionPrompt();
+        if (npcControllers != null) {
+            for (NPCController npcController : npcControllers) {
+                npcController.render(gameBatch);
+                if (npcController.isInRange()) {
+                    drawNPCInteractionPrompt(npcController);
+                }
             }
         }
 
@@ -591,7 +605,7 @@ public class GameplayState implements IState<GameController> {
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
-    private void drawNPCInteractionPrompt() {
+    private void drawNPCInteractionPrompt(NPCController npcController) {
         GlyphLayout layout = new GlyphLayout();
         String message = "E para interactuar";
         interactionFont.getData().setScale(0.5f);
@@ -793,8 +807,12 @@ public class GameplayState implements IState<GameController> {
                 enemy.getCharacter().dispose();
             }
         }
-        if (npcController != null && npcController.character != null) {
-            npcController.character.dispose();
+        if (npcControllers != null) {
+            for (NPCController npcController : npcControllers) {
+                if (npcController != null && npcController.character != null) {
+                    npcController.character.dispose();
+                }
+            }
         }
     }
 
