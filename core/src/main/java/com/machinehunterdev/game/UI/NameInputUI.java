@@ -114,7 +114,7 @@ public class NameInputUI implements InputProcessor {
 
             case TUTORIAL_CONFIRM:
                 batch.draw(tutorialBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                drawDialog("Quieres jugar el tutorial?", new String[]{"Sí", "No"}, tutorialConfirmSelection);
+                drawDialog("¿Quieres jugar el tutorial?", new String[]{"Sí", "No"}, tutorialConfirmSelection);
                 break;
         }
 
