@@ -3,7 +3,10 @@ package com.machinehunterdev.game.Dialog;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.machinehunterdev.game.GameController;
 import com.badlogic.gdx.Gdx;
+import com.machinehunterdev.game.GameStates.MainMenuState;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -62,20 +65,30 @@ public class DialogManager {
     /** Texturas para el fondo y borde del cuadro de diálogo */
     private Texture backgroundTexture;
     private Texture borderTexture;
+    private Texture skipIndicatorTexture;
     private Texture flashbackBackground;
 
+    private float skipTimer = 0f;
+    private boolean isSkipping = false;
+    private static final float TIME_TO_SKIP = 5f;
+    private float originalTextSpeed;
+
     private boolean isFlashback = false;
+
+    private GameController owner;
 
     /**
      * Constructor del gestor de diálogos.
      * @param batch SpriteBatch para renderizado
      */
-    public DialogManager(SpriteBatch batch) {
+    public DialogManager(GameController owner, SpriteBatch batch) {
+        this.owner = owner;
         this.batch = batch;
         font = new BitmapFont(Gdx.files.internal("fonts/OrangeKid64.fnt"));
         font.setColor(Color.WHITE);
         glyphLayout = new GlyphLayout();
         pages = new ArrayList<>();
+        originalTextSpeed = textSpeed;
 
         // Crear textura de fondo semi-transparente
         Pixmap bgPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -90,6 +103,12 @@ public class DialogManager {
         borderPixmap.fill();
         borderTexture = new Texture(borderPixmap);
         borderPixmap.dispose();
+
+        Pixmap skipPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        skipPixmap.setColor(Color.WHITE);
+        skipPixmap.fill();
+        skipIndicatorTexture = new Texture(skipPixmap);
+        skipPixmap.dispose();
 
         flashbackBackground = new Texture(Gdx.files.internal("Fondos/NameInputBackgroundShadowless.png"));
 
@@ -211,6 +230,27 @@ public class DialogManager {
     public void update(float dt) {
         if (!dialogActive) return;
 
+        // Fast-forward
+        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+            textSpeed = originalTextSpeed / 2;
+        } else {
+            textSpeed = originalTextSpeed;
+        }
+
+        // Skip dialog
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
+            isSkipping = true;
+            skipTimer += dt;
+            if (skipTimer >= TIME_TO_SKIP) {
+                skipDialog();
+            }
+        } else {
+            isSkipping = false;
+            skipTimer = 0;
+        }
+
+
+
         if (textFullyVisible) {
             return;
         }
@@ -225,6 +265,16 @@ public class DialogManager {
             currentVisibleText = fullText;
             textFullyVisible = true;
         }
+    }
+
+    /**
+     * Skips the current dialog.
+     */
+    public void skipDialog() {
+        dialogActive = false;
+        isSkipping = false;
+        skipTimer = 0;
+        owner.stateMachine.changeState(MainMenuState.instance);
     }
 
     /**
@@ -271,6 +321,24 @@ public class DialogManager {
             font.draw(batch, "Presiona E para continuar...", 0, glyphLayout.height + 20, Gdx.graphics.getWidth(), Align.center, false);
             font.getData().setScale(1.0f);
         }
+
+        if (isSkipping) {
+            float barWidth = 200;
+            float barHeight = 20;
+            float barX = Gdx.graphics.getWidth() - barWidth - 20;
+            float barY = 20;
+
+            batch.setColor(0.5f, 0.5f, 0.5f, 1);
+            batch.draw(skipIndicatorTexture, barX, barY, barWidth, barHeight);
+
+            float progress = skipTimer / TIME_TO_SKIP;
+            batch.setColor(1, 1, 1, 1);
+            batch.draw(skipIndicatorTexture, barX, barY, barWidth * progress, barHeight);
+
+            font.getData().setScale(0.5f);
+            font.draw(batch, "Mantén ENTER para omitir", barX, barY + barHeight + 20, barWidth, Align.center, false);
+            font.getData().setScale(1.0f);
+        }
         
         batch.end();
     }
@@ -292,6 +360,7 @@ public class DialogManager {
         font.dispose();
         backgroundTexture.dispose();
         borderTexture.dispose();
+        skipIndicatorTexture.dispose();
         flashbackBackground.dispose();
     }
 }

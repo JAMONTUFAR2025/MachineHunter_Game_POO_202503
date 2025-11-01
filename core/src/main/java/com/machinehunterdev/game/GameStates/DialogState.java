@@ -3,11 +3,12 @@ package com.machinehunterdev.game.GameStates;
 import java.util.ArrayList;
 import java.util.List;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.machinehunterdev.game.GameStates.CreditState;
+import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
@@ -91,7 +92,7 @@ public class DialogState implements IState<GameController>, InputProcessor {
     @Override
     public void enter(GameController owner) {
         this.owner = owner;
-        this.dialogManager = new DialogManager(owner.batch);
+        this.dialogManager = new DialogManager(owner, owner.batch);
         dialogManager.showDialog(currentDialog, isFlashback);
 
         // Establece esta clase para que escuche los eventos de input (teclado, mouse)
@@ -131,27 +132,26 @@ public class DialogState implements IState<GameController>, InputProcessor {
      * @param keycode El código de la tecla presionada.
      * @return true si el evento fue manejado (consumido).
      */
-    @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == com.badlogic.gdx.Input.Keys.E) {
-            if (dialogManager.isDialogActive()) {
-                dialogManager.nextLine();
-                if (!dialogManager.isDialogActive()) {
-                    if (levelFile != null) {
-                        if (levelFile.equals("credits")) {
-                            owner.stateMachine.changeState(CreditState.instance);
+        @Override
+        public boolean keyDown(int keycode) {
+            if (keycode == com.badlogic.gdx.Input.Keys.E) {
+                if (dialogManager.isDialogActive()) {
+                    dialogManager.nextLine();
+                    if (!dialogManager.isDialogActive()) {
+                        if (levelFile != null) {
+                            if (levelFile.equals("credits")) {
+                                owner.stateMachine.changeState(CreditState.instance);
+                            } else {
+                                owner.stateMachine.changeState(GameplayState.createForLevel(levelFile));
+                            }
                         } else {
-                            owner.stateMachine.changeState(GameplayState.createForLevel(levelFile));
+                            owner.stateMachine.pop(); // Regresar al estado anterior
                         }
-                    } else {
-                        owner.stateMachine.pop(); // Regresar al estado anterior
                     }
                 }
             }
+            return true;
         }
-        return true;
-    }
-
     // --- Métodos privados de ayuda ---
 
     /**

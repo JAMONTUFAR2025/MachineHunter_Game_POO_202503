@@ -128,7 +128,7 @@ public class GameplayState implements IState<GameController> {
     private void initializeResources() {
         backgroundTexture = new Texture(currentLevel.backgroundTexture);
         GlobalSettings.levelWidth = currentLevel.levelWidth; // Establecer el ancho del nivel en GlobalSettings
-        dialogManager = new DialogManager(gameBatch);
+        dialogManager = new DialogManager(owner, gameBatch);
         gameplayUI = new GameplayUI(gameBatch);
         pauseUI = new PauseUI(this, gameBatch);
         nextLevelUI = new NextLevelUI(this, gameBatch);
