@@ -105,7 +105,7 @@ public class GameplayUI {
         int heartSize = 64;
         int padding = 10;
         for (int i = 0; i < totalHealth; i++) {
-            float x = uiCamera.viewportWidth - ( (i + 1) * (heartSize + padding) );
+            float x = padding + (i * (heartSize + padding));
             float y = padding;
             if (i < playerHealth) {
                 batch.draw(heartTexture, x, y, heartSize, heartSize);
@@ -116,7 +116,7 @@ public class GameplayUI {
 
         // Draw pause icon
         int pauseIconSize = 64;
-        batch.draw(pauseIcon, uiCamera.viewportWidth - pauseIconSize - padding, uiCamera.viewportHeight - pauseIconSize - padding, pauseIconSize, pauseIconSize);
+        batch.draw(pauseIcon, uiCamera.viewportWidth - pauseIconSize - padding, padding, pauseIconSize, pauseIconSize);
 
         // Draw boss name text
         if (bossHealthBar != null) {
