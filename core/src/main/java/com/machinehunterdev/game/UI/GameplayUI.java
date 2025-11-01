@@ -37,6 +37,9 @@ public class GameplayUI {
     private Texture laserIcon;
     private Texture ionIcon;
     private Texture railgunIcon;
+    private Texture heartTexture;
+    private Texture noHeartTexture;
+    private Texture pauseIcon;
 
     /**
      * Constructor de la interfaz de gameplay.
@@ -52,6 +55,9 @@ public class GameplayUI {
         laserIcon = new Texture(Gdx.files.internal("UI/LaserIcon.png"));
         ionIcon = new Texture(Gdx.files.internal("UI/IonIcon.png"));
         railgunIcon = new Texture(Gdx.files.internal("UI/RailgunIcon.png"));
+        heartTexture = new Texture(Gdx.files.internal("UI/corazon_0001.png"));
+        noHeartTexture = new Texture(Gdx.files.internal("UI/corazon_0002.png"));
+        pauseIcon = new Texture(Gdx.files.internal("UI/pausa ui.png"));
     }
 
     /**
@@ -83,21 +89,6 @@ public class GameplayUI {
         shapeRenderer.setProjectionMatrix(uiCamera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        // Draw player health squares
-        int totalHealth = 3;
-        int squareSize = 64;
-        int padding = 10;
-        for (int i = 0; i < totalHealth; i++) {
-            if (i < playerHealth) {
-                shapeRenderer.setColor(Color.RED);
-            } else {
-                shapeRenderer.setColor(Color.WHITE);
-            }
-            float x = padding + (i * (squareSize + padding));
-            float y = padding;
-            shapeRenderer.rect(x, y, squareSize, squareSize);
-        }
-
         // Draw boss health bar shapes
         if (bossHealthBar != null) {
             bossHealthBar.drawShapes(shapeRenderer, uiCamera.viewportWidth, uiCamera.viewportHeight);
@@ -109,13 +100,23 @@ public class GameplayUI {
         batch.setProjectionMatrix(uiCamera.combined);
         batch.begin();
 
-        // Draw player name
-        GlyphLayout layout = new GlyphLayout();
-        String text = "Player: " + GlobalSettings.playerName;
-        layout.setText(font, text);
-        float x = uiCamera.viewportWidth - layout.width - 10;
-        float y = layout.height + 10;
-        font.draw(batch, text, x, y);
+        // Draw player health hearts
+        int totalHealth = 3;
+        int heartSize = 64;
+        int padding = 10;
+        for (int i = 0; i < totalHealth; i++) {
+            float x = uiCamera.viewportWidth - ( (i + 1) * (heartSize + padding) );
+            float y = padding;
+            if (i < playerHealth) {
+                batch.draw(heartTexture, x, y, heartSize, heartSize);
+            } else {
+                batch.draw(noHeartTexture, x, y, heartSize, heartSize);
+            }
+        }
+
+        // Draw pause icon
+        int pauseIconSize = 64;
+        batch.draw(pauseIcon, uiCamera.viewportWidth - pauseIconSize - padding, uiCamera.viewportHeight - pauseIconSize - padding, pauseIconSize, pauseIconSize);
 
         // Draw boss name text
         if (bossHealthBar != null) {
@@ -123,9 +124,9 @@ public class GameplayUI {
         }
 
         // Draw weapon selection icons
-        float totalWidth = (3 * squareSize) + (2 * padding);
+        float totalWidth = (3 * 64) + (2 * padding);
         float startX = (uiCamera.viewportWidth - totalWidth) / 2;
-        float iconSize = squareSize;
+        float iconSize = 64;
 
         if (isPlayerInvulnerable) {
             batch.setColor(1, 1, 1, 0.3f);
@@ -176,5 +177,8 @@ public class GameplayUI {
     public void dispose() {
         shapeRenderer.dispose();
         font.dispose();
+        heartTexture.dispose();
+        noHeartTexture.dispose();
+        pauseIcon.dispose();
     }
 }

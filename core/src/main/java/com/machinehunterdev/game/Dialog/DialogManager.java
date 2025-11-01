@@ -6,6 +6,7 @@ import java.util.List;
 import com.machinehunterdev.game.GameController;
 import com.badlogic.gdx.Gdx;
 import com.machinehunterdev.game.GameStates.MainMenuState;
+import com.machinehunterdev.game.Gameplay.GlobalSettings; // Importar GlobalSettings
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -151,7 +152,8 @@ public class DialogManager {
      * Inicia una nueva línea de diálogo con paginación automática.
      */
     private void startNewLine() {
-        String fullText = currentDialog.getLines().get(currentLineIndex);
+        String fullText = currentDialog.getLines().get(currentLineIndex)
+            .replace("Roberto Julián", GlobalSettings.playerName);
         pages.clear();
         currentPage = 0;
 
