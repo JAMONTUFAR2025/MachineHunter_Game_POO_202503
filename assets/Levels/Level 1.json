@@ -42,9 +42,9 @@
     {"type": "SHOOTER", "x": 1400, "y": 176 },
     {"type": "SHOOTER", "x": 2000, "y": 176 },
 
-    {"type": "FLYING", "x": 900, "y": 180, "patrolPoints": [{"x": 870, "y": 180}, {"x": 930, "y": 180}]},
-    {"type": "FLYING", "x": 1700, "y": 210, "patrolPoints": [{"x": 1670, "y": 210}, {"x": 1730, "y": 210}]},
-    {"type": "FLYING", "x": 2400, "y": 180, "patrolPoints": [{"x": 2370, "y": 180}, {"x": 2430, "y": 180}]}
+    {"type": "FLYING", "x": 900, "y": 180, "patrolPoints": [{"x": 870, "y": 180}, {"x": 930, "y": 144}]},
+    {"type": "FLYING", "x": 1700, "y": 210, "patrolPoints": [{"x": 1670, "y": 210}, {"x": 1730, "y": 144}]},
+    {"type": "FLYING", "x": 2400, "y": 180, "patrolPoints": [{"x": 2370, "y": 180}, {"x": 2430, "y": 80}]}
   ],
   "npcs": []
 }
