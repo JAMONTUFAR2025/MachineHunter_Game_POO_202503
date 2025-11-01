@@ -1,22 +1,50 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
   "groundTexture": "Environment/FloorBlue320.png",
-  "levelWidth": 2240,
+  "levelWidth": 3500,
   "playerStartX": 50,
   "playerStartY": 100,
   "nextLevel": "Levels/Level 3.json",
-  "flashbackDialogueSection": "Flashback2",
+    "flashbackDialogueSection": "Flashback1",
   "solidObjectsData": [
-    {"type":"Platform_White_Huge", "x": 100, "y": 80 },
-    {"type": "Platform_Blue_Huge", "x": 100, "y": 144 },
-    {"type": "Platform_White_Huge", "x": 100, "y": 208 },
-    {"type": "Chain_White", "x": 100, "y": 96, "walkable": false },
-    {"type": "Chain_White", "x": 380, "y": 96, "walkable": false }
+    {"type":"Platform_White_Huge", "x": 0, "y": 80 },
+    {"type":"Platform_White_Medium", "x": 300, "y": 144 },
+    {"type":"Platform_Blue_Medium", "x": 500, "y": 80 },
+
+    {"type":"Platform_White_Large", "x": 700, "y": 144 },
+    {"type":"Platform_Blue_Medium", "x": 900, "y": 208 },
+    {"type":"Platform_White_Tiny", "x": 1100, "y": 144 },
+
+    {"type":"Platform_Blue_Huge", "x": 1300, "y": 80 },
+    {"type":"Platform_White_Small", "x": 1550, "y": 144 },
+    {"type":"Platform_Blue_Medium", "x": 1700, "y": 208 }, 
+    {"type":"Platform_Blue_Large", "x": 1750, "y": 208 },
+    {"type":"Platform_White_Medium", "x": 1950, "y": 144 },
+
+    {"type":"Platform_White_Huge", "x": 2200, "y": 80 },
+    {"type":"Platform_Blue_Small", "x": 2400, "y": 144 },
+    {"type":"Platform_White_Tiny", "x": 2600, "y": 80 },
+
+
+    {"type":"Platform_Blue_Medium", "x": 2800, "y": 144 },
+    {"type":"Platform_White_Large", "x": 3000, "y": 208 },
+    {"type":"Platform_Green_Huge", "x": 3200, "y": 80 }
   ],
   "enemies": [
-    {"type": "PATROLLER", "x": 200, "y": 300, "patrolPoints": [{"x": 100, "y": 300}, {"x": 200, "y": 300}]},
-    {"type": "SHOOTER", "x": 800, "y": 0 },
-    {"type": "FLYING", "x": 100, "y": 50, "patrolPoints": [{"x": 300, "y": 64}, {"x": 300, "y": 270}]}
+    
+    {"type": "PATROLLER", "x": 800, "y": 112, "patrolPoints": [{"x": 750, "y": 112}, {"x": 850, "y": 112}]},
+    {"type": "PATROLLER", "x": 1400, "y": 112, "patrolPoints": [{"x": 1350, "y": 112}, {"x": 1450, "y": 112}]},
+    {"type": "PATROLLER", "x": 2300, "y": 112, "patrolPoints": [{"x": 2250, "y": 112}, {"x": 2350, "y": 112}]},
+
+
+    {"type": "SHOOTER", "x": 600, "y": 176 },
+    {"type": "SHOOTER", "x": 1600, "y": 176 },
+    {"type": "SHOOTER", "x": 2500, "y": 176 },
+    {"type": "SHOOTER", "x": 3100, "y": 176 },
+
+    
+    {"type": "FLYING", "x": 1000, "y": 250, "patrolPoints": [{"x": 950, "y": 250}, {"x": 1050, "y": 250}]},
+    {"type": "FLYING", "x": 1800, "y": 250, "patrolPoints": [{"x": 1750, "y": 250}, {"x": 1850, "y": 250}]}
   ],
   "npcs": [
     {"idleFrames": "NPC/Doctor/DoctorIdle", "x": 100, "y": 100, "dialogues": ["Dialogos_acto2"]}

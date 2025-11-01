@@ -136,5 +136,16 @@
                 "¡Te has ganado una de 1500!"
             ]
         }
+    ],
+    "Doctor_Intro": [
+        {
+            "ID": 20,
+            "Name": "Doctor",
+            "Texto": [
+                "¡Hola, Roberto Julián! Me alegra verte.",
+                "Este nivel es un poco más desafiante, pero sé que puedes hacerlo.",
+                "¡Ten cuidado con los nuevos enemigos y las plataformas!"
+            ]
+        }
     ]
 }
