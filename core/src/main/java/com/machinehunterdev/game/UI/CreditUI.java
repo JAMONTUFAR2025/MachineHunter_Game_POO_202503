@@ -39,24 +39,20 @@ public class CreditUI implements InputProcessor {
             "Ken Kato Castellanos",
             "",
             "Música y sonidos",
-            "Sin definir"
-    };
-
-    private String[] finalMessage = {
-            "Gracias por jugar...",
-            "ningún individuo, sea artista, guionista, o programador",
+            "Sin definir",
+            "",
+            "",
+            "¡Gracias por Jugar!",
+            "Ningún individuo sea guionista, artista o programador",
             "fue sobreexplotado en la elaboración de este producto",
-            "*guiño guiño*"
+            "*guiño* *guiño*"
     };
 
     private float scrollY;
-    private float scrollSpeed = 100f; // pixels per second
-    private boolean scrollingFinished = false;
-    private float typingTimer = 0f;
-    private float timePerChar = 0.05f;
-    private int charIndex = 0;
-    private int lineIndex = 0;
-    private boolean typingFinished = false;
+    private float scrollSpeed = 100f;
+    private boolean creditsFinished = false;
+    private float finishedTimer = 0f;
+    private boolean skipUsed = false;
 
     public CreditUI(SpriteBatch batch, GameController gameController) {
         this.batch = batch;
@@ -73,70 +69,39 @@ public class CreditUI implements InputProcessor {
         GlyphLayout layout = new GlyphLayout();
         float y = scrollY;
 
-        if (!scrollingFinished) {
+        if (!creditsFinished) {
             scrollY += scrollSpeed * Gdx.graphics.getDeltaTime();
-            for (int i = 0; i < credits.length; i++) {
-                if (credits[i].equals("MACHINE HUNTER")) {
-                    font.setColor(Color.RED);
-                } else if (credits[i].equals("Clase") ||
-                           credits[i].equals("Guión") ||
-                           credits[i].equals("Arte") ||
-                           credits[i].equals("Programación") ||
-                           credits[i].equals("Música y sonidos")) {
-                    font.setColor(Color.CYAN); // Sky blue
-                } else {
-                    font.setColor(Color.WHITE);
-                }
-                layout.setText(font, credits[i]);
-                float x = (Gdx.graphics.getWidth() - layout.width) / 2;
-                font.draw(batch, credits[i], x, y);
-                y -= 80; // Line spacing
-            }
+        }
 
-            if (y > Gdx.graphics.getHeight()) {
-                scrollingFinished = true;
+        float totalHeight = 0;
+        for (int i = 0; i < credits.length; i++) {
+            String line = credits[i];
+            if (line.equals("MACHINE HUNTER")) {
+                font.setColor(Color.RED);
+            } else if (line.equals("Clase") ||
+                       line.equals("Guión") ||
+                       line.equals("Arte") ||
+                       line.equals("Programación") ||
+                       line.equals("Música y sonidos") ||
+                       line.equals("¡Gracias por Jugar!")) {
+                font.setColor(Color.CYAN);
+            } else {
+                font.setColor(Color.WHITE);
             }
-        } else {
-            // Typing effect for the final message
-            if (!typingFinished) {
-                typingTimer += Gdx.graphics.getDeltaTime();
-                if (lineIndex < finalMessage.length) {
-                    String currentLine = finalMessage[lineIndex];
-                    if (charIndex < currentLine.length()) {
-                        if (typingTimer > timePerChar) {
-                            charIndex++;
-                            typingTimer = 0;
-                        }
-                    } else {
-                        lineIndex++;
-                        charIndex = 0;
-                    }
-                } else {
-                    typingFinished = true;
-                }
-            }
+            layout.setText(font, line);
+            float x = (Gdx.graphics.getWidth() - layout.width) / 2;
+            font.draw(batch, line, x, y - totalHeight);
+            totalHeight += 80;
+        }
 
-            float startY = Gdx.graphics.getHeight() / 2 + 100;
-            for (int i = 0; i < lineIndex; i++) {
-                font.setColor(Color.WHITE); // Ensure white for the main part of the final message
-                layout.setText(font, finalMessage[i]);
-                float x = (Gdx.graphics.getWidth() - layout.width) / 2;
-                font.draw(batch, finalMessage[i], x, startY - i * 80);
-            }
-            
-            if (lineIndex < finalMessage.length) {
-                font.setColor(Color.WHITE); // Ensure white for the main part of the final message
-                String lineToDraw = finalMessage[lineIndex].substring(0, charIndex);
-                layout.setText(font, lineToDraw);
-                float x = (Gdx.graphics.getWidth() - layout.width) / 2;
-                font.draw(batch, lineToDraw, x, startY - lineIndex * 80);
-            }
+        if (y - totalHeight > Gdx.graphics.getHeight()) {
+            creditsFinished = true;
+        }
 
-            if (typingFinished) {
-                font.setColor(Color.WHITE); // "Enter para continuar..." should be white
-                layout.setText(font, "Enter para continuar...");
-                float x = (Gdx.graphics.getWidth() - layout.width) / 2;
-                font.draw(batch, "Enter para continuar...", x, 50);
+        if (creditsFinished) {
+            finishedTimer += Gdx.graphics.getDeltaTime();
+            if (finishedTimer > 1) {
+                gameController.stateMachine.changeState(MainMenuState.instance);
             }
         }
 
@@ -157,8 +122,14 @@ public class CreditUI implements InputProcessor {
         if (keycode == Input.Keys.ESCAPE) {
             gameController.stateMachine.changeState(MainMenuState.instance);
         }
-        if (typingFinished && keycode == Input.Keys.ENTER) {
-            gameController.stateMachine.changeState(MainMenuState.instance);
+        if (keycode == Input.Keys.ENTER) {
+            if (!creditsFinished && !skipUsed) {
+                float totalHeight = credits.length * 80;
+                scrollY = totalHeight - 400; // Adjust to show the last few phrases
+                skipUsed = true;
+            } else if (creditsFinished) {
+                gameController.stateMachine.changeState(MainMenuState.instance);
+            }
         }
         return true;
     }
