@@ -2,23 +2,23 @@
     "Dialogos_Tutorial": [
         {
             "ID": 1,
-            "Name": "Controles",
+            "Name": "TUTORIAL_1",
             "Texto": ["Controles: W:  Para saltar A: Para moverse a la izquierda S: Para agacharse D: Para moverse a la derecha ESPACIO: Para disparar MECANICA: Si presionas s y espacio, bajaras de la plataforma"]
         },{
             "ID": 2,
-            "Name": "Controles",
+            "Name": "TUTORIAL_2",
             "Texto": ["El disparo normal (J) hace una cierta cantidad de daño y es de largo alcance.", "El patrullero no ataca, pero se mueve en ciertos patrones. Recibes daño si chocas contra ellos."]
         },{
             "ID": 3,
-            "Name": "Controles",
+            "Name": "TUTORIAL_3",
             "Texto": ["Los disparadores lanzan bolas de plasma que van directo a tu cabeza. Será mejor que te agaches o los esquives cuando te disparen."]
         },{
             "ID": 4,
-            "Name": "Controles",
+            "Name": "TUTORIAL_4",
             "Texto": ["El disparo de ion (K) consiste en tres bolitas que, separadas, no hacen tanto daño, pero juntas son el tipo de disparo que hace más daño. Son de corto alcance.", "Los enemigos voladores solo se mueven de arriba hacia abajo."]
         },{
             "ID": 5,
-            "Name": "Controles",
+            "Name": "TUTORIAL_5",
             "Texto": ["Va a haber momentos donde haya bastantes enemigos cerca; a eso se le llama horda.", "Con estas hordas, es recomendable que utilices el cañón de riel (L). Este último hace poco daño, pero tiene sus ventajas: dispara más largo, más rápido y puede traspasar enemigos."]
         }
     ],
