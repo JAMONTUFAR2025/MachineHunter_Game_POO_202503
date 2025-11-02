@@ -1,17 +1,28 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
-  "groundTexture": "Environment/FloorWhite320.png",
+  "groundTexture": "Environment/FloorBlue320.png",
   "levelWidth": 480,
   "playerStartX": 50,
   "playerStartY": 100,
   "nextLevel": "Levels/Level 4.json",
   "flashbackDialogueSection": "Flashback3",
   "solidObjectsData": [
-    { "type":"Platform_White_Small","x": 32, "y": 80 },
-    { "type":"Platform_White_Small","x": 32, "y": 144 },
-    { "type":"Platform_White_Small","x": 192, "y": 80 },
-    { "type":"Platform_White_Small","x": 352, "y": 80 },
-    { "type":"Platform_White_Small","x": 352, "y": 144 }
+    { "type":"Chain_Blue_Type2", "x": 32, "y": 96, "walkable": false },
+    { "type":"Chain_Blue_Type2", "x": 120, "y": 96, "walkable": false },
+
+    { "type":"Chain_Blue_Type1", "x": 192, "y": 96, "walkable": false },
+    { "type":"Chain_Blue_Type1", "x": 280, "y": 96, "walkable": false },
+
+    { "type":"Chain_Blue_Type2", "x": 352, "y": 96, "walkable": false },
+    { "type":"Chain_Blue_Type2", "x": 440, "y": 96, "walkable": false },
+
+    { "type":"Platform_Blue_Small","x": 32, "y": 80 },
+    { "type":"Platform_Blue_Small","x": 32, "y": 144 },
+
+    { "type":"Platform_Blue_Small","x": 192, "y": 80 },
+
+    { "type":"Platform_Blue_Small","x": 352, "y": 80 },
+    { "type":"Platform_Blue_Small","x": 352, "y": 144 }
   ],
   "enemies": [
     {"type": "BOSS_GEMINI", "name": "GEMINI.EXE", "x": 200, "y": 300 }

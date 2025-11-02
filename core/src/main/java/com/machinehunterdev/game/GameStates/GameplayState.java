@@ -236,9 +236,9 @@ public class GameplayState implements IState<GameController> {
 
             if (enemyData.type == EnemyType.BOSS_GEMINI || enemyData.type == EnemyType.BOSS_CHATGPT) {
                 idleRageFrames = loadSpriteFrames(skin.idleRageFrames, 4); // Assuming 4 frames
-                attack1Frames = loadSpriteFrames(skin.attack1Frames, 4); // Assuming 4 frames
-                attack2Frames = loadSpriteFrames(skin.attack2Frames, 4); // Assuming 4 frames
-                summonFrames = loadSpriteFrames(skin.summonFrames, 4); // Assuming 4 frames
+                attack1Frames = loadSpriteFrames(skin.attack1Frames, 8); // Assuming 8 frames
+                attack2Frames = loadSpriteFrames(skin.attack2Frames, 8); // Assuming 8 frames
+                summonFrames = loadSpriteFrames(skin.summonFrames, 8); // Assuming 8 frames
             }
 
             CharacterAnimator enemyAnimator = new CharacterAnimator(

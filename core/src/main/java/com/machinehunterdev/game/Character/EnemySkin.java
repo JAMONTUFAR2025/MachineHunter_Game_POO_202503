@@ -28,12 +28,12 @@ public enum EnemySkin {
      * Skin del jefe
      * Idle, Dead, Hurt
      */
-    BOSS_GEMINI("Enemy/GeminiEXE/GeminiEXEIdle", null, "Enemy/GeminiEXE/GeminiEXEDeath", "Enemy/GeminiEXE/GeminiEXEHurt", null, null, null, new HitboxData(0, 0, 80, 80), "Enemy/GeminiEXE/GeminiEXEIdleRage", "Enemy/GeminiEXE/GeminiEXEAttack", "Enemy/GeminiEXE/GeminiEXEDeath", "Enemy/GeminiEXE/GeminiEXESummon"),
+    BOSS_GEMINI("Enemy/GeminiEXE/GeminiEXEIdle", null, "Enemy/GeminiEXE/GeminiEXEDeath", "Enemy/GeminiEXE/GeminiEXEHurt", null, null, null, new HitboxData(0, 0, 80, 100), "Enemy/GeminiEXE/GeminiEXEIdleRage", "Enemy/GeminiEXE/GeminiEXEAttack", "Enemy/GeminiEXE/GeminiEXEAttackRage", "Enemy/GeminiEXE/GeminiEXESummon"),
     /**
      * Skin del jefe ChatGPT
      * Idle, Dead, Hurt
      */
-    BOSS_CHATGPT("Enemy/ChatGPTEXE/ChatGPTEXEIdle", null, "Enemy/ChatGPTEXE/ChatGPTEXEDeath", "Enemy/ChatGPTEXE/ChatGPTEXEHurt", null, null, null, new HitboxData(0, 0, 80, 80), "Enemy/ChatGPTEXE/ChatGPTEXEIdleRage", "Enemy/ChatGPTEXE/ChatGPTEXEAttack", "Enemy/ChatGPTEXE/ChatGPTEXEDeath", "Enemy/ChatGPTEXE/ChatGPTEXESummon");
+    BOSS_CHATGPT("Enemy/ChatGPTEXE/ChatGPTEXEIdle", null, "Enemy/ChatGPTEXE/ChatGPTEXEDeath", "Enemy/ChatGPTEXE/ChatGPTEXEHurt", null, null, null, new HitboxData(0, 0, 80, 100), "Enemy/ChatGPTEXE/ChatGPTEXEIdleRage", "Enemy/ChatGPTEXE/ChatGPTEXEAttack", "Enemy/ChatGPTEXE/ChatGPTEXEAttackRage", "Enemy/ChatGPTEXE/ChatGPTEXESummon");
 
     /** Rutas de los frames de animación */
     public final String idleFrames;

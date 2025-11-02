@@ -1,16 +1,27 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
-  "groundTexture": "Environment/FloorWhite320.png",
+  "groundTexture": "Environment/FloorGreen320.png",
   "levelWidth": 480,
   "playerStartX": 50,
   "playerStartY": 100,
   "nextLevel": null,
   "solidObjectsData": [
-    { "type":"Platform_White_Small","x": 32, "y": 80 },
-    { "type":"Platform_White_Small","x": 32, "y": 144 },
-    { "type":"Platform_White_Small","x": 192, "y": 80 },
-    { "type":"Platform_White_Small","x": 352, "y": 80 },
-    { "type":"Platform_White_Small","x": 352, "y": 144 }
+    { "type":"Chain_Green_Type2", "x": 32, "y": 96, "walkable": false },
+    { "type":"Chain_Green_Type2", "x": 120, "y": 96, "walkable": false },
+
+    { "type":"Chain_Green_Type1", "x": 192, "y": 96, "walkable": false },
+    { "type":"Chain_Green_Type1", "x": 280, "y": 96, "walkable": false },
+
+    { "type":"Chain_Green_Type2", "x": 352, "y": 96, "walkable": false },
+    { "type":"Chain_Green_Type2", "x": 440, "y": 96, "walkable": false },
+
+    { "type":"Platform_Green_Small","x": 32, "y": 80 },
+    { "type":"Platform_Green_Small","x": 32, "y": 144 },
+
+    { "type":"Platform_Green_Small","x": 192, "y": 80 },
+
+    { "type":"Platform_Green_Small","x": 352, "y": 80 },
+    { "type":"Platform_Green_Small","x": 352, "y": 144 }
   ],
   "enemies": [
     {"type": "BOSS_CHATGPT", "name": "CHATGPT.EXE", "x": 200, "y": 300 }
