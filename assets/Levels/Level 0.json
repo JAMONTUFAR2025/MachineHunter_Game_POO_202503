@@ -1,5 +1,6 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
+  "dialogueFile": "Dialogos/Dialogos_personajes.json",
   "groundTexture": "Environment/FloorBlue320.png",
   "levelWidth": 2500,
   "playerStartX": 32,
@@ -25,14 +26,14 @@
   ],
   "enemies": [
     
-    { "type": "PATROLLER", "x": 700, "y": 112, "patrolPoints": [], "waitTime": 0 },
+    { "type": "PATROLLER", "x": 700, "y": 112, "patrolPoints": [{"x": 670, "y": 112}, {"x": 730, "y": 112}]},
     
     { "type": "SHOOTER", "x": 1332, "y": 240 },
 
-    { "type": "FLYING", "x": 1900, "y": 120 },
-    { "type": "FLYING", "x": 1900, "y": 184 },
-    { "type": "FLYING", "x": 1900, "y": 248 },
-
+    { "type": "FLYING", "x": 1900, "y": 120, "patrolPoints": [{"x": 1900, "y": 120}, {"x": 1900, "y": 80}]},
+    { "type": "FLYING", "x": 1900, "y": 184, "patrolPoints": [{"x": 1900, "y": 184}, {"x": 1900, "y": 144}]},
+    { "type": "FLYING", "x": 1900, "y": 248, "patrolPoints": [{"x": 1900, "y": 248}, {"x": 1900, "y": 208}]},
+    
     { "type": "PATROLLER", "x": 2200, "y": 112, "patrolPoints": [], "waitTime": 0 },
     { "type": "PATROLLER", "x": 2264, "y": 112, "patrolPoints": [], "waitTime": 0 },
     { "type": "PATROLLER", "x": 2328, "y": 112, "patrolPoints": [], "waitTime": 0 }

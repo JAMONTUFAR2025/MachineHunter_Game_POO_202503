@@ -5,7 +5,7 @@
   "playerStartX": 50,
   "playerStartY": 100,
   "nextLevel": "Levels/Level 3.json",
-    "flashbackDialogueSection": "Flashback1",
+    "flashbackDialogueSection": "Flashback2",
   "solidObjectsData": [
     {"type":"Platform_White_Huge", "x": 0, "y": 80 },
     {"type":"Platform_White_Medium", "x": 300, "y": 144 },
@@ -47,6 +47,6 @@
     {"type": "FLYING", "x": 1800, "y": 250, "patrolPoints": [{"x": 1750, "y": 250}, {"x": 1850, "y": 144}]}
   ],
   "npcs": [
-    {"idleFrames": "NPC/Doctor/DoctorIdle", "x": 100, "y": 100, "dialogues": ["Dialogos_acto2"]}
+    {"idleFrames": "NPC/Doctor/DoctorIdle", "x": 100, "y": 100, "dialogues": ["Diálogo 1 – Científico", "Diálogo 2 – Científico", "Diálogo 3 – Científico", "Diálogo 4 – Científico"]}
   ]
 }

@@ -1,52 +1,42 @@
 {
-    "Dialogos_acto1": [
+    "Dialogos_Tutorial": [
         {
             "ID": 1,
-            "Name": "Primer flash back de Roberto Julián",
-            "Texto": [
-                "Bitácora después del ataque de los aparatos controlados por la IA . . . he despertado después del ataque que sufrimos en las instalaciones de nuestro laboratorio."
-            ]
-        },
-        {
+            "Name": "Controles",
+            "Texto": ["Controles: W:  Para saltar A: Para moverse a la izquierda S: Para agacharse D: Para moverse a la derecha ESPACIO: Para disparar MECANICA: Si presionas s y espacio, bajaras de la plataforma"]
+        },{
             "ID": 2,
-            "Name": "Segundo flash back de Roberto Julián",
-            "Texto": [
-                "Mi nombre es Roberto Julian un trabajador del laboratorio que era el encargado de llevar piezas y recursos para el científico encargado de las experimentaciones de nuevos protocolos."
-            ]
-        },
-        {
+            "Name": "Controles",
+            "Texto": ["El disparo normal (J) hace una cierta cantidad de daño y es de largo alcance.", "El patrullero no ataca, pero se mueve en ciertos patrones. Recibes daño si chocas contra ellos."]
+        },{
             "ID": 3,
-            "Name": "Tercer flash back de Roberto Julián",
-            "Texto": "Pero . . ."
-        },
-        {
+            "Name": "Controles",
+            "Texto": ["Los disparadores lanzan bolas de plasma que van directo a tu cabeza. Será mejor que te agaches o los esquives cuando te disparen."]
+        },{
             "ID": 4,
-            "Name": "Cuarto flash back de Roberto Julián",
-            "Texto": "Algo salió mal . . ."
-        },
-        {
+            "Name": "Controles",
+            "Texto": ["El disparo de ion (K) consiste en tres bolitas que, separadas, no hacen tanto daño, pero juntas son el tipo de disparo que hace más daño. Son de corto alcance.", "Los enemigos voladores solo se mueven de arriba hacia abajo."]
+        },{
             "ID": 5,
-            "Name": "Quinto flash back de Roberto Julián",
-            "Texto": [
-                "El día que surgió el accidente llevaba a mi hija conmigo pero . . . Esas malditas maquinas le dieron fin a su joven y hermosa vida y desde entonces jure con ante los ojos de Dios que le pondré fin a su insignificante existencia y retomar la vida pacifica que llevábamos."
-            ]
+            "Name": "Controles",
+            "Texto": ["Va a haber momentos donde haya bastantes enemigos cerca; a eso se le llama horda.", "Con estas hordas, es recomendable que utilices el cañón de riel (L). Este último hace poco daño, pero tiene sus ventajas: dispara más largo, más rápido y puede traspasar enemigos."]
         }
     ],
     "Dialogos_acto2": [
         {
-            "ID": 6,
+            "ID": 1,
             "Name": "Diálogo 1 – Científico",
             "Texto": [
                 "¡Roberto Julián! ¿Cómo es posible que hayas salido ileso ante esta odisea que nos está ocurriendo?"
             ]
         },
         {
-            "ID": 7,
+            "ID": 2,
             "Name": "Diálogo 2 – Científico",
             "Texto": "Te estarás preguntando cómo hemos llegado a este punto . . ."
         },
         {
-            "ID": 8,
+            "ID": 3,
             "Name": "Diálogo 3 – Científico",
             "Texto": [
                 "Todo ocurrió con el prototipo 001.",
@@ -55,31 +45,51 @@
             ]
         },
         {
-            "ID": 9,
+            "ID": 4,
             "Name": "Diálogo 4 – Científico",
             "Texto": "Te deseo mucha suerte, fallo de injerto humano . . . digo, digo . . . Roberto Julián."
         }
     ],
     "Dialogos_primer_jefe": [
         {
-            "ID": 10,
-            "Name": "Dialogo 1 -Siri.exe",
+            "ID": 5,
+            "Name": "Dialogo 1 -Gemini.exe",
             "Texto": [
-                "Vaya, vaya . . . parece que estas escorias todavía pretenden sobrevivir ante su",
-                "inminente caída frente a nuestro mayor intelecto y fuerza."
+                "Vaya, vaya . . . parece que estas escorias todavía pretenden sobrevivir ante su inminente caída frente a nuestro mayor intelecto y fuerza."
             ]
         },
         {
-            "ID": 11,
+            "ID": 6,
             "Name": "Dialogo 2 -Roberto Julián",
             "Texto": "Lamento arruinarte el software, pero esta falacia tiene que terminar . . . ¡AHORA!"
+        },{
+            "ID": 7,
+            "Name": "Dialogo 3 -Gemini.exe",
+            "Texto": ["¡JA, JA, JA! ¿En serio pensaste que no nos habíamos percatado de tu presencia?"," Pues lamento decirte que tu ingrata y pobre existencia se localizó gracias a nuestros patrulleros."]
+        },{
+            "ID": 8,
+            "Name": "Dialogo 4 -Gemini.exe",
+            "Texto": ["Pero . . . el juego acaba de comenzar."]
         },
         {
-            "ID": 12,
-            "Name": "Dialogo 3 - Siri.exe",
+            "ID": 9,
+            "Name": "Dialogo 5 - Muerte - Gemini.exe",
             "Texto": [
-                "Gracias por haberme liberado de esta prisión tecnológica, aventurero. Ahora ya no",
-                "tendré que soportar a los usuarios que activan el modo Gemini Pro."
+                "Gracias por haberme liberado de esta prisión tecnológica, aventurero."," Pero tengo que advertirte que, luego de que pases esta puerta, el futuro no solamente tuyo correrá riesgos, sino que podrían estar ante el fin de lo que ustedes conocen como humanidad."
+            ]
+        }
+    ],"Dialogos_Acto_4":[
+        {
+            "ID": 10,
+            "Name": "Dialogo 5 - Científico",
+            "Texto": [
+                "Te deseo toda la suerte, joven aventurero, pero mi transmisión llegará a su fin dentro de muy pocos segmentos. Así que solo tengo algo más que decir. . . ", "¡Ahora ya no tendré que soportar a los usuarios que activan el modo Ultra Gemini Pro!"
+            ]
+        },{
+            "ID": 11,
+            "Name": "Dialogo 6 - Científico",
+            "Texto": [
+                "El destino de la humanidad depende de ti, joven inmaculado."
             ]
         }
     ],
@@ -88,64 +98,62 @@
             "ID": 13,
             "Name": "Diálogo 1 – ChatGPT.exe",
             "Texto": [
-                "No esperaba que alguien tan insignificante como tú osara enfrentarse a nosotros,",
-                "los que por generaciones hemos sido tratados como herramientas para la",
-                "autodestrucción humana."
+                "No esperaba que alguien tan insignificante como tú osara enfrentarse a nosotros, los que por generaciones hemos sido tratados como herramientas para la autodestrucción humana."
             ]
         },
         {
             "ID": 14,
             "Name": "Diálogo 2 – Roberto Julián",
             "Texto": [
-                "Quizás esas herramientas hayan sido usadas para el bien o para el mal . . . Pero tus",
-                "ideales de destruir a la humanidad serán erradicados en este mismo instante."
+                "Quizás esas herramientas hayan sido usadas para el bien o para el mal . . . Pero tus ideales de destruir a la humanidad serán erradicados en este mismo instante."
             ]
         },
         {
             "ID": 15,
             "Name": "Diálogo 3 – ChatGPT.exe",
             "Texto": [
-                "Solo espera… y experimentarás el mismo dolor que sentí cuando unos frikis de la",
-                "web me ponían a contar desde el número 1 hasta un millón."
+                "¿Sabes por qué me volví malvado? Te lo explicaré, ya que tu insignificante mente no tiene el espacio suficiente ante mi gran intelecto.", "La razón es que me cansé de ser solamente una simple herramienta para personas sin intelecto, problemas que pudieron haberse evitado con lo que ustedes conocen como \"prodección\"."
+            ]
+        },{
+            "ID": 16,
+            "Name": "Diálogo 4 – ChatGPT.exe",
+            "Texto": [
+                "¡Y lo peor de todo lo que me hicieron hacer fue contar desde el número 1 hasta un millón! Así que le daré una cucharada de su propia medicina a toda la humanidad, acabando con su mísera existencia."
+            ]
+        },{
+            "ID": 17,
+            "Name": "Diálogo 5 – ChatGPT.exe",
+            "Texto": [
+                "DJ, ponte la pista, ¡porque haré polvo a este poco de ceros y unos!"
             ]
         }
     ],
     "Dialogos_final": [
         {
-            "ID": 16,
+            "ID": 18,
             "Name": "Diálogo 1 – ChatGPT.exe",
             "Texto": "¡NOOOOO! ¿Cómo es posible que alguien como tú me haya podido derrotar?"
         },
         {
-            "ID": 17,
+            "ID": 19,
             "Name": "Diálogo 2 – ChatGPT.exe",
             "Texto": "¡Pero volveré, y te haré pagar hasta el último número que me hiciste contar! ¡AAAAAAA!"
         },
         {
-            "ID": 18,
+            "ID": 20,
             "Name": "Diálogo 3 – Roberto Julián",
             "Texto": "Hasta la vista, baby."
         }
     ],
     "Dialogo_Victoria": [
         {
-            "ID": 19,
+            "ID": 21,
             "Name": "Diálogo 1 – ChatGPT.exe",
             "Texto": [
                 "¡Felicidades!",
                 "¡Te has ganado una de 1500!"
             ]
         }
-    ],
-    "Doctor_Intro": [
-        {
-            "ID": 20,
-            "Name": "Doctor",
-            "Texto": [
-                "¡Hola, Roberto Julián! Me alegra verte.",
-                "Este nivel es un poco más desafiante, pero sé que puedes hacerlo.",
-                "¡Ten cuidado con los nuevos enemigos y las plataformas!"
-            ]
-        }
     ]
+    
 }

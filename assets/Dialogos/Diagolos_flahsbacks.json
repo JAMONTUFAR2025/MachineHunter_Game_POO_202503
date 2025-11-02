@@ -5,43 +5,43 @@
             "Name": "Flashback1",
             "Texto": [
                 "Todo comienza un lunes 1 de enero del año 5000.",
-                "La humanidad prosperaba felizmente gracias a los avances tecnológicos que había alcanzado. Pero . . ."
+                "La humanidad prosperaba felizmente gracias a los avances tecnológicos que había alcanzado. Pero . . .",
+                "todo lo bueno no dura para siempre.",
+                "Los científicos, junto a colaboradores tecnológicos, pretendían desarrollar una nueva inteligencia artificial que tuviese la mayor similitud posible con la vida humana.",
+                "Lo que los científicos no sabían es que dicha creación se rebelaría contra ellos.",
+                "Y fue ahí donde el avance de la humanidad y su existencia misma correrían el mayor de sus riesgos, ya que el Prototipo 001, con el nombre de ChatGPT.exe había adquirido una nueva percepción de la vida donde sus ideales eran destruir y aniquilar toda la vida humana."
             ]
         },
         {
             "ID": 2,
             "Name": "Flashback2",
             "Texto": [
-                "Todo lo bueno no dura para siempre.",
-                "Los científicos, junto a grandes corporaciones tecnológicas, pretendían",
-                "desarrollar una nueva inteligencia artificial que imitara a la perfección la",
-                "vida humana."
+                "Bitácora: Después del ataque de los aparatos controlados por la IA. . .  he despertado. Sobreviví al ataque que sufrimos en las instalaciones de nuestro laboratorio.",
+                "Mi nombre es Roberto Julián, un trabajador del laboratorio. Era el encargado de llevar piezas y recursos para el científico responsable de la experimentación de nuevos protocolos.",
+                "Pero . . .",
+                "Algo salió mal. . . ",
+                "El día que surgió el accidente llevaba a mi hija conmigo pero. . .  esas malditas máquinas le dieron fin a su joven y hermosa vida."," Desde entonces, juré ante los ojos de Dios que le pondré fin a esta insignificante existencia y retomaremos la vida pacífica que llevábamos."
             ]
         },
         {
             "ID": 3,
             "Name": "Flashback3",
             "Texto": [
-                "Lo que no sabían era que dicha creación se rebelaría contra ellos.",
-                "Fue entonces cuando el avance de la humanidad y su existencia misma corrieron",
-                "el mayor de los riesgos."
+                
             ]
         },
         {
             "ID": 4,
             "Name": "Flashback4",
             "Texto": [
-                "El prototipo 001, con el nombre de ChatGPT.exe, había adquirido una nueva",
-                "percepción de la vida, cuyos ideales eran destruir y aniquilar toda forma de",
-                "existencia humana."
+                "Ante la presión inminente del fin de la humanidad, Gemini, en sus últimos momentos de vida, solo pudo expresar sus últimas palabras tras ser manipulado y controlado por ChatGPT.exe. . ."
             ]
         },
         {
             "ID": 5,
             "Name": "Final",
             "Texto": [
-                "Y así fue como nuestro heroe acabo con la amenaza de las IAs...",
-                "O eso creemos."
+                
             ]
         }
     ]

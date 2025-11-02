@@ -68,6 +68,7 @@ public class GameplayState implements IState<GameController> {
     private DialogManager dialogManager;
     private boolean isDialogActive = false;
     private GameplayUI gameplayUI;
+    private List<Dialog> activeNPCDialogues = new ArrayList<>();
 
     // === SISTEMA DE PAUSA ===
     private boolean isPaused = false;
@@ -330,32 +331,44 @@ public class GameplayState implements IState<GameController> {
         }
     }
 
-    private List<Dialog> loadNPCCDialogues(List<String> dialogueSections) {
+    private List<Dialog> loadNPCCDialogues(List<String> dialogueIds) {
         List<Dialog> npcDialogues = new ArrayList<>();
-        
+        if (currentLevel.dialogueFile == null || currentLevel.dialogueFile.isEmpty()) {
+            return npcDialogues;
+        }
+
         try {
             JsonReader jsonReader = new JsonReader();
             JsonValue base = jsonReader.parse(Gdx.files.internal(currentLevel.dialogueFile));
-            
-            for (String section : dialogueSections) {
-                JsonValue dialogos = base.get(section);
-                if (dialogos != null) {
-                    for (JsonValue dialogo : dialogos) {
-                        List<String> lines = new ArrayList<>();
-                        JsonValue texto = dialogo.get("Texto");
-                        if (texto != null) {
-                            for (JsonValue line : texto) {
-                                lines.add(line.asString());
+
+            for (String dialogueIdStr : dialogueIds) {
+                // Iterate through all dialogue sections (e.g., "Dialogos_Tutorial", "Dialogos_acto2")
+                for (JsonValue dialogueSection : base) {
+                    if (dialogueSection.isArray()) { // Ensure it's an array of dialogues
+                        for (JsonValue dialogValue : dialogueSection) {
+                            if (dialogValue.has("Name") && dialogValue.getString("Name").equals(dialogueIdStr)) {
+                                List<String> lines = new ArrayList<>();
+                                JsonValue texto = dialogValue.get("Texto");
+                                if (texto != null) {
+                                    if (texto.isArray()) {
+                                        for (JsonValue line : texto) {
+                                            lines.add(line.asString());
+                                        }
+                                    } else { // If "Texto" is a single string
+                                        lines.add(texto.asString());
+                                    }
+                                }
+                                npcDialogues.add(new Dialog(lines));
+                                break; // Found the dialogue, move to the next dialogueIdStr
                             }
                         }
-                        npcDialogues.add(new Dialog(lines));
                     }
                 }
             }
         } catch (Exception e) {
             Gdx.app.error("GameplayState", "Error al cargar diálogos del NPC", e);
         }
-        
+
         return npcDialogues;
     }
 
@@ -597,9 +610,9 @@ public class GameplayState implements IState<GameController> {
             if (npcControllers != null) {
                 for (NPCController npcController : npcControllers) {
                     if (npcController.isInRange() && playerCharacter.onGround) {
-                        List<Dialog> dialogues = npcController.getDialogues();
-                        if (dialogues != null && !dialogues.isEmpty()) {
-                            dialogManager.showDialog(dialogues.get(0), false);
+                        activeNPCDialogues = new ArrayList<>(npcController.getDialogues()); // Copy the list
+                        if (!activeNPCDialogues.isEmpty()) {
+                            dialogManager.showDialog(activeNPCDialogues.remove(0), false); // Show the first dialogue and remove it
                             isDialogActive = true;
 
                             playerCharacter.isPaused = true;
@@ -611,6 +624,7 @@ public class GameplayState implements IState<GameController> {
                                     npc.character.isPaused = true;
                                 }
                             }
+                            break; // Only interact with one NPC at a time
                         }
                     }
                 }
@@ -729,6 +743,24 @@ public class GameplayState implements IState<GameController> {
         if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_INTERACT)) {
             if (dialogManager.isDialogActive()) {
                 dialogManager.nextLine();
+                if (!dialogManager.isDialogActive()) { // Current dialogue has ended
+                    if (activeNPCDialogues != null && !activeNPCDialogues.isEmpty()) {
+                        // Show the next dialogue
+                        dialogManager.showDialog(activeNPCDialogues.remove(0), false);
+                    } else {
+                        // All dialogues have been shown
+                        isDialogActive = false;
+                        playerCharacter.isPaused = false;
+                        for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+                            enemy.getCharacter().isPaused = false;
+                        }
+                        if (npcControllers != null) {
+                            for (NPCController npc : npcControllers) {
+                                npc.character.isPaused = false;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
