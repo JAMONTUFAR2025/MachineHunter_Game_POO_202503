@@ -39,7 +39,7 @@ public class LevelData {
     public String flashbackDialogueSection;
 
     // Hitbox para el jugador
-    public HitboxData playerHitbox;
+    public HitboxData playerHitbox = new HitboxData(9, 0, 25, 38);
     
     /**
      * Constructor de LevelData.
@@ -58,6 +58,15 @@ public class LevelData {
         public float offsetY = 0;
         public float width = 32;
         public float height = 32;
+
+        public HitboxData() {}
+
+        public HitboxData(float offsetX, float offsetY, float width, float height) {
+            this.offsetX = offsetX;
+            this.offsetY = offsetY;
+            this.width = width;
+            this.height = height;
+        }
     }
     
     /**

@@ -21,9 +21,9 @@ public class GlobalSettings
     public static final int PLAYER_HEALTH = 3;
     
     /** Salud inicial de enemigos */
-    public static final int PATROLLER_HEALTH = 150;
-    public static final int SHOOTER_HEALTH = 120;
-    public static final int FLYING_HEALTH = 210;
+    public static final int PATROLLER_HEALTH = 1;
+    public static final int SHOOTER_HEALTH = 1;
+    public static final int FLYING_HEALTH = 1;
 
     /** Salud de los jefes */
     public static final int BOSS_GEMINI_HEALTH = 3000;

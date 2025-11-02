@@ -186,11 +186,12 @@ public class GameplayState implements IState<GameController> {
             playerIdleFrames, playerRunFrames, playerDeadFrames,
             playerJumpFrames, playerFallFrames, null,
             playerLaserAttackFrames, playerIonAttackFrames, playerRailgunAttackFrames,
-            playerHurtFrames, playerCrouchFrames
+            playerHurtFrames, playerCrouchFrames, null, null, null, null
         );
 
         playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, null, 
         currentLevel.playerStartX, currentLevel.playerStartY, true);
+        playerCharacter.setHitbox(currentLevel.playerHitbox);
         
         float adjustedPlayerY = findGroundY(playerCharacter.position.x, currentLevel.playerStartY, playerCharacter.getWidth());
         playerCharacter.position.y = adjustedPlayerY;
@@ -207,8 +208,6 @@ public class GameplayState implements IState<GameController> {
             EnemySkin skin = EnemySkin.getSkin(enemyData.type);
 
             List<Sprite> enemyIdleFrames;
-
-            // Nuevos frames de animación de reposo para enemigos voladores, cuatro para los demás
             if (enemyData.type == EnemyType.FLYING) {
                 enemyIdleFrames = loadSpriteFrames(skin.idleFrames, 9);
             } else {
@@ -217,8 +216,6 @@ public class GameplayState implements IState<GameController> {
 
             List<Sprite> enemyRunFrames = loadSpriteFrames(skin.runFrames, 4);
             List<Sprite> enemyDeadFrames;
-
-            // Nuevos frames de animación de muerte para jefes, cuatro para los demás
             if (enemyData.type == EnemyType.BOSS_GEMINI || enemyData.type == EnemyType.BOSS_CHATGPT) {
                 enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 15);
             } else {
@@ -228,13 +225,27 @@ public class GameplayState implements IState<GameController> {
             List<Sprite> enemyJumpFrames = loadSpriteFrames(skin.jumpFrames, 1);
             List<Sprite> enemyFallFrames = loadSpriteFrames(skin.fallFrames, 1);
             List<Sprite> enemyHurtFrames = loadSpriteFrames(skin.hurtFrames, 1);
-
             List<Sprite> enemyAttackFrames = loadSpriteFrames(skin.attackFrames, 2);
+
+            // Load boss-specific animations
+            List<Sprite> idleRageFrames = null;
+            List<Sprite> attack1Frames = null;
+            List<Sprite> attack2Frames = null;
+            List<Sprite> summonFrames = null;
+
+            if (enemyData.type == EnemyType.BOSS_GEMINI || enemyData.type == EnemyType.BOSS_CHATGPT) {
+                idleRageFrames = loadSpriteFrames(skin.idleRageFrames, 4); // Assuming 4 frames
+                attack1Frames = loadSpriteFrames(skin.attack1Frames, 4); // Assuming 4 frames
+                attack2Frames = loadSpriteFrames(skin.attack2Frames, 4); // Assuming 4 frames
+                summonFrames = loadSpriteFrames(skin.summonFrames, 4); // Assuming 4 frames
+            }
+
             CharacterAnimator enemyAnimator = new CharacterAnimator(
                 enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
                 enemyJumpFrames, enemyFallFrames, enemyAttackFrames,
                 null, null, null,
-                enemyHurtFrames, null
+                enemyHurtFrames, null,
+                idleRageFrames, attack1Frames, attack2Frames, summonFrames
             );
 
             int health = 0;
@@ -259,6 +270,9 @@ public class GameplayState implements IState<GameController> {
             }
 
             Character enemy = new Character(health, enemyAnimator, null, enemyData.x, enemyData.y, false);
+            // Use the hitbox from the level data if it exists, otherwise use the default from the skin
+            LevelData.HitboxData hitboxToUse = enemyData.hitbox != null ? enemyData.hitbox : skin.hitbox;
+            enemy.setHitbox(hitboxToUse);
             if (enemyData.type == EnemyType.SHOOTER) {
                 enemy.switchWeapon(com.machinehunterdev.game.DamageTriggers.WeaponType.SHOOTER);
             }
@@ -300,7 +314,7 @@ public class GameplayState implements IState<GameController> {
                 npcIdleFrames, null, null,
                 null, null, null,
                 null, null, null,
-                null, null
+                null, null, null, null, null, null
             );
             
             Character npcCharacter = new Character(100, npcAnimator, null, npcData.x, npcData.y, false);
@@ -483,14 +497,14 @@ public class GameplayState implements IState<GameController> {
             enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
             enemyJumpFrames, enemyFallFrames, enemyAttackFrames,
             null, null, null,
-            enemyHurtFrames, null
+            enemyHurtFrames, null, null, null, null, null
         );
 
         CharacterAnimator enemyAnimator2 = new CharacterAnimator(
             enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
             enemyJumpFrames, enemyFallFrames, enemyAttackFrames,
             null, null, null,
-            enemyHurtFrames, null
+            enemyHurtFrames, null, null, null, null, null
         );
 
         int health = 1;
@@ -632,8 +646,8 @@ public class GameplayState implements IState<GameController> {
             obj.render(gameBatch);
         }
 
-        playerCharacter.draw(gameBatch);
         enemyManager.draw(gameBatch);
+        playerCharacter.draw(gameBatch);
 
         if (npcControllers != null) {
             for (NPCController npcController : npcControllers) {
@@ -648,6 +662,9 @@ public class GameplayState implements IState<GameController> {
         impactEffectManager.draw(gameBatch);
 
         gameBatch.end();
+
+        // Render hitboxes for debugging
+        debugRenderHitboxes();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -913,6 +930,30 @@ public class GameplayState implements IState<GameController> {
             }
         }
         return closestGroundY;
+    }
+
+    private void debugRenderHitboxes() {
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.RED);
+
+        // Draw player hitbox
+        if (playerCharacter != null) {
+            Rectangle playerBounds = playerCharacter.getBounds();
+            shapeRenderer.rect(playerBounds.x, playerBounds.y, playerBounds.width, playerBounds.height);
+        }
+
+        // Draw enemy hitboxes
+        if (enemyManager != null) {
+            for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+                if (enemy != null && enemy.getCharacter() != null) {
+                    Rectangle enemyBounds = enemy.getCharacter().getBounds();
+                    shapeRenderer.rect(enemyBounds.x, enemyBounds.y, enemyBounds.width, enemyBounds.height);
+                }
+            }
+        }
+
+        shapeRenderer.end();
     }
 
     public String getCurrentLevelFile() {

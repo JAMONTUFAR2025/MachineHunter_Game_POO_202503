@@ -32,9 +32,17 @@ public abstract class CharacterController {
      */
     protected void checkCollisions(ArrayList<SolidObject> solidObjects) {
         Rectangle charBounds = character.getBounds();
+        float charWidth = charBounds.width;
+        float charX = charBounds.x;
+        float charY = charBounds.y;
+
+        // Posición de los pies del personaje (usando el hitbox)
+        float feetY = charY;
+        float feetLeft = charX;
+        float feetRight = charX + charWidth;
 
         // Verificar colisión con el suelo principal
-        if(charBounds.y <= GlobalSettings.GROUND_LEVEL && character.velocity.y <= 0) {
+        if(feetY <= GlobalSettings.GROUND_LEVEL && character.velocity.y <= 0) {
             character.landOn(GlobalSettings.GROUND_LEVEL);
             return;
         }
@@ -42,14 +50,18 @@ public abstract class CharacterController {
         // Verificar colisión con plataformas
         for (SolidObject obj : solidObjects) {
             if (obj.isWalkable() && !character.isFallingThroughPlatform) {
-                Rectangle platformBounds = obj.getBounds();
-                
-                // Solo verificar si el personaje está cayendo y si hay superposición
-                if (character.velocity.y <= 0 && charBounds.overlaps(platformBounds)) {
-                    float platformTop = platformBounds.y + platformBounds.height;
-                    
-                    // La condición `charBounds.y >= platformTop - 5` asegura que aterrice encima y no en el lateral.
-                    if (charBounds.y >= platformTop - 5) {
+                Rectangle platform = obj.getBounds();
+                float platformTop = platform.y + platform.height;
+
+                // Solo verificar si el personaje está cayendo
+                if (character.velocity.y <= 0) {
+                    // Calcular superposición horizontal
+                    float overlapLeft = Math.max(feetLeft, platform.x);
+                    float overlapRight = Math.min(feetRight, platform.x + platform.width);
+                    float overlapWidth = overlapRight - overlapLeft;
+
+                    // Si hay superposición horizontal y el personaje está a punto de aterrizar en la parte superior de la plataforma
+                    if (overlapWidth > 0 && charY >= platformTop - 5 && charY <= platformTop + 5) {
                         character.landOn(platformTop);
                         return;
                     }

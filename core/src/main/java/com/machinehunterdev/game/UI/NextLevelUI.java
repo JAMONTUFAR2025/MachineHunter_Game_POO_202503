@@ -31,7 +31,7 @@ public class NextLevelUI implements InputProcessor {
     private Texture backgroundTexture;
 
     /* Opciones del menú */
-    private String[] options = {"Siguiente Nivel"};
+    private String[] options = {"Continuar"};
     /* Índice de la opción seleccionada */
     private int selectedOption = 0;
 

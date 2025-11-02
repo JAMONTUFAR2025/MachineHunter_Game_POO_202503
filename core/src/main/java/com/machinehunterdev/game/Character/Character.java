@@ -51,6 +51,7 @@ public class Character
     private Rectangle hitbox = new Rectangle();
     private float hitboxOffsetX = 0;
     private float hitboxOffsetY = 0;
+    private float originalHitboxHeight = 0;
 
     /** Parámetros de movimiento */
     public float speed = 150.0f;        // Velocidad horizontal normal
@@ -76,6 +77,7 @@ public class Character
     public boolean isAlive;                     // Está vivo
     public boolean onGround;                    // Está en contacto con el suelo
     public boolean isCrouching;                 // Está agachado
+    public boolean isPerformingSpecialAttack = false; // Indica si se está ejecutando un ataque especial
     public boolean isFallingThroughPlatform = false; // Estado para ignorar plataformas temporalmente
     public boolean readyForGameOverTransition = false; // Indica si el personaje está listo para la pantalla de Game Over
     public boolean isPlayer = false;
@@ -270,6 +272,8 @@ public class Character
                         }
                         bulletInvocationPending = false;
                                         }
+                } else if (isPerformingSpecialAttack) {
+                    newState = characterAnimator.getCurrentState();
                 } else if (!onGround) {
                     // En el aire: JUMP si sube, FALL si baja
                     if (velocity.y > 0) {
@@ -291,7 +295,11 @@ public class Character
                     if (isMoving) {
                         newState = CharacterAnimator.AnimationState.RUN;
                     } else {
-                        newState = CharacterAnimator.AnimationState.IDLE;
+                        if (characterAnimator.getCurrentState() != CharacterAnimator.AnimationState.IDLE_RAGE) {
+                            newState = CharacterAnimator.AnimationState.IDLE;
+                        } else {
+                            newState = CharacterAnimator.AnimationState.IDLE_RAGE;
+                        }
                     }
                 }
             }
@@ -361,8 +369,22 @@ public class Character
         position.x += velocity.x * delta;
         position.y += velocity.y * delta;
 
+        // Adjust hitbox for crouching player
+        if (isPlayer) {
+            if (isCrouching) {
+                hitbox.height = originalHitboxHeight / 2;
+            } else {
+                hitbox.height = originalHitboxHeight;
+            }
+        }
+
         // Actualizar la posición del hitbox
-        hitbox.setPosition(position.x + hitboxOffsetX, position.y + hitboxOffsetY);
+        if (isSeeingRight) {
+            hitbox.setPosition(position.x + hitboxOffsetX, position.y + hitboxOffsetY);
+        } else {
+            float flippedX = position.x + getWidth() - (hitboxOffsetX + hitbox.width);
+            hitbox.setPosition(flippedX, position.y + hitboxOffsetY);
+        }
 
         // --- LÓGICA DE MOVIMIENTO NORMAL ---
         if (!isKnockedBack && !isHurt && isAlive) {
@@ -765,6 +787,7 @@ public class Character
             this.hitboxOffsetX = 0;
             this.hitboxOffsetY = 0;
         }
+        this.originalHitboxHeight = this.hitbox.height;
         // Actualizar posición inicial del hitbox
         this.hitbox.setPosition(this.position.x + this.hitboxOffsetX, this.position.y + this.hitboxOffsetY);
     }

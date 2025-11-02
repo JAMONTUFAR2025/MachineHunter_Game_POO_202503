@@ -19,7 +19,7 @@ public class CharacterAnimator {
      * Enumeración de estados de animación soportados.
      */
     public enum AnimationState {
-        IDLE, RUN, DEAD, JUMP, FALL, ATTACK, LASER_ATTACK, ION_ATTACK, RAILGUN_ATTACK, HURT, CROUCH
+        IDLE, RUN, DEAD, JUMP, FALL, ATTACK, LASER_ATTACK, ION_ATTACK, RAILGUN_ATTACK, HURT, CROUCH, IDLE_RAGE, ATTACK1, ATTACK2, SUMMON
     }
 
     /** Mapa que asocia estados de animación con sus respectivos animadores */
@@ -59,7 +59,11 @@ public class CharacterAnimator {
         List<Sprite> attackIonFrames,
         List<Sprite> attackRailgunFrames,
         List<Sprite> hurtFrames,
-        List<Sprite> crouchFrames
+        List<Sprite> crouchFrames,
+        List<Sprite> idleRageFrames,
+        List<Sprite> attack1Frames,
+        List<Sprite> attack2Frames,
+        List<Sprite> summonFrames
     ) {
         this.animators = new HashMap<>();
         
@@ -98,6 +102,18 @@ public class CharacterAnimator {
         }
         if (crouchFrames != null && !crouchFrames.isEmpty()) {
             this.animators.put(AnimationState.CROUCH, new SpriteAnimator(crouchFrames));
+        }
+        if (idleRageFrames != null && !idleRageFrames.isEmpty()) {
+            this.animators.put(AnimationState.IDLE_RAGE, new SpriteAnimator(idleRageFrames));
+        }
+        if (attack1Frames != null && !attack1Frames.isEmpty()) {
+            this.animators.put(AnimationState.ATTACK1, new SpriteAnimator(attack1Frames, 0.15f));
+        }
+        if (attack2Frames != null && !attack2Frames.isEmpty()) {
+            this.animators.put(AnimationState.ATTACK2, new SpriteAnimator(attack2Frames, 0.15f));
+        }
+        if (summonFrames != null && !summonFrames.isEmpty()) {
+            this.animators.put(AnimationState.SUMMON, new SpriteAnimator(summonFrames, 0.15f));
         }  
 
         setCurrentAnimation(AnimationState.IDLE);

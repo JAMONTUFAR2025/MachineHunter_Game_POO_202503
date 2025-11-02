@@ -1,5 +1,7 @@
 package com.machinehunterdev.game.Character;
 
+import com.machinehunterdev.game.Levels.LevelData.HitboxData;
+
 /**
  * Definición de skins para diferentes tipos de enemigos.
  * Cada skin especifica las rutas de los frames de animación.
@@ -11,27 +13,27 @@ public enum EnemySkin {
      * Skin del enemigo patrullero
      * Idle, Run, Dead, Hurt
     */
-    PATROLLER("Enemy/Patroller/PatrollerIdle", "Enemy/Patroller/PatrollerRun", "Enemy/Explosion", "Enemy/Patroller/PatrollerHurt", "Enemy/Patroller/PatrollerJump", "Enemy/Patroller/PatrollerFall", null),
+    PATROLLER("Enemy/Patroller/PatrollerIdle", "Enemy/Patroller/PatrollerRun", "Enemy/Explosion", "Enemy/Patroller/PatrollerHurt", "Enemy/Patroller/PatrollerJump", "Enemy/Patroller/PatrollerFall", null, new HitboxData(5, 0, 30, 35), null, null, null, null),
     /**
      * Skin del enemigo tirador
      * Idle, Run, Dead, Hurt, Attack
      */
-    SHOOTER("Enemy/Shooter/ShooterIdle", "Enemy/Shooter/ShooterRun", "Enemy/Explosion", "Enemy/Shooter/ShooterHurt", null, null, "Enemy/Shooter/ShooterAttack"),
+    SHOOTER("Enemy/Shooter/ShooterIdle", "Enemy/Shooter/ShooterRun", "Enemy/Explosion", "Enemy/Shooter/ShooterHurt", null, null, "Enemy/Shooter/ShooterAttack", new HitboxData(9, 0, 23, 35), null, null, null, null),
     /**
      * Skin del enemigo volador
      * Idle, Dead, Hurt
      */
-    FLYING("Enemy/Flying/FlyingIdle", null, "Enemy/Explosion", "Enemy/Flying/FlyingHurt", null, null, null),
+    FLYING("Enemy/Flying/FlyingIdle", null, "Enemy/Explosion", "Enemy/Flying/FlyingHurt", null, null, null, new HitboxData(3, 7, 34, 29), null, null, null, null),
     /**
      * Skin del jefe
      * Idle, Dead, Hurt
      */
-    BOSS_GEMINI("Enemy/GeminiEXE/GeminiEXEIdle", null, "Enemy/GeminiEXE/GeminiEXEDeath", "Enemy/GeminiEXE/GeminiEXEHurt", null, null, null),
+    BOSS_GEMINI("Enemy/GeminiEXE/GeminiEXEIdle", null, "Enemy/GeminiEXE/GeminiEXEDeath", "Enemy/GeminiEXE/GeminiEXEHurt", null, null, null, new HitboxData(0, 0, 80, 80), "Enemy/GeminiEXE/GeminiEXEIdleRage", "Enemy/GeminiEXE/GeminiEXEAttack", "Enemy/GeminiEXE/GeminiEXEDeath", "Enemy/GeminiEXE/GeminiEXESummon"),
     /**
      * Skin del jefe ChatGPT
      * Idle, Dead, Hurt
      */
-    BOSS_CHATGPT("Enemy/ChatGPTEXE/ChatGPTEXEIdle", null, "Enemy/ChatGPTEXE/ChatGPTEXEDeath", "Enemy/ChatGPTEXE/ChatGPTEXEHurt", null, null, null);
+    BOSS_CHATGPT("Enemy/ChatGPTEXE/ChatGPTEXEIdle", null, "Enemy/ChatGPTEXE/ChatGPTEXEDeath", "Enemy/ChatGPTEXE/ChatGPTEXEHurt", null, null, null, new HitboxData(0, 0, 80, 80), "Enemy/ChatGPTEXE/ChatGPTEXEIdleRage", "Enemy/ChatGPTEXE/ChatGPTEXEAttack", "Enemy/ChatGPTEXE/ChatGPTEXEDeath", "Enemy/ChatGPTEXE/ChatGPTEXESummon");
 
     /** Rutas de los frames de animación */
     public final String idleFrames;
@@ -41,6 +43,11 @@ public enum EnemySkin {
     public final String jumpFrames;
     public final String fallFrames;
     public final String attackFrames;
+    public final HitboxData hitbox;
+    public final String idleRageFrames;
+    public final String attack1Frames;
+    public final String attack2Frames;
+    public final String summonFrames;
 
     /** Constructor completo para skins de enemigos 
      * @param idleFrames Ruta de los frames de animación de idle
@@ -50,8 +57,13 @@ public enum EnemySkin {
      * @param jumpFrames Ruta de los frames de animación de jump
      * @param fallFrames Ruta de los frames de animación de fall
      * @param attackFrames Ruta de los frames de animación de attack
+     * @param hitbox Hitbox por defecto para el tipo de enemigo
+     * @param idleRageFrames Ruta de los frames de animación de idle en modo furia
+     * @param attack1Frames Ruta de los frames de animación para el ataque 1
+     * @param attack2Frames Ruta de los frames de animación para el ataque 2
+     * @param summonFrames Ruta de los frames de animación para la invocación
     */
-    EnemySkin(String idleFrames, String runFrames, String deadFrames, String hurtFrames, String jumpFrames, String fallFrames, String attackFrames) {
+    EnemySkin(String idleFrames, String runFrames, String deadFrames, String hurtFrames, String jumpFrames, String fallFrames, String attackFrames, HitboxData hitbox, String idleRageFrames, String attack1Frames, String attack2Frames, String summonFrames) {
         this.idleFrames = idleFrames;
         this.runFrames = runFrames;
         this.deadFrames = deadFrames;
@@ -59,26 +71,14 @@ public enum EnemySkin {
         this.jumpFrames = jumpFrames;
         this.fallFrames = fallFrames;
         this.attackFrames = attackFrames;
+        this.hitbox = hitbox;
+        this.idleRageFrames = idleRageFrames;
+        this.attack1Frames = attack1Frames;
+        this.attack2Frames = attack2Frames;
+        this.summonFrames = summonFrames;
     }
 
-    /** Constructor para el enemigo patrullero 
-     * @param idleFrames Ruta de los frames de animación de idle
-     * @param runFrames Ruta de los frames de animación de run
-     * @param deadFrames Ruta de los frames de animación de dead
-     * @param hurtFrames Ruta de los frames de animación de hurt
-    */
-    EnemySkin(String idleFrames, String runFrames, String deadFrames, String hurtFrames) {
-        this(idleFrames, runFrames, deadFrames, hurtFrames, null, null, null);
-    }
 
-    /** Constructor para el enemigo volador 
-     * @param idleFrames Ruta de los frames de animación de idle
-     * @param deadFrames Ruta de los frames de animación de dead
-     * @param hurtFrames Ruta de los frames de animación de hurt
-    */
-    EnemySkin(String idleFrames, String deadFrames, String hurtFrames) {
-        this(idleFrames, null, deadFrames, hurtFrames, null, null, null);
-    }
 
     /** Obtiene el skin correspondiente a un tipo de enemigo 
      * @param enemyType Tipo de enemigo

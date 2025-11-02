@@ -97,10 +97,37 @@ public class BossEnemyController extends CharacterController {
             }
         }
 
+        // Handle rage animation based on health
+        boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
+        CharacterAnimator.AnimationState currentAnimation = character.characterAnimator.getCurrentState();
+
+        if (isPhaseTwo) {
+            if (currentAnimation == CharacterAnimator.AnimationState.IDLE) {
+                character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE_RAGE);
+            }
+        } else {
+            if (currentAnimation == CharacterAnimator.AnimationState.IDLE_RAGE) {
+                character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE);
+            }
+        }
+
+        // Return to idle after attack animations
+        if ((currentAnimation == CharacterAnimator.AnimationState.ATTACK1 || 
+             currentAnimation == CharacterAnimator.AnimationState.ATTACK2 || 
+             currentAnimation == CharacterAnimator.AnimationState.SUMMON) && 
+             character.characterAnimator.isAnimationFinished(currentAnimation)) {
+            
+            character.isPerformingSpecialAttack = false;
+            if (isPhaseTwo) {
+                character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE_RAGE);
+            } else {
+                character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE);
+            }
+        }
+
         if (lightningAttackActive) {
             lightningAttackTimer += delta;
 
-            boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
             float lightningDuration = isPhaseTwo ? 1.7f : 2.1f; // 3 flashes (1.2s) + 0.5s strike OR 4 flashes (1.6s) + 0.5s strike
 
             if (lightningAttackTimer >= lightningDuration) {
@@ -120,9 +147,10 @@ public class BossEnemyController extends CharacterController {
         character.velocity.set(0, 0);
         character.stopMoving();
 
-        attackTimer += delta;
+        if (!character.isPerformingSpecialAttack) {
+            attackTimer += delta;
+        }
 
-        boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
         float currentAttackInterval = isPhaseTwo ? attackIntervalPhase2 : attackInterval;
 
         if (enemyCount > 1) {
@@ -160,6 +188,8 @@ public class BossEnemyController extends CharacterController {
     }
         
     private void attackType1(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
+        character.isPerformingSpecialAttack = true;
+        character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK1);
         System.out.println("Boss Attack 1");
         if (playerCharacter != null) {
             lightningAttackActive = true;
@@ -169,6 +199,8 @@ public class BossEnemyController extends CharacterController {
     }
     
     private void attackType2(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
+        character.isPerformingSpecialAttack = true;
+        character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK2);
         System.out.println("Boss Attack 2");
         if (playerCharacter == null) return;
 
@@ -197,6 +229,8 @@ public class BossEnemyController extends CharacterController {
     }
 
     private void attackType3(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
+        character.isPerformingSpecialAttack = true;
+        character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.SUMMON);
         if (enemyCount > 1) {
             // Do nothing if there are other enemies
             return;
