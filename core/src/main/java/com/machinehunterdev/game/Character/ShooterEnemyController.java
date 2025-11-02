@@ -44,6 +44,9 @@ public class ShooterEnemyController extends CharacterController {
      */
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
+        if (!character.isAlive()) return;
+
+        handleHurtAnimation();
         checkCollisions(solidObjects);
 
         switch (currentState) {

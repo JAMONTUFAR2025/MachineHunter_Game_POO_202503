@@ -89,6 +89,8 @@ public class BossEnemyController extends CharacterController {
 
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
+        handleHurtAnimation();
+
         if (playerCharacter != null) {
             if (playerCharacter.position.x > character.position.x) {
                 character.setSeeingRight(true);
@@ -124,6 +126,8 @@ public class BossEnemyController extends CharacterController {
                 character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE);
             }
         }
+
+
 
         if (lightningAttackActive) {
             lightningAttackTimer += delta;
@@ -229,12 +233,14 @@ public class BossEnemyController extends CharacterController {
     }
 
     private void attackType3(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
-        character.isPerformingSpecialAttack = true;
-        character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.SUMMON);
         if (enemyCount > 1) {
             // Do nothing if there are other enemies
+            character.isPerformingSpecialAttack = false; // Also reset this, otherwise boss might get stuck
             return;
         }
+
+        character.isPerformingSpecialAttack = true;
+        character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.SUMMON);
 
         summonWarningActive = true;
         summonWarningTimer = 0f;

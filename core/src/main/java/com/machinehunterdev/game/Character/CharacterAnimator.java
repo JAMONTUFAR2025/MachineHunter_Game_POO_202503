@@ -29,7 +29,10 @@ public class CharacterAnimator {
     private AnimationState currentState = AnimationState.IDLE;
     
     /** Estado de animación anterior */
-    //private AnimationState previousState = AnimationState.IDLE;
+    private AnimationState previousState = AnimationState.IDLE;
+    
+    /** Frame de la animación interrumpida */
+    private int interruptedFrame = 0;
     
     /** Dirección de mirada del personaje */
     private boolean facingRight = true;
@@ -107,13 +110,13 @@ public class CharacterAnimator {
             this.animators.put(AnimationState.IDLE_RAGE, new SpriteAnimator(idleRageFrames));
         }
         if (attack1Frames != null && !attack1Frames.isEmpty()) {
-            this.animators.put(AnimationState.ATTACK1, new SpriteAnimator(attack1Frames, 0.15f));
+            this.animators.put(AnimationState.ATTACK1, new SpriteAnimator(attack1Frames, 0.15f, false));
         }
         if (attack2Frames != null && !attack2Frames.isEmpty()) {
-            this.animators.put(AnimationState.ATTACK2, new SpriteAnimator(attack2Frames, 0.15f));
+            this.animators.put(AnimationState.ATTACK2, new SpriteAnimator(attack2Frames, 0.15f, false));
         }
         if (summonFrames != null && !summonFrames.isEmpty()) {
-            this.animators.put(AnimationState.SUMMON, new SpriteAnimator(summonFrames, 0.15f));
+            this.animators.put(AnimationState.SUMMON, new SpriteAnimator(summonFrames, 0.15f, false));
         }  
 
         setCurrentAnimation(AnimationState.IDLE);
@@ -161,10 +164,29 @@ public class CharacterAnimator {
      * @param newState Nuevo estado de animación
      */
     public void setCurrentAnimation(AnimationState newState) {
-        if (this.currentState != newState && animators.containsKey(newState)) {
-            //this.previousState = this.currentState;
-            this.currentState = newState;
-            animators.get(newState).start();
+        if (animators.containsKey(newState)) {
+            if (this.currentState != newState) {
+                if (newState == AnimationState.HURT) {
+                    this.previousState = this.currentState;
+                    SpriteAnimator interruptedAnimator = animators.get(this.currentState);
+                    if (interruptedAnimator != null) {
+                        this.interruptedFrame = interruptedAnimator.getCurrentFrameIndex();
+                    }
+                }
+                this.currentState = newState;
+                animators.get(newState).start();
+            }
+        }
+    }
+
+    public void resumeAnimation(AnimationState resumeState) {
+        if (animators.containsKey(resumeState)) {
+            this.currentState = resumeState;
+            SpriteAnimator animator = animators.get(resumeState);
+            if (animator != null) {
+                animator.start(); // Resets finished flag and timer
+                animator.setCurrentFrame(this.interruptedFrame);
+            }
         }
     }
 
@@ -191,6 +213,13 @@ public class CharacterAnimator {
      */
     public AnimationState getCurrentState() {
         return currentState;
+    }
+
+    /**
+     * Obtiene el estado de animación anterior.
+     */
+    public AnimationState getPreviousState() {
+        return previousState;
     }
 
     /**

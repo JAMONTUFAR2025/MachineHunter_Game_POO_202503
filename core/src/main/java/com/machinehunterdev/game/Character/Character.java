@@ -235,7 +235,7 @@ public class Character
                     velocity.y = 0;
                 }
             } else { // Only determine other states if character is alive
-                if (isHurt && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
+                if (isHurt && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT) && !(isPerformingSpecialAttack || (isAttacking && !isPlayer))) {
                     // Prioridad: Animación de daño
                     newState = CharacterAnimator.AnimationState.HURT;
                 } else if (isCrouching && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.CROUCH)) {

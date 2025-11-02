@@ -513,7 +513,7 @@ public class GameplayState implements IState<GameController> {
                 health = com.machinehunterdev.game.Gameplay.GlobalSettings.PATROLLER_HEALTH;
                 break;
             case SHOOTER:
-                health = com.machinehunterdev.game.Gameplay.GlobalSettings.SHOOTER_HEALTH;
+                health = com.machinehunterdev.game.Gameplay.GlobalSettings.SHOOTER_HEALTH / 2; // Weaker shooters when summoned
                 break;
             case FLYING:
                 health = com.machinehunterdev.game.Gameplay.GlobalSettings.FLYING_HEALTH;
@@ -523,8 +523,8 @@ public class GameplayState implements IState<GameController> {
                 break;
         }
 
-        Character enemy1 = new Character(health, enemyAnimator1, null, 60, 480, false);
-        Character enemy2 = new Character(health, enemyAnimator2, null, 380, 480, false);
+        Character enemy1 = new Character(health, enemyAnimator1, null, 88, 480, false);
+        Character enemy2 = new Character(health, enemyAnimator2, null, 352, 480, false);
 
         if (type == EnemyType.FLYING) {
             enemy1.position.y = 200; 
@@ -688,8 +688,8 @@ public class GameplayState implements IState<GameController> {
 
                 if (controller.isSummonWarning()) {
                     shapeRenderer.setColor(Color.BLACK);
-                    shapeRenderer.rect(60, 32, 40, 448);
-                    shapeRenderer.rect(380, 32, 40, 448);
+                    shapeRenderer.rect(88, 32, 40, 448);
+                    shapeRenderer.rect(352, 32, 40, 448);
                 }
             }
         }

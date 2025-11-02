@@ -81,4 +81,23 @@ public abstract class CharacterController {
      * @param bullets Lista de balas activas para colisiones.
      */
     public abstract void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount);
+
+    protected void handleHurtAnimation() {
+        CharacterAnimator.AnimationState currentAnimation = character.characterAnimator.getCurrentState();
+        if (currentAnimation == CharacterAnimator.AnimationState.HURT && character.characterAnimator.isAnimationFinished(CharacterAnimator.AnimationState.HURT)) {
+            CharacterAnimator.AnimationState previousState = character.characterAnimator.getPreviousState();
+            character.characterAnimator.resumeAnimation(previousState);
+
+            // Reset attack flags if we are not resuming an attack
+            boolean wasAttacking = previousState == CharacterAnimator.AnimationState.ATTACK ||
+                                   previousState == CharacterAnimator.AnimationState.ATTACK1 ||
+                                   previousState == CharacterAnimator.AnimationState.ATTACK2 ||
+                                   previousState == CharacterAnimator.AnimationState.SUMMON;
+
+            if (!wasAttacking) {
+                character.isAttacking = false;
+                character.isPerformingSpecialAttack = false;
+            }
+        }
+    }
 }

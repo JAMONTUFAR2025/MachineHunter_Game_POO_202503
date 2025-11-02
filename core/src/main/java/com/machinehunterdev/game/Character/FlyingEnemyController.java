@@ -59,6 +59,7 @@ public class FlyingEnemyController extends CharacterController {
      */
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
+        handleHurtAnimation();
         // No se necesitan colisiones para enemigos voladores
 
         if (character.isHurt()) {
