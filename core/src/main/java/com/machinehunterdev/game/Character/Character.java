@@ -10,6 +10,8 @@ import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.DamageTriggers.DamageSystem;
 import com.machinehunterdev.game.DamageTriggers.DamageType;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.machinehunterdev.game.Levels.LevelData;
+
 import java.util.ArrayList;
 
 /**
@@ -44,6 +46,11 @@ public class Character
     
     /** Velocidad actual del personaje (vx, vy) */
     public Vector2 velocity;
+
+    /** Hitbox de colisión */
+    private Rectangle hitbox = new Rectangle();
+    private float hitboxOffsetX = 0;
+    private float hitboxOffsetY = 0;
 
     /** Parámetros de movimiento */
     public float speed = 150.0f;        // Velocidad horizontal normal
@@ -137,6 +144,7 @@ public class Character
         this.position = new Vector2(x, y);
         this.velocity = new Vector2(0, 0);
         this.isPlayer = isPlayer;
+        setHitbox(null); // Inicializar hitbox con valores por defecto
         initDefaults();
     }
 
@@ -352,6 +360,9 @@ public class Character
         // --- ACTUALIZACIÓN DE POSICIÓN ---
         position.x += velocity.x * delta;
         position.y += velocity.y * delta;
+
+        // Actualizar la posición del hitbox
+        hitbox.setPosition(position.x + hitboxOffsetX, position.y + hitboxOffsetY);
 
         // --- LÓGICA DE MOVIMIENTO NORMAL ---
         if (!isKnockedBack && !isHurt && isAlive) {
@@ -705,7 +716,7 @@ public class Character
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(position.x, position.y, getWidth(), getHeight());
+        return hitbox;
     }
 
     public WeaponType getWeaponType() {
@@ -735,6 +746,27 @@ public class Character
 
     public void setHurtTimer(float hurtTimer) {
         this.hurtTimer = hurtTimer;
+    }
+
+    /**
+     * Configura el hitbox del personaje a partir de datos.
+     * @param hitboxData Los datos del hitbox. Si es nulo, se usa un hitbox por defecto.
+     */
+    public void setHitbox(LevelData.HitboxData hitboxData) {
+        if (hitboxData != null) {
+            this.hitbox.width = hitboxData.width;
+            this.hitbox.height = hitboxData.height;
+            this.hitboxOffsetX = hitboxData.offsetX;
+            this.hitboxOffsetY = hitboxData.offsetY;
+        } else {
+            // Valores por defecto si no hay datos
+            this.hitbox.width = getWidth();
+            this.hitbox.height = getHeight();
+            this.hitboxOffsetX = 0;
+            this.hitboxOffsetY = 0;
+        }
+        // Actualizar posición inicial del hitbox
+        this.hitbox.setPosition(this.position.x + this.hitboxOffsetX, this.position.y + this.hitboxOffsetY);
     }
 
     // === SISTEMA DE MUERTE ===

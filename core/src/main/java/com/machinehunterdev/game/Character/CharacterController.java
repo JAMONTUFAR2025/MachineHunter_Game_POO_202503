@@ -31,18 +31,10 @@ public abstract class CharacterController {
      * @param solidObjects Lista de objetos sólidos en el nivel.
      */
     protected void checkCollisions(ArrayList<SolidObject> solidObjects) {
-        float charWidth = character.getWidth();
-        //float charHeight = character.getHeight();
-        float charX = character.getX();
-        float charY = character.getY();
-
-        // Posición de los pies del personaje
-        float feetY = charY;
-        float feetLeft = charX;
-        float feetRight = charX + charWidth;
+        Rectangle charBounds = character.getBounds();
 
         // Verificar colisión con el suelo principal
-        if(feetY <= GlobalSettings.GROUND_LEVEL && character.velocity.y <= 0) {
+        if(charBounds.y <= GlobalSettings.GROUND_LEVEL && character.velocity.y <= 0) {
             character.landOn(GlobalSettings.GROUND_LEVEL);
             return;
         }
@@ -50,21 +42,14 @@ public abstract class CharacterController {
         // Verificar colisión con plataformas
         for (SolidObject obj : solidObjects) {
             if (obj.isWalkable() && !character.isFallingThroughPlatform) {
-                Rectangle platform = obj.getBounds();
-                float platformTop = platform.y + platform.height;
-
-                // Solo verificar si el personaje está cayendo
-                if (character.velocity.y <= 0) {
-                    // Calcular superposición horizontal
-                    float overlapLeft = Math.max(feetLeft, platform.x);
-                    float overlapRight = Math.min(feetRight, platform.x + platform.width);
-                    float overlapWidth = overlapRight - overlapLeft;
-
-                    // Si hay superposición horizontal y el personaje está a punto de aterrizar en la parte superior de la plataforma
-                    // (es decir, sus pies están justo por encima o en la parte superior de la plataforma)
-                    // La condición charY >= platformTop - 5 y charY <= platformTop + 5 crea una pequeña ventana vertical
-                    // para detectar el aterrizaje, evitando que el personaje se "teletransporte" si golpea el lateral.
-                    if (overlapWidth > 0 && charY >= platformTop - 5 && charY <= platformTop + 5) {
+                Rectangle platformBounds = obj.getBounds();
+                
+                // Solo verificar si el personaje está cayendo y si hay superposición
+                if (character.velocity.y <= 0 && charBounds.overlaps(platformBounds)) {
+                    float platformTop = platformBounds.y + platformBounds.height;
+                    
+                    // La condición `charBounds.y >= platformTop - 5` asegura que aterrice encima y no en el lateral.
+                    if (charBounds.y >= platformTop - 5) {
                         character.landOn(platformTop);
                         return;
                     }

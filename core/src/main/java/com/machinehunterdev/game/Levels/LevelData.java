@@ -37,6 +37,9 @@ public class LevelData {
     public String nextLevel = null;
     public List<String> flashbackDialogues;
     public String flashbackDialogueSection;
+
+    // Hitbox para el jugador
+    public HitboxData playerHitbox;
     
     /**
      * Constructor de LevelData.
@@ -45,6 +48,16 @@ public class LevelData {
         solidObjectsData = new ArrayList<>();
         enemies = new ArrayList<>();
         npcs = new ArrayList<>();
+    }
+
+    /**
+     * Datos para el hitbox de un personaje.
+     */
+    public static class HitboxData {
+        public float offsetX = 0;
+        public float offsetY = 0;
+        public float width = 32;
+        public float height = 32;
     }
     
     /**
@@ -80,6 +93,7 @@ public class LevelData {
         public float waitTime = 3.0f;
         public float shootInterval = 2.0f;
         public float shootTime = 1.0f;
+        public HitboxData hitbox;
     }
     
     /**
