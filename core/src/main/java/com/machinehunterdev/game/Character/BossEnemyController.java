@@ -127,8 +127,6 @@ public class BossEnemyController extends CharacterController {
             }
         }
 
-
-
         if (lightningAttackActive) {
             lightningAttackTimer += delta;
 
@@ -157,7 +155,8 @@ public class BossEnemyController extends CharacterController {
 
         float currentAttackInterval = isPhaseTwo ? attackIntervalPhase2 : attackInterval;
 
-        if (enemyCount > 1) {
+        // Si hay otros enemigos y su salud esta arriba del 30%, aumentar el intervalo de ataque (nerfeo)
+        if (enemyCount > 1 && (float) character.getHealth() / maxHealth > 0.3f) {
             currentAttackInterval *= 2;
         }
 
@@ -170,22 +169,20 @@ public class BossEnemyController extends CharacterController {
 
     private void performRandomAttack(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
-        int numberOfAttacks = isPhaseTwo ? 4 : 3;
+        int numberOfAttacks = isPhaseTwo && enemyCount == 1 ? 3 : 2; // Si no hay otros enemigos en pantalla, desbloquear el ataque de invocación
         int attackType = random.nextInt(numberOfAttacks);
 
         switch (attackType) {
             case 0:
+            attackType1(bullets, playerCharacter, enemyCount);
                 // Nada
                 break;
             case 1:
-                attackType1(bullets, playerCharacter, enemyCount);
-            break;
-            case 2:
                 attackType2(bullets, playerCharacter, enemyCount);
-            break;
-            case 3:
-                attackType3(bullets, playerCharacter, enemyCount);
                 break;
+            case 2:
+                attackType3(bullets, playerCharacter, enemyCount);
+            break;
             default:
                 break;
         }
@@ -194,7 +191,6 @@ public class BossEnemyController extends CharacterController {
     private void attackType1(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK1);
-        System.out.println("Boss Attack 1");
         if (playerCharacter != null) {
             lightningAttackActive = true;
             lightningAttackTimer = 0f;
@@ -205,7 +201,6 @@ public class BossEnemyController extends CharacterController {
     private void attackType2(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK2);
-        System.out.println("Boss Attack 2");
         if (playerCharacter == null) return;
 
         Vector2 bossTop = new Vector2(character.position.x + character.getWidth() / 2, character.position.y + character.getHeight());

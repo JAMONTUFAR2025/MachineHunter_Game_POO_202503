@@ -526,7 +526,7 @@ public class GameplayState implements IState<GameController> {
                 health = com.machinehunterdev.game.Gameplay.GlobalSettings.PATROLLER_HEALTH;
                 break;
             case SHOOTER:
-                health = com.machinehunterdev.game.Gameplay.GlobalSettings.SHOOTER_HEALTH / 2; // Weaker shooters when summoned
+                health = com.machinehunterdev.game.Gameplay.GlobalSettings.SHOOTER_HEALTH / 2; // Menos salud para enemigos disparadores invocados
                 break;
             case FLYING:
                 health = com.machinehunterdev.game.Gameplay.GlobalSettings.FLYING_HEALTH;
@@ -565,22 +565,22 @@ public class GameplayState implements IState<GameController> {
 
         switch (type) {
             case PATROLLER:
-                patrolPoints1.add(new Vector2(400, 32));
-                patrolPoints1.add(new Vector2(80, 32));
-                patrolPoints2.add(new Vector2(80, 32));
-                patrolPoints2.add(new Vector2(400, 32));
-                waitTime = 2.0f;
+                patrolPoints1.add(new Vector2(352, 32));
+                patrolPoints1.add(new Vector2(88, 32));
+                patrolPoints2.add(new Vector2(88, 32));
+                patrolPoints2.add(new Vector2(352, 32));
+                waitTime = 3.0f;
                 break;
             case SHOOTER:
-                shootInterval = 2.0f;
-                shootTime = 1.0f;
+                shootInterval = 5.0f;
+                shootTime = 1f;
                 break;
             case FLYING:
-                patrolPoints1.add(new Vector2(138, 144));
-                patrolPoints1.add(new Vector2(138, 80));
-                patrolPoints2.add(new Vector2(302, 80));
-                patrolPoints2.add(new Vector2(302, 138));
-                waitTime = 2.0f;
+                patrolPoints1.add(new Vector2(138, 168));
+                patrolPoints1.add(new Vector2(138, 96));
+                patrolPoints2.add(new Vector2(302, 96));
+                patrolPoints2.add(new Vector2(302, 168));
+                waitTime = 0.5f;
                 break;
             default:
                 break;
