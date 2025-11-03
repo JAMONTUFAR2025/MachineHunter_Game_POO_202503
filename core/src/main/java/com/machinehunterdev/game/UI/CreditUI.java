@@ -28,6 +28,9 @@ public class CreditUI implements InputProcessor {
             "",
             "Período 2025-3",
             "",
+            "Catedrático",
+            "Luis Fernando Truel Umanzor",
+            "",
             "Guión",
             "Raúl Fernando Ramos Lara",
             "",
@@ -35,13 +38,20 @@ public class CreditUI implements InputProcessor {
             "Mariely Nicol Hiraeta Henriquez",
             "Ken Kato Castellanos",
             "",
+            "Texturas",
+            "Explosion",
+            "A quien corresponda",
+            "Rayo",
+            "Pokémon Ruby & Sapphire",
+            "",
             "Programación",
             "Josué Alejandro Montúfar Zúniga",
             "Anner Alessandro Teruel Pineda",
             "Ken Kato Castellanos",
             "",
             "Música y sonidos",
-            "Sin definir",
+            "Mario & Luigi: Superstar Saga",
+            "Pokémon Ruby & Sapphire",
             "",
             "",
             "¡Gracias por Jugar!",
@@ -106,8 +116,10 @@ public class CreditUI implements InputProcessor {
             if (line.equals("MACHINE HUNTER")) {
                 font.setColor(Color.RED);
             } else if (line.equals("Clase") ||
+                        line.equals("Catedrático") ||
                         line.equals("Guión") ||
                         line.equals("Arte") ||
+                        line.equals("Texturas") ||
                         line.equals("Programación") ||
                         line.equals("Música y sonidos") ||
                         line.equals("¡Gracias por Jugar!")) {
