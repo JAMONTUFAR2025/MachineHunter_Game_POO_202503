@@ -11,6 +11,7 @@ import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.DamageTriggers.DamageSystem;
 import com.machinehunterdev.game.DamageTriggers.DamageType;
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.machinehunterdev.game.Levels.LevelData;
 
@@ -79,6 +80,7 @@ public class Character
     public boolean isAttacking;                 // Está atacando
     public boolean isAlive;                     // Está vivo
     public boolean onGround;                    // Está en contacto con el suelo
+    public boolean onPlatform;                  // Está en contacto con una plataforma
     public boolean isCrouching;                 // Está agachado
     public boolean isPerformingSpecialAttack = false; // Indica si se está ejecutando un ataque especial
     public boolean isFallingThroughPlatform = false; // Estado para ignorar plataformas temporalmente
@@ -197,6 +199,7 @@ public class Character
         this.isAttacking = false;
         this.isAlive = true;
         this.onGround = false;
+        this.onPlatform = false;
     }
 
     // === MÉTODO DE ACTUALIZACIÓN PRINCIPAL ===
@@ -616,6 +619,7 @@ public class Character
         else AudioManager.getInstance().playSfx(AudioId.EnemyLand, this);
 
         onGround = true;
+        onPlatform = (groundY != GlobalSettings.GROUND_LEVEL);
 
         if (!isAlive) {
             readyForGameOverTransition = true;
@@ -670,10 +674,11 @@ public class Character
     }
 
     public void fallThroughPlatform() {
-        if (onGround) {
+        if (onGround && onPlatform) {
             isFallingThroughPlatform = true;
             fallThroughTimer = 0.2f; // Ignorar plataformas por 0.2 segundos
             onGround = false;
+            onPlatform = false;
         }
     }
 

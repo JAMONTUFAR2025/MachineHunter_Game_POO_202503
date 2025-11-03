@@ -68,7 +68,7 @@ public class PlayerController extends CharacterController {
         if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_ATTACK) && character.onGround) {
 
             // Si esta agachado, caer a través de la plataforma
-            if (character.isCrouching) {
+            if (character.isCrouching && character.onPlatform) {
                 character.fallThroughPlatform();
             }
             

@@ -131,6 +131,8 @@ public class GameController extends ApplicationAdapter
         // Actualizar cámara
         camera.update();
 
+
+
         // Ejecutar el estado actual
         stateMachine.execute();
 

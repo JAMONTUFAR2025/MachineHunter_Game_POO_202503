@@ -11,50 +11,28 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.Audio.AudioId;
 import com.machinehunterdev.game.Audio.AudioManager;
-import com.machinehunterdev.game.GameStates.GameplayState;
+import com.machinehunterdev.game.GameStates.PauseState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
-/**
- * Interfaz de usuario para el menú de pausa con sistema de confirmación.
- * Implementa un sistema de dos estados: menú principal y confirmación de salida.
- * 
- * @author MachineHunterDev
- */
 public class PauseUI implements InputProcessor {
 
-    /** Referencia al estado de gameplay para reanudar o salir */
-    private GameplayState gameplayState;
-    
-    /** SpriteBatch para renderizado */
+    private PauseState pauseState;
     private SpriteBatch batch;
-    
-    /** Fuente para el texto del menú */
     private BitmapFont font;
-    
-    /** Textura blanca para el fondo semi-transparente */
     private Texture backgroundTexture;
 
-    /** Estados del menú de pausa */
     private enum MenuState { MAIN, CONFIRM_EXIT, CONFIRM_RETRY }
     private MenuState currentState = MenuState.MAIN;
 
-    /** Opciones para cada estado del menú */
     private String[] mainOptions = {"Reanudar","Reintentar", "Salir"};
     private String[] confirmOptions = {"Si", "No"};
     
-    /** Índice de la opción seleccionada actualmente */
     private int selectedOption = 0;
 
-    /**
-     * Constructor del menú de pausa.
-     * @param gameplayState Referencia al estado de gameplay
-     * @param batch SpriteBatch compartido para renderizado
-     */
-    public PauseUI(GameplayState gameplayState, SpriteBatch batch) {
-        this.gameplayState = gameplayState;
+    public PauseUI(PauseState pauseState, SpriteBatch batch) { // Changed constructor parameter
+        this.pauseState = pauseState;
         this.batch = batch;
 
-        // Crear textura blanca programáticamente para el fondo
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
         pixmap.fill();
@@ -64,9 +42,6 @@ public class PauseUI implements InputProcessor {
         loadCustomBitmapFont();
     }
 
-    /**
-     * Carga la fuente personalizada para la interfaz.
-     */
     private void loadCustomBitmapFont() {
         try {
             this.font = new BitmapFont(Gdx.files.internal("fonts/OrangeKid64.fnt"));
@@ -75,20 +50,15 @@ public class PauseUI implements InputProcessor {
         }
     }
 
-    /**
-     * Renderiza el menú de pausa con fondo semi-transparente.
-     */
     public void draw() {
         batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         
         batch.begin();
         
-        // Dibujar fondo semi-transparente sobre toda la pantalla
         batch.setColor(0, 0, 0, 0.7f);
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.setColor(Color.WHITE);
 
-        // Dibujar el menú apropiado según el estado actual
         font.getData().setScale(1.0f);
 
         if (currentState == MenuState.MAIN) {
@@ -102,9 +72,6 @@ public class PauseUI implements InputProcessor {
         batch.end();
     }
 
-    /**
-     * Dibuja las instrucciones de controles en la parte inferior.
-     */
     private void drawControls() {
         String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_CANCEL) + "-Retroceder | " + Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + "-Seleccionar | " + Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + "/" + Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + "-Moverse";
         GlyphLayout layout = new GlyphLayout(font, controlsText);
@@ -115,25 +82,15 @@ public class PauseUI implements InputProcessor {
         font.draw(batch, controlsText, textX, textY);
     }
 
-    /**
-     * Dibuja un menú con las opciones proporcionadas.
-     * @param options Opciones a mostrar
-     * @param startY Posición Y inicial para el primer elemento
-     */
     private void drawMenu(String[] options, float startY) {
         for (int i = 0; i < options.length; i++) {
             drawText(options[i], startY - (i * 80), i == selectedOption);
         }
     }
 
-    /**
-     * Dibuja el menú de confirmación de salida.
-     */
     private void drawConfirmationMenu() {
         float startY = Gdx.graphics.getHeight() / 2f + 80;
-
         drawText("¿Esta seguro?", startY, false);
-        
         for (int i = 0; i < confirmOptions.length; i++) {
             float optionY = startY - ((i + 1) * 80);
             drawText(confirmOptions[i], optionY, i == selectedOption);
@@ -142,21 +99,13 @@ public class PauseUI implements InputProcessor {
 
     private void drawRetryConfirmationMenu() {
         float startY = Gdx.graphics.getHeight() / 2f + 80;
-
         drawText("¿Desea reintentar?", startY, false);
-        
         for (int i = 0; i < confirmOptions.length; i++) {
             float optionY = startY - ((i + 1) * 80);
             drawText(confirmOptions[i], optionY, i == selectedOption);
         }
     }
 
-    /**
-     * Dibuja un texto individual con resaltado de selección.
-     * @param text Texto a dibujar
-     * @param y Posición Y del texto
-     * @param isSelected Indica si el texto está seleccionado
-     */
     private void drawText(String text, float y, boolean isSelected) {
         GlyphLayout layout = new GlyphLayout(font, text);
         float x = (Gdx.graphics.getWidth() - layout.width) / 2f;
@@ -164,12 +113,6 @@ public class PauseUI implements InputProcessor {
         font.draw(batch, text, x, y);
     }
 
-    // === Manejo de entrada ===
-    /**
-     * Maneja la entrada del teclado para la selección de opciones.
-     * @param keycode Código de la tecla presionada.
-     * @return true si la entrada fue procesada.
-     */
     @Override
     public boolean keyDown(int keycode) {
         if (currentState == MenuState.MAIN) {
@@ -182,10 +125,6 @@ public class PauseUI implements InputProcessor {
         return true;
     }
 
-    /**
-     * Maneja la entrada en el menú principal de pausa.
-     * @param keycode Código de la tecla presionada
-     */
     private void handleMainMenuInput(int keycode) {
         if (keycode == GlobalSettings.CONTROL_JUMP) {
             AudioManager.getInstance().playSfx(AudioId.UIChange, null);
@@ -196,7 +135,7 @@ public class PauseUI implements InputProcessor {
         } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
             if (selectedOption == 0) { // Reanudar
                 AudioManager.getInstance().playSfx(AudioId.UICancel, null);
-                gameplayState.resumeGame();
+                pauseState.resumeGame();
             } else if (selectedOption == 1) { // Reintentar
                 AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                 currentState = MenuState.CONFIRM_RETRY;
@@ -208,14 +147,10 @@ public class PauseUI implements InputProcessor {
             }
         } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
             AudioManager.getInstance().playSfx(AudioId.UICancel, null);
-            gameplayState.resumeGame();
+            pauseState.resumeGame();
         }
     }
 
-    /**
-     * Maneja la entrada en el menú de confirmación de salida.
-     * @param keycode Código de la tecla presionada
-     */
     private void handleConfirmExitInput(int keycode) {
         if (keycode == GlobalSettings.CONTROL_JUMP) {
             AudioManager.getInstance().playSfx(AudioId.UIChange, null);
@@ -226,7 +161,7 @@ public class PauseUI implements InputProcessor {
         } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
             if (selectedOption == 0) { // Si
                 AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
-                gameplayState.exitToMainMenu();
+                pauseState.exitToMainMenu();
             } else if (selectedOption == 1) { // No
                 AudioManager.getInstance().playSfx(AudioId.UICancel, null);
                 currentState = MenuState.MAIN;
@@ -249,7 +184,7 @@ public class PauseUI implements InputProcessor {
         } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
             if (selectedOption == 0) { // Si
                 AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
-                gameplayState.restartLevel();
+                pauseState.restartLevel();
             } else if (selectedOption == 1) { // No
                 AudioManager.getInstance().playSfx(AudioId.UICancel, null);
                 currentState = MenuState.MAIN;
@@ -262,16 +197,11 @@ public class PauseUI implements InputProcessor {
         }
     }
 
-    /**
-     * Libera los recursos utilizados por la interfaz.
-     */
     public void dispose() {
         font.dispose();
         backgroundTexture.dispose();
     }
 
-    // === Métodos de InputProcessor no utilizados ===
-    
     @Override public boolean keyUp(int keycode) { return false; }
     @Override public boolean keyTyped(char character) { return false; }
     @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) { return false; }

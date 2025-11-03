@@ -3,20 +3,25 @@ package com.machinehunterdev.game.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.Timer;
 import com.machinehunterdev.game.Character.Character;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class AudioManager {
     private static AudioManager instance;
 
-    private float fadeDuration = 1.0f;
-    private float targetMusicVolume = 1.0f;
     private Music currentMusic;
     private String currentMusicPath;
-    private boolean musicPausedForSfx = false;
+
+    // Sistema de Fade
+    private float normalVolume = 1.0f;
+    private float volumeBeforeFade;
+    private float targetVolume;
+    private float fadeTimer;
+    private float fadeDuration;
+    private boolean isFading;
+    private Runnable onFadeComplete;
 
     private final ObjectMap<AudioId, Sound> sfxMap = new ObjectMap<>();
     private Character player;
@@ -31,13 +36,95 @@ public class AudioManager {
 
     private AudioManager() {}
 
-    public void setPlayer(Character player) {
-        this.player = player;
+    public void update(float delta) {
+        if (isFading && currentMusic != null) {
+            fadeTimer += delta;
+            float progress = Math.min(fadeTimer / fadeDuration, 1.0f);
+            float newVolume = volumeBeforeFade + (targetVolume - volumeBeforeFade) * progress;
+            currentMusic.setVolume(newVolume);
+
+            if (progress >= 1.0f) {
+                isFading = false;
+                if (onFadeComplete != null) {
+                    onFadeComplete.run();
+                    onFadeComplete = null;
+                }
+            }
+        }
     }
 
-    public void setCamera(OrthographicCamera camera) {
-        this.camera = camera;
+    private void startFade(float duration, float targetVol, Runnable onComplete) {
+        if (currentMusic == null) {
+            if (onComplete != null) onComplete.run();
+            return;
+        }
+        this.fadeDuration = Math.max(0.01f, duration);
+        this.targetVolume = targetVol;
+        this.volumeBeforeFade = currentMusic.getVolume();
+        this.fadeTimer = 0;
+        this.isFading = true;
+        this.onFadeComplete = onComplete;
     }
+
+    public void playMusic(String path, boolean loop, boolean fade) {
+        if (currentMusic != null) {
+            if (currentMusicPath != null && currentMusicPath.equals(path)) {
+                return; // No reiniciar la misma música
+            }
+            stopMusic(fade);
+        }
+
+        currentMusic = Gdx.audio.newMusic(Gdx.files.internal(path));
+        currentMusicPath = path;
+        currentMusic.setLooping(loop);
+        
+        if (fade) {
+            currentMusic.setVolume(0);
+            startFade(1.0f, normalVolume, null);
+        } else {
+            currentMusic.setVolume(normalVolume);
+        }
+        currentMusic.play();
+    }
+
+    public void pauseMusic(boolean fade) {
+        if (currentMusic == null) return;
+        if (fade) {
+            startFade(0.5f, 0.2f, null);
+        } else {
+            currentMusic.setVolume(0.2f);
+        }
+    }
+
+    public void resumeMusic(boolean fade) {
+        if (currentMusic == null) return;
+        if (fade) {
+            startFade(0.5f, normalVolume, null);
+        } else {
+            currentMusic.setVolume(normalVolume);
+        }
+    }
+
+    public void stopMusic(boolean fade) {
+        if (currentMusic == null) return;
+        if (fade) {
+            startFade(1.0f, 0.0f, () -> {
+                currentMusic.stop();
+                currentMusic.dispose();
+                currentMusic = null;
+                currentMusicPath = null;
+            });
+        } else {
+            currentMusic.stop();
+            currentMusic.dispose();
+            currentMusic = null;
+            currentMusicPath = null;
+        }
+    }
+
+    // --- SFX Methods ---
+    public void setPlayer(Character player) { this.player = player; }
+    public void setCamera(OrthographicCamera camera) { this.camera = camera; }
 
     public void loadAssets(Array<AudioData> sfxList) {
         for (AudioData data : sfxList) {
@@ -45,18 +132,6 @@ public class AudioManager {
         }
     }
 
-    public Sound getSound(AudioId id) {
-        return sfxMap.get(id);
-    }
-
-    public void dispose() {
-        for (Sound s : sfxMap.values()) s.dispose();
-        if (currentMusic != null) currentMusic.dispose();
-        sfxMap.clear();
-        currentMusic = null;
-    }
-
-    // ✅ playSfx SIN delay automático (recomendado)
     public void playSfx(AudioId id, Character source) {
         playSfx(id, source, 1.0f);
     }
@@ -72,9 +147,7 @@ public class AudioManager {
             float tolerance = 40f;
             float cameraLeft = camera.position.x - camera.viewportWidth / 2 - tolerance;
             float cameraRight = camera.position.x + camera.viewportWidth / 2 + tolerance;
-            float characterX = source.getX();
-
-            if (characterX >= cameraLeft && characterX <= cameraRight) {
+            if (source.getX() >= cameraLeft && source.getX() <= cameraRight) {
                 Sound sound = sfxMap.get(id);
                 if (sound != null) sound.play(volume);
             }
@@ -84,208 +157,16 @@ public class AudioManager {
         }
     }
 
-    // ✅ Si necesitas pausar música, hazlo MANUALMENTE desde tu juego
-    // Pero si quieres automatizarlo, usa este método con CUIDADO
-    public void playSfxWithMusicPause(AudioId id, float durationSeconds, Character source) {
-        playSfxWithMusicPause(id, durationSeconds, source, 1.0f);
+    public Sound getSound(AudioId id) {
+        return sfxMap.get(id);
     }
 
-    public void playSfxWithMusicPause(AudioId id, float durationSeconds, Character source, float volume) {
-        if (source != null && source.isPlayer) {
-            Sound sound = sfxMap.get(id);
-            if (sound != null) sound.play(volume);
-            return;
-        }
-
-        if (camera != null && source != null) {
-            float tolerance = 40f;
-            float cameraLeft = camera.position.x - camera.viewportWidth / 2 - tolerance;
-            float cameraRight = camera.position.x + camera.viewportWidth / 2 + tolerance;
-            float characterX = source.getX();
-
-            if (characterX >= cameraLeft && characterX <= cameraRight) {
-                Sound sound = sfxMap.get(id);
-                if (sound == null) return;
-
-                if (currentMusic != null && currentMusic.isPlaying()) {
-                    currentMusic.pause();
-                    musicPausedForSfx = true;
-
-                    // ✅ Usar Timer correctamente
-                    Timer.schedule(new Timer.Task() {
-                        @Override
-                        public void run() {
-                            if (musicPausedForSfx && currentMusic != null) {
-                                currentMusic.setVolume(0f);
-                                currentMusic.play();
-                                fadeInMusic();
-                                musicPausedForSfx = false;
-                            }
-                        }
-                    }, durationSeconds); // en segundos
-                }
-
-                sound.play(volume);
-            }
-        } else {
-            Sound sound = sfxMap.get(id);
-            if (sound == null) return;
-
-            if (currentMusic != null && currentMusic.isPlaying()) {
-                currentMusic.pause();
-                musicPausedForSfx = true;
-
-                // ✅ Usar Timer correctamente
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        if (musicPausedForSfx && currentMusic != null) {
-                            currentMusic.setVolume(0f);
-                            currentMusic.play();
-                            fadeInMusic();
-                            musicPausedForSfx = false;
-                        }
-                    }
-                }, durationSeconds); // en segundos
-            }
-
-            sound.play(volume);
-        }
-    }
-
-    public String getCurrentMusicPath() {
-        return currentMusicPath;
-    }
-
-    public void playMusic(String path, boolean loop, boolean fade) {
-        Gdx.app.log("AudioManager", "playMusic: " + path + ", loop: " + loop + ", fade: " + fade);
-        if (currentMusic != null && currentMusicPath != null && currentMusicPath.equals(path)) {
-            Gdx.app.log("AudioManager", "playMusic: Same music already playing, returning.");
-            return; // No reiniciar la misma música
-        }
-
+    public void dispose() {
+        for (Sound s : sfxMap.values()) s.dispose();
         if (currentMusic != null) {
-            Gdx.app.log("AudioManager", "playMusic: Stopping current music.");
-            if (fade) {
-                fadeOutMusic(() -> {
-                    currentMusic.dispose();
-                    loadAndPlayNewMusic(path, loop, fade);
-                });
-            } else {
-                currentMusic.stop();
-                currentMusic.dispose();
-                    loadAndPlayNewMusic(path, loop, fade);
-            }
-        } else {
-            Gdx.app.log("AudioManager", "playMusic: No current music, loading new.");
-            loadAndPlayNewMusic(path, loop, fade);
+            currentMusic.dispose();
         }
-    }
-
-    private void loadAndPlayNewMusic(String path, boolean loop, boolean fade) {
-        Gdx.app.log("AudioManager", "loadAndPlayNewMusic: " + path);
-        currentMusic = Gdx.audio.newMusic(Gdx.files.internal(path));
-        currentMusicPath = path;
-        currentMusic.setLooping(loop);
-        targetMusicVolume = 1.0f; // Default to full volume
-        if (fade) {
-            currentMusic.setVolume(0f);
-            currentMusic.play();
-            fadeInMusic();
-        } else {
-            currentMusic.setVolume(targetMusicVolume);
-            currentMusic.play();
-        }
-        Gdx.app.log("AudioManager", "loadAndPlayNewMusic: Music started at volume: " + currentMusic.getVolume());
-    }
-
-    public void pauseMusic(boolean fade) {
-        Gdx.app.log("AudioManager", "pauseMusic: fade: " + fade);
-        if (currentMusic == null || !currentMusic.isPlaying()) return;
-        if (fade) {
-            fadeOutMusic(currentMusic::pause);
-        }
-        else {
-            currentMusic.pause();
-        }
-        Gdx.app.log("AudioManager", "pauseMusic: Music paused.");
-    }
-
-    public void resumeMusic() {
-        Gdx.app.log("AudioManager", "resumeMusic.");
-        if (currentMusic != null && !currentMusic.isPlaying()) {
-            currentMusic.play();
-            restoreMusicVolume();
-        }
-    }
-
-    // --- Fade usando postRunnable SIN delay (solo para bucle de fade) ---
-    private void fadeInMusic() {
-        Gdx.app.log("AudioManager", "fadeInMusic: Starting fade in.");
-        if (currentMusic == null) return;
-        float startVol = currentMusic.getVolume();
-        long startTime = System.currentTimeMillis();
-
-        Runnable fadeTask = new Runnable() {
-            @Override
-            public void run() {
-                if (currentMusic == null) return;
-                float elapsed = (System.currentTimeMillis() - startTime) / 1000f;
-                float t = Math.min(elapsed / fadeDuration, 1.0f);
-                float vol = startVol + (targetMusicVolume - startVol) * t;
-                currentMusic.setVolume(vol);
-                if (t < 1.0f) {
-                    Gdx.app.postRunnable(this); // ✅ Sin delay: se llama en el próximo frame
-                } else {
-                    Gdx.app.log("AudioManager", "fadeInMusic: Fade in complete. Final volume: " + currentMusic.getVolume());
-                }
-            }
-        };
-        Gdx.app.postRunnable(fadeTask);
-    }
-
-    private void fadeOutMusic(Runnable onComplete) {
-        Gdx.app.log("AudioManager", "fadeOutMusic: Starting fade out.");
-        if (currentMusic == null) {
-            if (onComplete != null) onComplete.run();
-            return;
-        }
-        float startVol = currentMusic.getVolume();
-        long startTime = System.currentTimeMillis();
-
-        Runnable fadeTask = new Runnable() {
-            @Override
-            public void run() {
-                if (currentMusic == null) {
-                    if (onComplete != null) onComplete.run();
-                    return;
-                }
-                float elapsed = (System.currentTimeMillis() - startTime) / 1000f;
-                float t = Math.min(elapsed / fadeDuration, 1.0f);
-                float vol = startVol * (1 - t);
-                currentMusic.setVolume(vol);
-                if (t < 1.0f) {
-                    Gdx.app.postRunnable(this);
-                } else {
-                    Gdx.app.log("AudioManager", "fadeOutMusic: Fade out complete. Final volume: " + currentMusic.getVolume());
-                    if (onComplete != null) onComplete.run();
-                }
-            }
-        };
-        Gdx.app.postRunnable(fadeTask);
-    }
-
-    // Getters/setters
-    public void setFadeDuration(float seconds) { this.fadeDuration = seconds; }
-
-    public void restoreMusicVolume() {
-        Gdx.app.log("AudioManager", "restoreMusicVolume: Restoring to targetMusicVolume: " + targetMusicVolume);
-        if (currentMusic != null) {
-            currentMusic.setVolume(targetMusicVolume);
-            Gdx.app.log("AudioManager", "restoreMusicVolume: Current music volume set to: " + currentMusic.getVolume());
-        }
-    }
-    public void setMusicVolume(float volume) {
-        if (currentMusic != null) currentMusic.setVolume(volume);
+        sfxMap.clear();
+        currentMusic = null;
     }
 }

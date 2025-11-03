@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -19,8 +18,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.machinehunterdev.game.Audio.AudioId;
+import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.Character.BaseEnemy;
-import com.machinehunterdev.game.Character.BossEnemy;
 import com.machinehunterdev.game.Character.BossEnemyController;
 import com.machinehunterdev.game.Character.Character;
 import com.machinehunterdev.game.Character.CharacterAnimator;
@@ -44,8 +44,6 @@ import com.machinehunterdev.game.UI.GameplayUI;
 import com.machinehunterdev.game.UI.NextLevelUI;
 import com.machinehunterdev.game.UI.PauseUI;
 import com.machinehunterdev.game.Util.IState;
-import com.machinehunterdev.game.Audio.AudioId;
-import com.machinehunterdev.game.Audio.AudioManager;
 
 public class GameplayState implements IState<GameController> {
     // === DATOS DEL NIVEL ===
@@ -73,8 +71,8 @@ public class GameplayState implements IState<GameController> {
     private List<Dialog> activeNPCDialogues = new ArrayList<>();
 
     // === SISTEMA DE PAUSA ===
-    private boolean isPaused = false;
-    private PauseUI pauseUI;
+
+
     private NextLevelUI nextLevelUI;
     private boolean levelCompleted = false;
     private BitmapFont interactionFont;
@@ -101,17 +99,14 @@ public class GameplayState implements IState<GameController> {
         return state;
     }
 
-    public void resumeGame() {
-        isPaused = false;
-        Gdx.input.setInputProcessor(null);
-    }
+
 
     public void exitToMainMenu() {
         owner.stateMachine.changeState(MainMenuState.instance);
     }
 
     public void restartLevel() {
-        AudioManager.getInstance().pauseMusic(false);
+        AudioManager.getInstance().stopMusic(false);
         owner.stateMachine.changeState(createForLevel(currentLevelFile));
     }
 
@@ -119,7 +114,7 @@ public class GameplayState implements IState<GameController> {
     public void enter(GameController owner) {
         GlobalSettings.currentLevelFile = this.currentLevelFile;
         this.ignoreInputOnFirstFrame = true;
-        isPaused = false;
+
         levelCompleted = false;
         this.owner = owner;
         this.gameBatch = owner.batch;
@@ -132,7 +127,7 @@ public class GameplayState implements IState<GameController> {
             currentLevelFile.equals("Levels/Level 4.json")) {
             AudioManager.getInstance().playMusic("Audio/Soundtrack/NormalBattleTheme.mp3", true, false);
         } else if (currentLevelFile.equals("Levels/Level 3.json") || 
-                   currentLevelFile.equals("Levels/Level 5.json")) {
+            currentLevelFile.equals("Levels/Level 5.json")) {
             AudioManager.getInstance().playMusic("Audio/Soundtrack/BossPhase1.mp3", true, false);
         }
 
@@ -150,7 +145,7 @@ public class GameplayState implements IState<GameController> {
         GlobalSettings.levelWidth = currentLevel.levelWidth; // Establecer el ancho del nivel en GlobalSettings
         dialogManager = new DialogManager(owner, gameBatch);
         gameplayUI = new GameplayUI(gameBatch);
-        pauseUI = new PauseUI(this, gameBatch);
+
         nextLevelUI = new NextLevelUI(this, gameBatch);
         bullets = new ArrayList<>();
         interactionFont = new BitmapFont(Gdx.files.internal("fonts/OrangeKid32.fnt"));
@@ -396,27 +391,17 @@ public class GameplayState implements IState<GameController> {
 
     @Override
     public void execute() {
+        AudioManager.getInstance().update(Gdx.graphics.getDeltaTime());
+
         if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_PAUSE) && !levelCompleted) {
-            isPaused = !isPaused;
-            if (isPaused) {
-                AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
-                AudioManager.getInstance().setMusicVolume(0.5f);
-                Gdx.input.setInputProcessor(pauseUI);
-            } else {
-                AudioManager.getInstance().restoreMusicVolume();
-                Gdx.input.setInputProcessor(null);
-            }
+            owner.stateMachine.push(new PauseState(this));
+            return; // Stop executing the rest of the frame
         }
 
-        if (!isPaused) {
-            updateGameLogic();
-        }
-
+        updateGameLogic();
         drawGameWorld();
 
-        if (isPaused) {
-            pauseUI.draw();
-        } else if (levelCompleted) {
+        if (levelCompleted) {
             nextLevelUI.draw();
         } else {
             if (isDialogActive) {
@@ -679,7 +664,7 @@ public class GameplayState implements IState<GameController> {
         checkLightningCollisions();
     }
 
-    private void drawGameWorld() {
+    public void drawGameWorld() {
         gameBatch.setProjectionMatrix(camera.combined);
         gameBatch.begin();
 
@@ -992,7 +977,7 @@ public class GameplayState implements IState<GameController> {
         
         if (dialogManager != null) dialogManager.dispose();
         if (gameplayUI != null) gameplayUI.dispose();
-        if (pauseUI != null) pauseUI.dispose();
+
         if (nextLevelUI != null) nextLevelUI.dispose();
         if (impactEffectManager != null) impactEffectManager.dispose();
         if (shapeRenderer != null) shapeRenderer.dispose();
