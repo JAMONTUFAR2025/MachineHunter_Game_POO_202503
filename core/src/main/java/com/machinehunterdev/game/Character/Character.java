@@ -609,6 +609,12 @@ public class Character
     public void landOn(float groundY) {
         position.y = groundY;
         velocity.y = 0;
+
+        /* Sonido de aterrizaje para el jugador y el enemigo */
+        if(onGround) return; // Evitar reproducir sonido si ya estaba en el suelo
+        if(isPlayer) AudioManager.getInstance().playSfx(AudioId.PlayerLand, this);
+        else AudioManager.getInstance().playSfx(AudioId.EnemyLand, this);
+
         onGround = true;
 
         if (!isAlive) {

@@ -158,12 +158,14 @@ public class AudioManager {
     }
 
     public void playMusic(String path, boolean loop, boolean fade) {
-        /* De momento esto no se usará, solo con FADE pero no se usa FADE ahorita */
-        // if (currentMusic != null && currentMusicPath != null && currentMusicPath.equals(path)) {
-        //     return; // No reiniciar la misma música
-        // }
+        Gdx.app.log("AudioManager", "playMusic: " + path + ", loop: " + loop + ", fade: " + fade);
+        if (currentMusic != null && currentMusicPath != null && currentMusicPath.equals(path)) {
+            Gdx.app.log("AudioManager", "playMusic: Same music already playing, returning.");
+            return; // No reiniciar la misma música
+        }
 
         if (currentMusic != null) {
+            Gdx.app.log("AudioManager", "playMusic: Stopping current music.");
             if (fade) {
                 fadeOutMusic(() -> {
                     currentMusic.dispose();
@@ -172,14 +174,16 @@ public class AudioManager {
             } else {
                 currentMusic.stop();
                 currentMusic.dispose();
-                loadAndPlayNewMusic(path, loop, fade);
+                    loadAndPlayNewMusic(path, loop, fade);
             }
         } else {
+            Gdx.app.log("AudioManager", "playMusic: No current music, loading new.");
             loadAndPlayNewMusic(path, loop, fade);
         }
     }
 
     private void loadAndPlayNewMusic(String path, boolean loop, boolean fade) {
+        Gdx.app.log("AudioManager", "loadAndPlayNewMusic: " + path);
         currentMusic = Gdx.audio.newMusic(Gdx.files.internal(path));
         currentMusicPath = path;
         currentMusic.setLooping(loop);
@@ -192,25 +196,32 @@ public class AudioManager {
             currentMusic.setVolume(targetMusicVolume);
             currentMusic.play();
         }
+        Gdx.app.log("AudioManager", "loadAndPlayNewMusic: Music started at volume: " + currentMusic.getVolume());
     }
 
     public void pauseMusic(boolean fade) {
+        Gdx.app.log("AudioManager", "pauseMusic: fade: " + fade);
         if (currentMusic == null || !currentMusic.isPlaying()) return;
         if (fade) {
             fadeOutMusic(currentMusic::pause);
-        } else {
+        }
+        else {
             currentMusic.pause();
         }
+        Gdx.app.log("AudioManager", "pauseMusic: Music paused.");
     }
 
     public void resumeMusic() {
+        Gdx.app.log("AudioManager", "resumeMusic.");
         if (currentMusic != null && !currentMusic.isPlaying()) {
             currentMusic.play();
+            restoreMusicVolume();
         }
     }
 
     // --- Fade usando postRunnable SIN delay (solo para bucle de fade) ---
     private void fadeInMusic() {
+        Gdx.app.log("AudioManager", "fadeInMusic: Starting fade in.");
         if (currentMusic == null) return;
         float startVol = currentMusic.getVolume();
         long startTime = System.currentTimeMillis();
@@ -225,6 +236,8 @@ public class AudioManager {
                 currentMusic.setVolume(vol);
                 if (t < 1.0f) {
                     Gdx.app.postRunnable(this); // ✅ Sin delay: se llama en el próximo frame
+                } else {
+                    Gdx.app.log("AudioManager", "fadeInMusic: Fade in complete. Final volume: " + currentMusic.getVolume());
                 }
             }
         };
@@ -232,6 +245,7 @@ public class AudioManager {
     }
 
     private void fadeOutMusic(Runnable onComplete) {
+        Gdx.app.log("AudioManager", "fadeOutMusic: Starting fade out.");
         if (currentMusic == null) {
             if (onComplete != null) onComplete.run();
             return;
@@ -253,6 +267,7 @@ public class AudioManager {
                 if (t < 1.0f) {
                     Gdx.app.postRunnable(this);
                 } else {
+                    Gdx.app.log("AudioManager", "fadeOutMusic: Fade out complete. Final volume: " + currentMusic.getVolume());
                     if (onComplete != null) onComplete.run();
                 }
             }
@@ -264,8 +279,10 @@ public class AudioManager {
     public void setFadeDuration(float seconds) { this.fadeDuration = seconds; }
 
     public void restoreMusicVolume() {
+        Gdx.app.log("AudioManager", "restoreMusicVolume: Restoring to targetMusicVolume: " + targetMusicVolume);
         if (currentMusic != null) {
             currentMusic.setVolume(targetMusicVolume);
+            Gdx.app.log("AudioManager", "restoreMusicVolume: Current music volume set to: " + currentMusic.getVolume());
         }
     }
     public void setMusicVolume(float volume) {

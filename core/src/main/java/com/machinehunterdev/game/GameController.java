@@ -82,10 +82,12 @@ public class GameController extends ApplicationAdapter
         sfxList.add(new AudioData(AudioId.LaserAttack, "Audio/Sfx/LaserAttack.wav"));
         sfxList.add(new AudioData(AudioId.IonAttack, "Audio/Sfx/IonAttack.wav"));
         sfxList.add(new AudioData(AudioId.RailgunAttack, "Audio/Sfx/RailgunAttack.wav"));
+        sfxList.add(new AudioData(AudioId.PlayerLand, "Audio/Sfx/PlayerLand.wav"));
         sfxList.add(new AudioData(AudioId.EnemyJump, "Audio/Sfx/EnemyJump.wav"));
         sfxList.add(new AudioData(AudioId.EnemyHurt, "Audio/Sfx/EnemyHurt.wav"));
         sfxList.add(new AudioData(AudioId.Explosion, "Audio/Sfx/Explosion.wav"));
         sfxList.add(new AudioData(AudioId.EnemyAttack, "Audio/Sfx/EnemyAttack.wav"));
+        sfxList.add(new AudioData(AudioId.EnemyLand, "Audio/Sfx/EnemyLand.wav"));
         sfxList.add(new AudioData(AudioId.BossThunderWarning, "Audio/Sfx/BossThunderWarning.mp3"));
         sfxList.add(new AudioData(AudioId.BossThunderAttack, "Audio/Sfx/BossThunderAttack.mp3"));
         sfxList.add(new AudioData(AudioId.BossSummonWarning, "Audio/Sfx/BossSummonWarning.wav"));

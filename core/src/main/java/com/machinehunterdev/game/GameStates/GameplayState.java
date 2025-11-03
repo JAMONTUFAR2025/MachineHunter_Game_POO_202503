@@ -88,7 +88,9 @@ public class GameplayState implements IState<GameController> {
     private GameController owner;
     private boolean ignoreInputOnFirstFrame = true;
     private boolean isBossPhase2 = false;
+    private boolean bossThunderWarningSoundPlayed = false;
     private boolean bossThunderAttackSoundPlayed = false;
+    private boolean bossSummonWarningSoundPlayed = false;
 
     private GameplayState() {}
 
@@ -726,6 +728,10 @@ public class GameplayState implements IState<GameController> {
                 BossEnemyController controller = (BossEnemyController) ((BaseEnemy) enemy).getController();
                 if (controller.isLightningAttackActive()) {
                     if (controller.isLightningWarning()) {
+                        if (!bossThunderWarningSoundPlayed) {
+                            AudioManager.getInstance().playSfx(AudioId.BossThunderWarning, enemy.getCharacter(), 0.5f);
+                            bossThunderWarningSoundPlayed = true;
+                        }
                         shapeRenderer.setColor(1, 0, 0, 0.8f);
                         float x = controller.getLightningPlayerX();
                         shapeRenderer.rect(x, 32, 40, 448);
@@ -739,13 +745,20 @@ public class GameplayState implements IState<GameController> {
                         shapeRenderer.rect(x, 32, 40, 448);
                     }
                 } else {
+                    bossThunderWarningSoundPlayed = false;
                     bossThunderAttackSoundPlayed = false;
                 }
 
                 if (controller.isSummonWarning()) {
+                    if (!bossSummonWarningSoundPlayed) {
+                        AudioManager.getInstance().playSfx(AudioId.BossSummonWarning, enemy.getCharacter(), 0.5f);
+                        bossSummonWarningSoundPlayed = true;
+                    }
                     shapeRenderer.setColor(Color.BLACK);
                     shapeRenderer.rect(88, 32, 40, 448);
                     shapeRenderer.rect(352, 32, 40, 448);
+                } else {
+                    bossSummonWarningSoundPlayed = false;
                 }
             }
         }

@@ -195,7 +195,6 @@ public class BossEnemyController extends CharacterController {
     private void attackType1(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK1);
-        AudioManager.getInstance().playSfx(AudioId.BossThunderWarning, character, 0.5f);
         if (playerCharacter != null) {
             lightningAttackActive = true;
             lightningAttackTimer = 0f;
@@ -241,7 +240,6 @@ public class BossEnemyController extends CharacterController {
 
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.SUMMON);
-        AudioManager.getInstance().playSfx(AudioId.BossSummonWarning, character, 0.5f);
 
         summonWarningActive = true;
         summonWarningTimer = 0f;
