@@ -1,14 +1,14 @@
 package com.machinehunterdev.game.Character;
 
-import com.badlogic.gdx.Audio;
+import java.util.ArrayList;
+import java.util.Random;
+
 import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.Audio.AudioId;
 import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.Environment.SolidObject;
-import java.util.ArrayList;
-import java.util.Random;
 
 public class BossEnemyController extends CharacterController {
 
@@ -118,9 +118,9 @@ public class BossEnemyController extends CharacterController {
 
         // Return to idle after attack animations
         if ((currentAnimation == CharacterAnimator.AnimationState.ATTACK1 || 
-             currentAnimation == CharacterAnimator.AnimationState.ATTACK2 || 
-             currentAnimation == CharacterAnimator.AnimationState.SUMMON) && 
-             character.characterAnimator.isAnimationFinished(currentAnimation)) {
+            currentAnimation == CharacterAnimator.AnimationState.ATTACK2 || 
+            currentAnimation == CharacterAnimator.AnimationState.SUMMON) && 
+            character.characterAnimator.isAnimationFinished(currentAnimation)) {
             
             character.isPerformingSpecialAttack = false;
             if (isPhaseTwo) {
@@ -181,7 +181,6 @@ public class BossEnemyController extends CharacterController {
                 attackType1(bullets, playerCharacter, enemyCount);
                 break;
             case 1:
-                AudioManager.getInstance().playSfx(AudioId.EnemyAttack, character);
                 attackType2(bullets, playerCharacter, enemyCount);
                 break;
             case 2:
@@ -195,6 +194,7 @@ public class BossEnemyController extends CharacterController {
     private void attackType1(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK1);
+        AudioManager.getInstance().playSfx(AudioId.BossThunderWarning, character, 0.5f);
         if (playerCharacter != null) {
             lightningAttackActive = true;
             lightningAttackTimer = 0f;
@@ -205,6 +205,7 @@ public class BossEnemyController extends CharacterController {
     private void attackType2(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK2);
+        AudioManager.getInstance().playSfx(AudioId.LaserAttack, character);
         if (playerCharacter == null) return;
 
         Vector2 bossTop = new Vector2(character.position.x + character.getWidth() / 2, character.position.y + character.getHeight());
@@ -240,6 +241,7 @@ public class BossEnemyController extends CharacterController {
 
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.SUMMON);
+        AudioManager.getInstance().playSfx(AudioId.BossSummonWarning, character, 0.5f);
 
         summonWarningActive = true;
         summonWarningTimer = 0f;
