@@ -15,6 +15,7 @@ public class AudioManager {
     private float fadeDuration = 1.0f;
     private float originalMusicVolume = 1.0f;
     private Music currentMusic;
+    private String currentMusicPath;
     private boolean musicPausedForSfx = false;
 
     private final ObjectMap<AudioId, Sound> sfxMap = new ObjectMap<>();
@@ -57,9 +58,13 @@ public class AudioManager {
 
     // ✅ playSfx SIN delay automático (recomendado)
     public void playSfx(AudioId id, Character source) {
+        playSfx(id, source, 1.0f);
+    }
+
+    public void playSfx(AudioId id, Character source, float volume) {
         if (source != null && source.isPlayer) {
             Sound sound = sfxMap.get(id);
-            if (sound != null) sound.play();
+            if (sound != null) sound.play(volume);
             return;
         }
 
@@ -71,20 +76,24 @@ public class AudioManager {
 
             if (characterX >= cameraLeft && characterX <= cameraRight) {
                 Sound sound = sfxMap.get(id);
-                if (sound != null) sound.play();
+                if (sound != null) sound.play(volume);
             }
         } else {
             Sound sound = sfxMap.get(id);
-            if (sound != null) sound.play();
+            if (sound != null) sound.play(volume);
         }
     }
 
     // ✅ Si necesitas pausar música, hazlo MANUALMENTE desde tu juego
     // Pero si quieres automatizarlo, usa este método con CUIDADO
     public void playSfxWithMusicPause(AudioId id, float durationSeconds, Character source) {
+        playSfxWithMusicPause(id, durationSeconds, source, 1.0f);
+    }
+
+    public void playSfxWithMusicPause(AudioId id, float durationSeconds, Character source, float volume) {
         if (source != null && source.isPlayer) {
             Sound sound = sfxMap.get(id);
-            if (sound != null) sound.play();
+            if (sound != null) sound.play(volume);
             return;
         }
 
@@ -116,7 +125,7 @@ public class AudioManager {
                     }, durationSeconds); // en segundos
                 }
 
-                sound.play();
+                sound.play(volume);
             }
         } else {
             Sound sound = sfxMap.get(id);
@@ -140,11 +149,19 @@ public class AudioManager {
                 }, durationSeconds); // en segundos
             }
 
-            sound.play();
+            sound.play(volume);
         }
     }
 
+    public String getCurrentMusicPath() {
+        return currentMusicPath;
+    }
+
     public void playMusic(String path, boolean loop, boolean fade) {
+        if (currentMusic != null && currentMusicPath != null && currentMusicPath.equals(path)) {
+            return; // No reiniciar la misma música
+        }
+
         if (currentMusic != null) {
             if (fade) {
                 fadeOutMusic(() -> {
@@ -163,6 +180,7 @@ public class AudioManager {
 
     private void loadAndPlayNewMusic(String path, boolean loop, boolean fade) {
         currentMusic = Gdx.audio.newMusic(Gdx.files.internal(path));
+        currentMusicPath = path;
         currentMusic.setLooping(loop);
         originalMusicVolume = 1.0f;
         if (fade) {

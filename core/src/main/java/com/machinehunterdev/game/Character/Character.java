@@ -28,6 +28,7 @@ public class Character
     
     /** Salud actual del personaje */
     public int health;
+    public int maxHealth;
     
     /** Dimensiones por defecto del personaje */
     public int width = 32;
@@ -143,6 +144,7 @@ public class Character
      */
     public Character(int health, CharacterAnimator animator, Texture fallbackTexture, float x, float y, boolean isPlayer) {
         this.health = health;
+        this.maxHealth = health;
         this.characterAnimator = animator;
         this.fallbackTexture = fallbackTexture;
         this.position = new Vector2(x, y);
@@ -712,6 +714,7 @@ public class Character
     }
 
     public int getHealth() { return health; }
+    public int getMaxHealth() { return maxHealth; }
     public boolean isMoving() { return isMoving; }
     public boolean isSeeingRight() { return isSeeingRight; }
     public boolean isAttacking() { return isAttacking; }

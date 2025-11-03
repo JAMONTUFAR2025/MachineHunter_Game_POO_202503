@@ -87,6 +87,7 @@ public class GameplayState implements IState<GameController> {
     // === CONTROL DE ESTADO ===
     private GameController owner;
     private boolean ignoreInputOnFirstFrame = true;
+    private boolean isBossPhase2 = false;
 
     private GameplayState() {}
 
@@ -120,6 +121,17 @@ public class GameplayState implements IState<GameController> {
         this.gameBatch = owner.batch;
         this.camera = owner.camera;
         AudioManager.getInstance().setCamera(this.camera);
+
+        if (currentLevelFile.equals("Levels/Level 0.json") || 
+            currentLevelFile.equals("Levels/Level 1.json") || 
+            currentLevelFile.equals("Levels/Level 2.json") || 
+            currentLevelFile.equals("Levels/Level 4.json")) {
+            //AudioManager.getInstance().playMusic("Audio/Soundtrack/NormalLevelBattleTheme.mp3", true, true);
+        } else if (currentLevelFile.equals("Levels/Level 3.json") || 
+                   currentLevelFile.equals("Levels/Level 5.json")) {
+            AudioManager.getInstance().playMusic("Audio/Soundtrack/BossPhase1.mp3", true, true);
+        }
+
         loadLevel(currentLevelFile);
     }
 
@@ -415,6 +427,19 @@ public class GameplayState implements IState<GameController> {
             playerCharacter.characterAnimator = null; 
             GameOverState.setPlayerAnimator(animator);
             owner.stateMachine.changeState(GameOverState.instance);
+        }
+
+        if (!isBossPhase2 && (currentLevelFile.equals("Levels/Level 3.json") || currentLevelFile.equals("Levels/Level 5.json"))) {
+            for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+                if (enemy instanceof com.machinehunterdev.game.Character.BossEnemy) {
+                    Character boss = enemy.getCharacter();
+                    if (boss.getHealth() <= boss.getMaxHealth() / 2) {
+                        AudioManager.getInstance().playMusic("Audio/Soundtrack/BossPhase2.mp3", true, true);
+                        isBossPhase2 = true;
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -843,7 +868,7 @@ public class GameplayState implements IState<GameController> {
                             if (!bullet.hasHit(enemyCharacter)) {
                                 enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
                                 if (enemyCharacter.isAlive()) {
-                                    AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter);
+                                    AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter, 0.5f);
                                 } else {
                                     AudioManager.getInstance().playSfx(AudioId.Explosion, enemyCharacter);
                                 }
@@ -853,7 +878,7 @@ public class GameplayState implements IState<GameController> {
                         } else {
                             enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
                             if (enemyCharacter.isAlive()) {
-                                AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter);
+                                AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter, 0.5f);
                             } else {
                                 AudioManager.getInstance().playSfx(AudioId.Explosion, enemyCharacter);
                             }
@@ -890,6 +915,7 @@ public class GameplayState implements IState<GameController> {
                 if (controller.isLightningStriking()) {
                     Rectangle lightningBounds = new Rectangle(controller.getLightningPlayerX(), 32, 40, 448);
                                             if (DamageSystem.canTakeDamage(playerCharacter) && playerCharacter.isAlive() && lightningBounds.overlaps(playerCharacter.getBounds())) {
+                                                AudioManager.getInstance().playSfx(AudioId.PlayerHurt, playerCharacter);
                                                 DamageSystem.applyContactDamage(playerCharacter, enemy.getCharacter(), 1);
                                                 impactEffectManager.createImpact(playerCharacter.position.x + playerCharacter.getWidth() / 2, playerCharacter.position.y + playerCharacter.getHeight() / 2, WeaponType.PATROLLER);
                                             }                }
@@ -919,6 +945,7 @@ public class GameplayState implements IState<GameController> {
 
     @Override
     public void exit() {
+        AudioManager.getInstance().pauseMusic(true);
         disposeTexture(backgroundTexture);
         disposeTexture(blackTexture);
         disposeTexture(groundTexture);
