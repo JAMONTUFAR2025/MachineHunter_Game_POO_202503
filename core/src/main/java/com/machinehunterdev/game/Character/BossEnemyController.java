@@ -205,7 +205,7 @@ public class BossEnemyController extends CharacterController {
     private void attackType2(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK2);
-        AudioManager.getInstance().playSfx(AudioId.LaserAttack, character);
+        AudioManager.getInstance().playSfx(AudioId.BossThunderAttack, character);
         if (playerCharacter == null) return;
 
         Vector2 bossTop = new Vector2(character.position.x + character.getWidth() / 2, character.position.y + character.getHeight());

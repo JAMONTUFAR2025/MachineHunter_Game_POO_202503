@@ -15,7 +15,7 @@ public class AudioManager {
     private String currentMusicPath;
 
     // Sistema de Fade
-    private float normalVolume = 0.0f;
+    private float normalVolume = 1.0f;
     private float volumeBeforeFade;
     private float targetVolume;
     private float fadeTimer;
