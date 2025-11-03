@@ -21,9 +21,11 @@ public class BossEnemyController extends CharacterController {
     private boolean lightningAttackActive = false;
     private float lightningAttackTimer = 0f;
     private float lightningPlayerX = 0f;
+    private int previousFlashCount = -1;
 
     private boolean summonWarningActive = false;
     private float summonWarningTimer = 0f;
+    private int previousSummonFlashCount = -1;
     private EnemyType pendingEnemyToSummon = null;
 
     private EnemyType enemyToSummon = null;
@@ -117,11 +119,11 @@ public class BossEnemyController extends CharacterController {
         }
 
         // Return to idle after attack animations
-        if ((currentAnimation == CharacterAnimator.AnimationState.ATTACK1 || 
-            currentAnimation == CharacterAnimator.AnimationState.ATTACK2 || 
-            currentAnimation == CharacterAnimator.AnimationState.SUMMON) && 
+        if ((currentAnimation == CharacterAnimator.AnimationState.ATTACK1 ||
+            currentAnimation == CharacterAnimator.AnimationState.ATTACK2 ||
+            currentAnimation == CharacterAnimator.AnimationState.SUMMON) &&
             character.characterAnimator.isAnimationFinished(currentAnimation)) {
-            
+
             character.isPerformingSpecialAttack = false;
             if (isPhaseTwo) {
                 character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE_RAGE);
@@ -131,22 +133,47 @@ public class BossEnemyController extends CharacterController {
         }
 
         if (lightningAttackActive) {
+            float oldTimer = lightningAttackTimer;
             lightningAttackTimer += delta;
+
+            float warningDuration = isPhaseTwo ? 1.2f : 1.6f;
+            int currentFlashCount = (int) (lightningAttackTimer / 0.2f);
+
+            if (currentFlashCount > previousFlashCount && currentFlashCount % 2 == 0 && lightningAttackTimer < warningDuration) {
+                AudioManager.getInstance().playSfx(AudioId.BossThunderWarning, character, 0.75f);
+            }
+            previousFlashCount = currentFlashCount;
+
+            if (oldTimer < warningDuration && lightningAttackTimer >= warningDuration) {
+                AudioManager.getInstance().playSfx(AudioId.BossThunderAttack, character);
+            }
 
             float lightningDuration = isPhaseTwo ? 1.7f : 2.1f; // 3 flashes (1.2s) + 0.5s strike OR 4 flashes (1.6s) + 0.5s strike
 
             if (lightningAttackTimer >= lightningDuration) {
                 lightningAttackActive = false;
+                previousFlashCount = -1;
             }
         }
 
         if (summonWarningActive) {
+            float oldTimer = summonWarningTimer;
             summonWarningTimer += delta;
-            if (summonWarningTimer >= 1.2f) {
+
+            float warningDuration = 1.2f;
+            int currentFlashCount = (int) (summonWarningTimer / 0.2f);
+
+            if (currentFlashCount > previousSummonFlashCount && currentFlashCount % 2 == 0 && summonWarningTimer < warningDuration) {
+                AudioManager.getInstance().playSfx(AudioId.BossSummonWarning, character, 0.75f);
+            }
+            previousSummonFlashCount = currentFlashCount;
+
+            if (oldTimer < warningDuration && summonWarningTimer >= warningDuration) {
                 AudioManager.getInstance().playSfx(AudioId.BossSummonAttack, character);
                 enemyToSummon = pendingEnemyToSummon;
                 summonWarningActive = false;
                 pendingEnemyToSummon = null;
+                previousSummonFlashCount = -1;
             }
         }
 
@@ -190,22 +217,21 @@ public class BossEnemyController extends CharacterController {
                 break;
         }
     }
-        
+
     private void attackType1(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK1);
-        AudioManager.getInstance().playSfx(AudioId.BossThunderWarning, character, 0.5f);
         if (playerCharacter != null) {
             lightningAttackActive = true;
             lightningAttackTimer = 0f;
             lightningPlayerX = playerCharacter.position.x;
         }
     }
-    
+
     private void attackType2(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK2);
-        AudioManager.getInstance().playSfx(AudioId.BossThunderAttack, character);
+        AudioManager.getInstance().playSfx(AudioId.EnemyAttack, character); // No cambiar esto
         if (playerCharacter == null) return;
 
         Vector2 bossTop = new Vector2(character.position.x + character.getWidth() / 2, character.position.y + character.getHeight());
@@ -241,7 +267,6 @@ public class BossEnemyController extends CharacterController {
 
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.SUMMON);
-        AudioManager.getInstance().playSfx(AudioId.BossSummonWarning, character, 0.5f);
 
         summonWarningActive = true;
         summonWarningTimer = 0f;

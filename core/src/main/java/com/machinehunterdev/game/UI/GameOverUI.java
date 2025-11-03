@@ -58,6 +58,7 @@ public class GameOverUI implements InputProcessor {
     private boolean deathMessageFinished = false;
     private boolean showDeathMessage = false;
     private boolean showOptions = false;
+    private boolean musicStarted = false;
 
     private boolean showContent = false;
 
@@ -155,6 +156,10 @@ public class GameOverUI implements InputProcessor {
                 if (optionsTimer > 1.5f) { // Changed delay to 1.5 seconds
                     showDeathMessage = false;
                     showOptions = true;
+                    if (!musicStarted) {
+                        AudioManager.getInstance().playMusic("Audio/Soundtrack/ChillTheme.mp3", true, false);
+                        musicStarted = true;
+                    }
                 }
             }
 

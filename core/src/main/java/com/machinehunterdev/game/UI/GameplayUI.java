@@ -55,9 +55,9 @@ public class GameplayUI {
         laserIcon = new Texture(Gdx.files.internal("UI/LaserIcon.png"));
         ionIcon = new Texture(Gdx.files.internal("UI/IonIcon.png"));
         railgunIcon = new Texture(Gdx.files.internal("UI/RailgunIcon.png"));
-        heartTexture = new Texture(Gdx.files.internal("UI/corazon_0001.png"));
-        noHeartTexture = new Texture(Gdx.files.internal("UI/corazon_0002.png"));
-        pauseIcon = new Texture(Gdx.files.internal("UI/pausa ui.png"));
+        heartTexture = new Texture(Gdx.files.internal("UI/Heart.png"));
+        noHeartTexture = new Texture(Gdx.files.internal("UI/Heartbroken.png"));
+        pauseIcon = new Texture(Gdx.files.internal("UI/PauseIcon.png"));
     }
 
     /**

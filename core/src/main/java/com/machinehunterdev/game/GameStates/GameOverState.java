@@ -59,6 +59,9 @@ public class GameOverState implements IState<GameController> {
         Gdx.input.setInputProcessor(gameOverUI);
         backgroundTexture = new Texture("Fondos/GameOverBackground.png");
 
+        // Stop any playing music immediately
+        AudioManager.getInstance().stopMusic(false);
+
         // Inicializar temporizadores y estados
         gameOverTextTimer = 0f;
         dialogueTimer = 0f;
@@ -110,7 +113,6 @@ public class GameOverState implements IState<GameController> {
             gameOverUI.setDialogueTimer(dialogueTimer);
             if (gameOverUI.isDeathMessageFinished()) {
                 isDialogueTypingFinished = true;
-                AudioManager.getInstance().playMusic("Audio/Soundtrack/ChillTheme.mp3", true, true);
             }
         }
     }

@@ -21,7 +21,7 @@ public class PauseState implements IState<GameController> {
         this.owner = owner;
         this.pauseUI = new PauseUI(this, owner.batch);
         Gdx.input.setInputProcessor(pauseUI);
-        AudioManager.getInstance().pauseMusic(true);
+        AudioManager.getInstance().pauseMusic(false);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class PauseState implements IState<GameController> {
 
     @Override
     public void exit() {
-        AudioManager.getInstance().resumeMusic(true);
+        AudioManager.getInstance().resumeMusic(false);
         Gdx.input.setInputProcessor(null);
         if (pauseUI != null) {
             pauseUI.dispose();

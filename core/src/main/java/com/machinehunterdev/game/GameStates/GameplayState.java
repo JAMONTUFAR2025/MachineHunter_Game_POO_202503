@@ -100,11 +100,13 @@ public class GameplayState implements IState<GameController> {
 
 
     public void exitToMainMenu() {
+        owner.stateMachine.pop(); // Quitamos pause state si estamos en pausa
         owner.stateMachine.changeState(MainMenuState.instance);
     }
 
     public void restartLevel() {
         AudioManager.getInstance().stopMusic(false);
+        owner.stateMachine.pop(); // Quitamos pause state si estamos en pausa
         owner.stateMachine.changeState(createForLevel(currentLevelFile));
     }
 
@@ -713,21 +715,18 @@ public class GameplayState implements IState<GameController> {
                     if (controller.isLightningWarning()) {
                         shapeRenderer.setColor(1, 0, 0, 0.8f);
                         float x = controller.getLightningPlayerX();
-                        shapeRenderer.rect(x, 32, 40, 448);
+                        shapeRenderer.rect(x, 32, 40, 448); // Ajustar para 32 de ancho
                     } else if (controller.isLightningStriking()) {
                         shapeRenderer.setColor(Color.YELLOW);
                         float x = controller.getLightningPlayerX();
-                        shapeRenderer.rect(x, 32, 40, 448);
+                        shapeRenderer.rect(x, 32, 40, 448); // Ajustar para 32 de ancho
                     }
-                } else {
-
                 }
 
                 if (controller.isSummonWarning()) {
                     shapeRenderer.setColor(Color.BLACK);
-                    shapeRenderer.rect(88, 32, 40, 448);
-                    shapeRenderer.rect(352, 32, 40, 448);
-                } else {
+                    shapeRenderer.rect(88, 32, 40, 448); // Ajustar para 32 de ancho
+                    shapeRenderer.rect(352, 32, 40, 448); // Ajustar para 32 de ancho
                 }
             }
         }
@@ -868,7 +867,7 @@ public class GameplayState implements IState<GameController> {
                                         enemiesHitThisFrame.add(enemyCharacter);
                                     }
                                 } else {
-                                    AudioManager.getInstance().playSfx(AudioId.Explosion, enemyCharacter);
+                                    handleEnemyDeath(enemy, enemyCharacter);
                                 }
                                 bullet.addHitEnemy(enemyCharacter);
                                 impactEffectManager.createImpact(bullet.position.x, bullet.position.y, bullet.getWeaponType());
@@ -881,16 +880,33 @@ public class GameplayState implements IState<GameController> {
                                     enemiesHitThisFrame.add(enemyCharacter);
                                 }
                             } else {
-                                AudioManager.getInstance().playSfx(AudioId.Explosion, enemyCharacter);
+                                handleEnemyDeath(enemy, enemyCharacter);
                             }
                             impactEffectManager.createImpact(bullet.position.x, bullet.position.y, bullet.getWeaponType());
                             bullets.remove(i);
                             bullet.dispose();
-                            break; 
+                            break;
                         }
                     }
                 }
             }
+        }
+    }
+
+    private void handleEnemyDeath(com.machinehunterdev.game.Character.IEnemy enemy, Character enemyCharacter) {
+        if (enemy.getType() == EnemyType.BOSS_GEMINI || enemy.getType() == EnemyType.BOSS_CHATGPT) {
+            AudioManager.getInstance().playSfx(AudioId.BossDeath, enemyCharacter);
+
+            // Eliminar a todos los enemigos restantes al morir el jefe
+            for (com.machinehunterdev.game.Character.IEnemy remainingEnemy : enemyManager.getEnemies()) {
+                // Verifica que el enemigo esté vivo y no sea el jefe que acaba de morir
+                if (remainingEnemy.getCharacter().isAlive() && remainingEnemy != enemy) {
+                    remainingEnemy.getCharacter().takeDamageWithoutVulnerability(remainingEnemy.getCharacter().getHealth());
+                    AudioManager.getInstance().playSfx(AudioId.Explosion, remainingEnemy.getCharacter());
+                }
+            }
+        } else {
+            AudioManager.getInstance().playSfx(AudioId.Explosion, enemyCharacter);
         }
     }
 
