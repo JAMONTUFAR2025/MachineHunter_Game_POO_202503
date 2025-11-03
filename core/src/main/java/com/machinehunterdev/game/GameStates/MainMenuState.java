@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.UI.MainMenuUI;
 import com.machinehunterdev.game.Util.IState;
+import com.machinehunterdev.game.Audio.AudioManager;
 
 /**
  * Estado del menú principal del juego.
@@ -43,6 +44,7 @@ public class MainMenuState implements IState<GameController>{
         SpriteBatch batch = new SpriteBatch();
         this.menuUI = new MainMenuUI(batch, owner);
         Gdx.input.setInputProcessor(this.menuUI);
+        AudioManager.getInstance().playMusic("Audio/Soundtrack/MainMenu.mp3", true, false);
     }
 
     /**
@@ -63,5 +65,6 @@ public class MainMenuState implements IState<GameController>{
     public void exit() 
     {
         Gdx.input.setInputProcessor(null);
+        AudioManager.getInstance().pauseMusic(false);
     }
 }

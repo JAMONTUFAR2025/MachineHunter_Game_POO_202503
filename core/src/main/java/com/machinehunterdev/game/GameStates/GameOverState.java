@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.GameController;
+import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.UI.GameOverUI;
 import com.machinehunterdev.game.Util.IState;
 
@@ -109,6 +110,7 @@ public class GameOverState implements IState<GameController> {
             gameOverUI.setDialogueTimer(dialogueTimer);
             if (gameOverUI.isDeathMessageFinished()) {
                 isDialogueTypingFinished = true;
+                AudioManager.getInstance().playMusic("Audio/Soundtrack/ChillTheme.mp3", true, true);
             }
         }
     }
@@ -118,6 +120,7 @@ public class GameOverState implements IState<GameController> {
      */
     @Override
     public void exit() {
+        AudioManager.getInstance().pauseMusic(false);
         if (gameOverUI != null) {
             gameOverUI.dispose();
         }

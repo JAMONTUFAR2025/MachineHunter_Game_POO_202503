@@ -175,6 +175,8 @@ public class NameInputUI implements InputProcessor {
                     if (playerName.length() > 0) {
                         AudioManager.getInstance().playSfx(AudioId.UICancel, null);
                         playerName.setLength(playerName.length() - 1);
+                    } else {
+                        AudioManager.getInstance().playSfx(AudioId.NotAvailable, null);
                     }
                 }
                 break;
@@ -186,7 +188,7 @@ public class NameInputUI implements InputProcessor {
                     AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                     if (tutorialConfirmSelection == 0) { // Sí
                         // Cargar nivel 0 (tutorial)
-                        GameplayState tutorial = GameplayState.createForLevel("Levels/Level 4.json");
+                        GameplayState tutorial = GameplayState.createForLevel("Levels/Level 0.json");
                         gameController.stateMachine.changeState(tutorial);
                     } else { // No
                         // Cargar nivel 1
@@ -223,6 +225,8 @@ public class NameInputUI implements InputProcessor {
             if (playerName.length() < 15 && (java.lang.Character.isLetterOrDigit(character) || character == ' ')) {
                 playerName.append(character);
                 AudioManager.getInstance().playSfx(AudioId.UIChange, null);
+            } else if (playerName.length() >= 15) {
+                AudioManager.getInstance().playSfx(AudioId.NotAvailable, null);
             }
         }
         return true;

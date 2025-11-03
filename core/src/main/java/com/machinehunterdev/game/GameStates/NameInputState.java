@@ -10,6 +10,7 @@ import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.UI.NameInputUI;
 import com.machinehunterdev.game.Util.IState;
+import com.machinehunterdev.game.Audio.AudioManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +67,7 @@ public class NameInputState implements IState<GameController> {
         float charX = (Gdx.graphics.getWidth() / 2f) - (playerIdleFrames.get(0).getWidth() / 2f);
         float charY = (Gdx.graphics.getHeight() / 2f) - (playerIdleFrames.get(0).getHeight() / 2f);
         playerCharacter = new Character(0, playerAnimator, charX, charY);
+        AudioManager.getInstance().playMusic("Audio/Soundtrack/ChillTheme.mp3", true, false);
     }
 
     /**
@@ -102,6 +104,7 @@ public class NameInputState implements IState<GameController> {
             backgroundTexture.dispose();
         }
         Gdx.input.setInputProcessor(null);
+        AudioManager.getInstance().pauseMusic(false);
     }
 
     /**

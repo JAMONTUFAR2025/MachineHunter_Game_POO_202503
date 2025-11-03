@@ -357,6 +357,7 @@ public class GameOverUI implements InputProcessor {
                 } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
                     if (selected == 0) { // Reintentar
                         AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
+                        AudioManager.getInstance().pauseMusic(false);
                         GameplayState currentLevel = GameplayState.createForLevel(com.machinehunterdev.game.Gameplay.GlobalSettings.currentLevelFile);
                         gameController.stateMachine.changeState(currentLevel);
                     } else if (selected == 1) { // Salir

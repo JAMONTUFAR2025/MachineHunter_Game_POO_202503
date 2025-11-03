@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.UI.CreditUI;
 import com.machinehunterdev.game.Util.IState;
+import com.machinehunterdev.game.Audio.AudioManager;
 
 public class CreditState implements IState<GameController> {
 
@@ -20,6 +21,7 @@ public class CreditState implements IState<GameController> {
         SpriteBatch batch = new SpriteBatch();
         this.creditUI = new CreditUI(batch, owner);
         Gdx.input.setInputProcessor(this.creditUI);
+        AudioManager.getInstance().playMusic("Audio/Soundtrack/Credits.mp3", true, false);
     }
 
     @Override
@@ -35,5 +37,6 @@ public class CreditState implements IState<GameController> {
         if (creditUI != null) {
             creditUI.dispose();
         }
+        AudioManager.getInstance().pauseMusic(false);
     }
 }

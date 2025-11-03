@@ -55,16 +55,13 @@ public class PlayerController extends CharacterController {
      * @param bullets Lista de balas activas para disparar
      */
     private void handleInput(ArrayList<Bullet> bullets) {
-        // Cambio de armas con teclas numéricas (mientras no este atacando)
-        if (Gdx.input.isKeyJustPressed(GlobalSettings.CHANGE_WEAPON_LASER) && !character.isAttacking) {
-            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
-            character.switchWeapon(WeaponType.LASER);
-        } else if (Gdx.input.isKeyJustPressed(GlobalSettings.CHANGE_WEAPON_ION) && !character.isAttacking) {
-            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
-            character.switchWeapon(WeaponType.ION);
-        } else if (Gdx.input.isKeyJustPressed(GlobalSettings.CHANGE_WEAPON_RAILGUN) && !character.isAttacking) {
-            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
-            character.switchWeapon(WeaponType.RAILGUN);
+        // Cambio de armas con teclas numéricas
+        if (Gdx.input.isKeyJustPressed(GlobalSettings.CHANGE_WEAPON_LASER)) {
+            handleWeaponSwitch(WeaponType.LASER);
+        } else if (Gdx.input.isKeyJustPressed(GlobalSettings.CHANGE_WEAPON_ION)) {
+            handleWeaponSwitch(WeaponType.ION);
+        } else if (Gdx.input.isKeyJustPressed(GlobalSettings.CHANGE_WEAPON_RAILGUN)) {
+            handleWeaponSwitch(WeaponType.RAILGUN);
         }
 
         // Ejecucion al presionar la barra espaciadora mientras este en el suelo
@@ -120,6 +117,21 @@ public class PlayerController extends CharacterController {
         if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_JUMP)) {
             character.jump();
         }
+    }
+
+    private void handleWeaponSwitch(WeaponType newWeapon) {
+        if (character.isAttacking() || character.isInvulnerable()) {
+            AudioManager.getInstance().playSfx(AudioId.NotAvailable, null);
+            return;
+        }
+
+        if (character.getCurrentWeapon() == newWeapon) {
+            AudioManager.getInstance().playSfx(AudioId.NotAvailable, null);
+            return;
+        }
+
+        character.switchWeapon(newWeapon);
+        AudioManager.getInstance().playSfx(AudioId.UIChange, null);
     }
 
     /**

@@ -13,6 +13,7 @@ import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Util.IState;
+import com.machinehunterdev.game.Audio.AudioManager;
 
 /**
  * Estado del juego dedicado exclusivamente a mostrar diálogos.
@@ -97,6 +98,10 @@ public class DialogState implements IState<GameController>, InputProcessor {
 
         // Establece esta clase para que escuche los eventos de input (teclado, mouse)
         Gdx.input.setInputProcessor(this);
+
+        if (isFlashback) {
+            AudioManager.getInstance().playMusic("Audio/Soundtrack/Flashback.mp3", true, false);
+        }
     }
 
     /**
@@ -121,6 +126,9 @@ public class DialogState implements IState<GameController>, InputProcessor {
     public void exit() {
         dialogManager.dispose(); // Libera la fuente (BitmapFont), etc.
         Gdx.input.setInputProcessor(null); // Deja de escuchar eventos de input
+        if (isFlashback) {
+            AudioManager.getInstance().pauseMusic(false);
+        }
     }
 
     // --- Métodos de la interfaz InputProcessor ---

@@ -88,6 +88,7 @@ public class GameplayState implements IState<GameController> {
     private GameController owner;
     private boolean ignoreInputOnFirstFrame = true;
     private boolean isBossPhase2 = false;
+    private boolean bossThunderAttackSoundPlayed = false;
 
     private GameplayState() {}
 
@@ -108,6 +109,7 @@ public class GameplayState implements IState<GameController> {
     }
 
     public void restartLevel() {
+        AudioManager.getInstance().pauseMusic(false);
         owner.stateMachine.changeState(createForLevel(currentLevelFile));
     }
 
@@ -126,10 +128,10 @@ public class GameplayState implements IState<GameController> {
             currentLevelFile.equals("Levels/Level 1.json") || 
             currentLevelFile.equals("Levels/Level 2.json") || 
             currentLevelFile.equals("Levels/Level 4.json")) {
-            //AudioManager.getInstance().playMusic("Audio/Soundtrack/NormalLevelBattleTheme.mp3", true, true);
+            AudioManager.getInstance().playMusic("Audio/Soundtrack/NormalBattleTheme.mp3", true, false);
         } else if (currentLevelFile.equals("Levels/Level 3.json") || 
                    currentLevelFile.equals("Levels/Level 5.json")) {
-            AudioManager.getInstance().playMusic("Audio/Soundtrack/BossPhase1.mp3", true, true);
+            AudioManager.getInstance().playMusic("Audio/Soundtrack/BossPhase1.mp3", true, false);
         }
 
         loadLevel(currentLevelFile);
@@ -396,8 +398,10 @@ public class GameplayState implements IState<GameController> {
             isPaused = !isPaused;
             if (isPaused) {
                 AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
+                AudioManager.getInstance().setMusicVolume(0.5f);
                 Gdx.input.setInputProcessor(pauseUI);
             } else {
+                AudioManager.getInstance().restoreMusicVolume();
                 Gdx.input.setInputProcessor(null);
             }
         }
@@ -434,7 +438,7 @@ public class GameplayState implements IState<GameController> {
                 if (enemy instanceof com.machinehunterdev.game.Character.BossEnemy) {
                     Character boss = enemy.getCharacter();
                     if (boss.getHealth() <= boss.getMaxHealth() / 2) {
-                        AudioManager.getInstance().playMusic("Audio/Soundtrack/BossPhase2.mp3", true, true);
+                        AudioManager.getInstance().playMusic("Audio/Soundtrack/BossPhase2.mp3", true, false);
                         isBossPhase2 = true;
                         break;
                     }
@@ -622,6 +626,8 @@ public class GameplayState implements IState<GameController> {
 
     private void checkLevelCompletion() {
         if (enemyManager.getEnemies().isEmpty()) {
+            AudioManager.getInstance().pauseMusic(false);
+            AudioManager.getInstance().playMusic("Audio/Soundtrack/LevelCompleted.mp3", false, false);
             levelCompleted = true;
             Gdx.input.setInputProcessor(nextLevelUI);
         }
@@ -724,10 +730,16 @@ public class GameplayState implements IState<GameController> {
                         float x = controller.getLightningPlayerX();
                         shapeRenderer.rect(x, 32, 40, 448);
                     } else if (controller.isLightningStriking()) {
+                        if (!bossThunderAttackSoundPlayed) {
+                            AudioManager.getInstance().playSfx(AudioId.BossThunderAttack, enemy.getCharacter());
+                            bossThunderAttackSoundPlayed = true;
+                        }
                         shapeRenderer.setColor(Color.YELLOW);
                         float x = controller.getLightningPlayerX();
                         shapeRenderer.rect(x, 32, 40, 448);
                     }
+                } else {
+                    bossThunderAttackSoundPlayed = false;
                 }
 
                 if (controller.isSummonWarning()) {
@@ -858,6 +870,7 @@ public class GameplayState implements IState<GameController> {
     }
 
     private void checkBulletEnemyCollision() {
+        List<Character> enemiesHitThisFrame = new ArrayList<>();
         for (int i = bullets.size() - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
             if (bullet.getOwner() == playerCharacter) {
@@ -868,7 +881,10 @@ public class GameplayState implements IState<GameController> {
                             if (!bullet.hasHit(enemyCharacter)) {
                                 enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
                                 if (enemyCharacter.isAlive()) {
-                                    AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter, 0.5f);
+                                    if (!enemiesHitThisFrame.contains(enemyCharacter)) {
+                                        AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter, 0.5f);
+                                        enemiesHitThisFrame.add(enemyCharacter);
+                                    }
                                 } else {
                                     AudioManager.getInstance().playSfx(AudioId.Explosion, enemyCharacter);
                                 }
@@ -878,7 +894,10 @@ public class GameplayState implements IState<GameController> {
                         } else {
                             enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
                             if (enemyCharacter.isAlive()) {
-                                AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter, 0.5f);
+                                if (!enemiesHitThisFrame.contains(enemyCharacter)) {
+                                    AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter, 0.5f);
+                                    enemiesHitThisFrame.add(enemyCharacter);
+                                }
                             } else {
                                 AudioManager.getInstance().playSfx(AudioId.Explosion, enemyCharacter);
                             }
@@ -945,7 +964,7 @@ public class GameplayState implements IState<GameController> {
 
     @Override
     public void exit() {
-        AudioManager.getInstance().pauseMusic(true);
+        AudioManager.getInstance().pauseMusic(false);
         disposeTexture(backgroundTexture);
         disposeTexture(blackTexture);
         disposeTexture(groundTexture);
