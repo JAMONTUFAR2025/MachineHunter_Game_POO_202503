@@ -144,16 +144,7 @@
             "Name": "Diálogo 3 – Roberto Julián",
             "Texto": "Hasta la vista, baby."
         }
-    ],
-    "Dialogo_Victoria": [
-        {
-            "ID": 21,
-            "Name": "Diálogo 1 – ChatGPT.exe",
-            "Texto": [
-                "¡Felicidades!",
-                "¡Te has ganado una de 1500!"
-            ]
-        }
     ]
+   
     
 }
