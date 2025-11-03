@@ -64,8 +64,6 @@ public class GameOverState implements IState<GameController> {
 
         isGameOverTextFinished = false;
         isDialogueTypingFinished = false;
-
-        gameOverUI.setShowDeathMessage(true);
     }
 
     /**
@@ -104,6 +102,7 @@ public class GameOverState implements IState<GameController> {
             gameOverUI.setGameOverTextTimer(gameOverTextTimer);
             if (gameOverTextTimer > 1.5f) {
                 isGameOverTextFinished = true;
+                gameOverUI.setShowDeathMessage(true);
             }
         } else if (!isDialogueTypingFinished) {
             dialogueTimer += deltaTime;

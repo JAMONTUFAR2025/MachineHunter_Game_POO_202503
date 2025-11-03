@@ -44,6 +44,8 @@ import com.machinehunterdev.game.UI.GameplayUI;
 import com.machinehunterdev.game.UI.NextLevelUI;
 import com.machinehunterdev.game.UI.PauseUI;
 import com.machinehunterdev.game.Util.IState;
+import com.machinehunterdev.game.Audio.AudioId;
+import com.machinehunterdev.game.Audio.AudioManager;
 
 public class GameplayState implements IState<GameController> {
     // === DATOS DEL NIVEL ===
@@ -117,6 +119,7 @@ public class GameplayState implements IState<GameController> {
         this.owner = owner;
         this.gameBatch = owner.batch;
         this.camera = owner.camera;
+        AudioManager.getInstance().setCamera(this.camera);
         loadLevel(currentLevelFile);
     }
 
@@ -200,6 +203,7 @@ public class GameplayState implements IState<GameController> {
         playerCharacter.velocity.y = 0;
 
         playerController = new PlayerController(playerCharacter);
+        AudioManager.getInstance().setPlayer(playerCharacter);
     }
 
     private void initializeEnemies() {
@@ -379,6 +383,7 @@ public class GameplayState implements IState<GameController> {
         if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_PAUSE) && !levelCompleted) {
             isPaused = !isPaused;
             if (isPaused) {
+                AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                 Gdx.input.setInputProcessor(pauseUI);
             } else {
                 Gdx.input.setInputProcessor(null);
@@ -774,7 +779,7 @@ public class GameplayState implements IState<GameController> {
 
                 if (playerBounds.overlaps(enemyBounds)) {
                     if (DamageSystem.canTakeDamage(playerCharacter)) {
-                        
+                        AudioManager.getInstance().playSfx(AudioId.PlayerHurt, playerCharacter);
                         DamageSystem.applyContactDamage(playerCharacter, enemyCharacter, 1);
 
                         /* Animación de impacto al contacto */
@@ -837,11 +842,21 @@ public class GameplayState implements IState<GameController> {
                         if (bullet.isPiercing()) {
                             if (!bullet.hasHit(enemyCharacter)) {
                                 enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
+                                if (enemyCharacter.isAlive()) {
+                                    AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter);
+                                } else {
+                                    AudioManager.getInstance().playSfx(AudioId.Explosion, enemyCharacter);
+                                }
                                 bullet.addHitEnemy(enemyCharacter);
                                 impactEffectManager.createImpact(bullet.position.x, bullet.position.y, bullet.getWeaponType());
                             }
                         } else {
                             enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
+                            if (enemyCharacter.isAlive()) {
+                                AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter);
+                            } else {
+                                AudioManager.getInstance().playSfx(AudioId.Explosion, enemyCharacter);
+                            }
                             impactEffectManager.createImpact(bullet.position.x, bullet.position.y, bullet.getWeaponType());
                             bullets.remove(i);
                             bullet.dispose();
@@ -858,6 +873,7 @@ public class GameplayState implements IState<GameController> {
             Bullet bullet = bullets.get(i);
             if (bullet.getOwner() != playerCharacter) {
                 if (DamageSystem.canTakeDamage(playerCharacter) && playerCharacter.isAlive() && bullet.getBounds().overlaps(playerCharacter.getBounds())) {
+                    AudioManager.getInstance().playSfx(AudioId.PlayerHurt, playerCharacter);
                     DamageSystem.applyContactDamage(playerCharacter, bullet.getOwner(), bullet.getDamage());
                     impactEffectManager.createImpact(bullet.position.x, bullet.position.y, bullet.getWeaponType());
                     bullets.remove(i);

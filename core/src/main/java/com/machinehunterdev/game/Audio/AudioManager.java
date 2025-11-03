@@ -6,37 +6,8 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Timer;
-
-// Enums (sin 'public' para estar en el mismo archivo)
-enum AudioId {
-    UISelect, NotVeryEffective, Effective, SuperEffective,
-    Faint, ExpGain, ItemObtained, PokemonObtained
-}
-
-enum AudioAttackId {
-    Leaf, Punch, Water, Fire, Thunder, Poison, Bug, BulkUp,
-    statFell, statRose, Tackle, Psychic, Confusion, Bite, Fly,
-    FlyFall, Cut, Metal, PlayRough, FireHit, Ice, Dig, Shadow,
-    Spark, Falling, RockSmash, Snore
-}
-
-class AudioData {
-    public final AudioId id;
-    public final String path;
-    public AudioData(AudioId id, String path) {
-        this.id = id;
-        this.path = path;
-    }
-}
-
-class AudioAttackData {
-    public final AudioAttackId id;
-    public final String path;
-    public AudioAttackData(AudioAttackId id, String path) {
-        this.id = id;
-        this.path = path;
-    }
-}
+import com.machinehunterdev.game.Character.Character;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class AudioManager {
     private static AudioManager instance;
@@ -47,7 +18,8 @@ public class AudioManager {
     private boolean musicPausedForSfx = false;
 
     private final ObjectMap<AudioId, Sound> sfxMap = new ObjectMap<>();
-    private final ObjectMap<AudioAttackId, Sound> attackSfxMap = new ObjectMap<>();
+    private Character player;
+    private OrthographicCamera camera;
 
     public static AudioManager getInstance() {
         if (instance == null) {
@@ -58,60 +30,118 @@ public class AudioManager {
 
     private AudioManager() {}
 
-    public void loadAssets(Array<AudioData> sfxList, Array<AudioAttackData> attackList) {
+    public void setPlayer(Character player) {
+        this.player = player;
+    }
+
+    public void setCamera(OrthographicCamera camera) {
+        this.camera = camera;
+    }
+
+    public void loadAssets(Array<AudioData> sfxList) {
         for (AudioData data : sfxList) {
             sfxMap.put(data.id, Gdx.audio.newSound(Gdx.files.internal(data.path)));
         }
-        for (AudioAttackData data : attackList) {
-            attackSfxMap.put(data.id, Gdx.audio.newSound(Gdx.files.internal(data.path)));
-        }
+    }
+
+    public Sound getSound(AudioId id) {
+        return sfxMap.get(id);
     }
 
     public void dispose() {
         for (Sound s : sfxMap.values()) s.dispose();
-        for (Sound s : attackSfxMap.values()) s.dispose();
         if (currentMusic != null) currentMusic.dispose();
         sfxMap.clear();
-        attackSfxMap.clear();
         currentMusic = null;
     }
 
     // ✅ playSfx SIN delay automático (recomendado)
-    public void playSfx(AudioId id) {
-        Sound sound = sfxMap.get(id);
-        if (sound != null) sound.play();
+    public void playSfx(AudioId id, Character source) {
+        if (source != null && source.isPlayer) {
+            Sound sound = sfxMap.get(id);
+            if (sound != null) sound.play();
+            return;
+        }
+
+        if (camera != null && source != null) {
+            float tolerance = 40f;
+            float cameraLeft = camera.position.x - camera.viewportWidth / 2 - tolerance;
+            float cameraRight = camera.position.x + camera.viewportWidth / 2 + tolerance;
+            float characterX = source.getX();
+
+            if (characterX >= cameraLeft && characterX <= cameraRight) {
+                Sound sound = sfxMap.get(id);
+                if (sound != null) sound.play();
+            }
+        } else {
+            Sound sound = sfxMap.get(id);
+            if (sound != null) sound.play();
+        }
     }
 
     // ✅ Si necesitas pausar música, hazlo MANUALMENTE desde tu juego
     // Pero si quieres automatizarlo, usa este método con CUIDADO
-    public void playSfxWithMusicPause(AudioId id, float durationSeconds) {
-        Sound sound = sfxMap.get(id);
-        if (sound == null) return;
-
-        if (currentMusic != null && currentMusic.isPlaying()) {
-            currentMusic.pause();
-            musicPausedForSfx = true;
-
-            // ✅ Usar Timer correctamente
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    if (musicPausedForSfx && currentMusic != null) {
-                        currentMusic.setVolume(0f);
-                        currentMusic.play();
-                        fadeInMusic();
-                        musicPausedForSfx = false;
-                    }
-                }
-            }, durationSeconds); // en segundos
+    public void playSfxWithMusicPause(AudioId id, float durationSeconds, Character source) {
+        if (source != null && source.isPlayer) {
+            Sound sound = sfxMap.get(id);
+            if (sound != null) sound.play();
+            return;
         }
 
-        sound.play();
-    }
+        if (camera != null && source != null) {
+            float tolerance = 40f;
+            float cameraLeft = camera.position.x - camera.viewportWidth / 2 - tolerance;
+            float cameraRight = camera.position.x + camera.viewportWidth / 2 + tolerance;
+            float characterX = source.getX();
 
-    public void playAttackSfx(AudioAttackId id) {
-        Sound sound = attackSfxMap.get(id);
-        if (sound != null) sound.play();
+            if (characterX >= cameraLeft && characterX <= cameraRight) {
+                Sound sound = sfxMap.get(id);
+                if (sound == null) return;
+
+                if (currentMusic != null && currentMusic.isPlaying()) {
+                    currentMusic.pause();
+                    musicPausedForSfx = true;
+
+                    // ✅ Usar Timer correctamente
+                    Timer.schedule(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            if (musicPausedForSfx && currentMusic != null) {
+                                currentMusic.setVolume(0f);
+                                currentMusic.play();
+                                fadeInMusic();
+                                musicPausedForSfx = false;
+                            }
+                        }
+                    }, durationSeconds); // en segundos
+                }
+
+                sound.play();
+            }
+        } else {
+            Sound sound = sfxMap.get(id);
+            if (sound == null) return;
+
+            if (currentMusic != null && currentMusic.isPlaying()) {
+                currentMusic.pause();
+                musicPausedForSfx = true;
+
+                // ✅ Usar Timer correctamente
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        if (musicPausedForSfx && currentMusic != null) {
+                            currentMusic.setVolume(0f);
+                            currentMusic.play();
+                            fadeInMusic();
+                            musicPausedForSfx = false;
+                        }
+                    }
+                }, durationSeconds); // en segundos
+            }
+
+            sound.play();
+        }
     }
 
     public void playMusic(String path, boolean loop, boolean fade) {

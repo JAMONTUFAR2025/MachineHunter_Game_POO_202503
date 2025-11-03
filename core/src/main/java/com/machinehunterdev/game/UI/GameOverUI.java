@@ -14,8 +14,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.audio.Sound;
 import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.GameController;
+import com.machinehunterdev.game.Audio.AudioId;
+import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.GameStates.GameplayState;
 import com.machinehunterdev.game.GameStates.MainMenuState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
@@ -65,6 +68,8 @@ public class GameOverUI implements InputProcessor {
     private String[] confirmationOptions = {"Sí", "No"};
     private int confirmationSelected = 0;
     private boolean isExitConfirmationVisible = false;
+    private int eliminatedSoundPlayed = 0;
+    private Sound talkingSound;
 
     
     /**
@@ -209,6 +214,11 @@ public class GameOverUI implements InputProcessor {
             float shakeY = 0;
 
             if (gameOverTextTimer >= startTime) {
+                if (i >= eliminatedSoundPlayed) {
+                    AudioManager.getInstance().playSfx(AudioId.EnemyHurt, null);
+                    eliminatedSoundPlayed++;
+                }
+
                 float progress = Math.min(1f, (gameOverTextTimer - startTime) / animationPerCharDuration);
 
                 if (progress < 1f) { // Animating
@@ -244,6 +254,13 @@ public class GameOverUI implements InputProcessor {
     private void drawDeathMessage() {
         if (randomDeathMessage == null) return;
 
+        if (talkingSound == null) {
+            talkingSound = AudioManager.getInstance().getSound(AudioId.Talking);
+            if (talkingSound != null) {
+                talkingSound.loop();
+            }
+        }
+
         float charsPerSecond = 20f;
         float duration = randomDeathMessage.length() / charsPerSecond;
         float charsToShow = randomDeathMessage.length() * (Math.min(dialogueTimer, duration) / duration);
@@ -251,6 +268,10 @@ public class GameOverUI implements InputProcessor {
 
         if ((int) charsToShow >= randomDeathMessage.length()) {
             deathMessageFinished = true;
+            if (talkingSound != null) {
+                talkingSound.stop();
+                talkingSound = null;
+            }
         }
 
         GlyphLayout layout = new GlyphLayout(font, visibleText);
@@ -313,25 +334,33 @@ public class GameOverUI implements InputProcessor {
             if (isExitConfirmationVisible) {
                 if (keycode == GlobalSettings.CONTROL_JUMP) {
                     confirmationSelected = (confirmationSelected - 1 + confirmationOptions.length) % confirmationOptions.length;
+                    AudioManager.getInstance().playSfx(AudioId.UIChange, null);
                 } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
                     confirmationSelected = (confirmationSelected + 1) % confirmationOptions.length;
+                    AudioManager.getInstance().playSfx(AudioId.UIChange, null);
                 } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
                     if (confirmationSelected == 0) { // Sí
+                        AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                         gameController.stateMachine.changeState(MainMenuState.instance);
                     } else { // No
+                        AudioManager.getInstance().playSfx(AudioId.UICancel, null);
                         isExitConfirmationVisible = false;
                     }
                 }
             } else {
                 if (keycode == GlobalSettings.CONTROL_JUMP) {
                     selected = (selected - 1 + options.length) % options.length;
+                    AudioManager.getInstance().playSfx(AudioId.UIChange, null);
                 } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
                     selected = (selected + 1) % options.length;
+                    AudioManager.getInstance().playSfx(AudioId.UIChange, null);
                 } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
                     if (selected == 0) { // Reintentar
+                        AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                         GameplayState currentLevel = GameplayState.createForLevel(com.machinehunterdev.game.Gameplay.GlobalSettings.currentLevelFile);
                         gameController.stateMachine.changeState(currentLevel);
                     } else if (selected == 1) { // Salir
+                        AudioManager.getInstance().playSfx(AudioId.UICancel, null);
                         isExitConfirmationVisible = true;
                         confirmationSelected = 0;
                     }
@@ -387,6 +416,10 @@ public class GameOverUI implements InputProcessor {
      * Libera los recursos utilizados por la interfaz.
      */
     public void dispose() {
+        if (talkingSound != null) {
+            talkingSound.stop();
+            talkingSound = null;
+        }
         if (font != null) {
             font.dispose();
         }

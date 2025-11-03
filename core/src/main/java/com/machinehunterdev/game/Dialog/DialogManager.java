@@ -16,6 +16,9 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.audio.Sound;
+import com.machinehunterdev.game.Audio.AudioId;
+import com.machinehunterdev.game.Audio.AudioManager;
 
 /**
  * Gestor del sistema de diálogos del juego.
@@ -50,10 +53,11 @@ public class DialogManager {
 
     /** Texto actualmente visible (para efecto de escritura) */
     private String currentVisibleText = "";
+    private int previousTextLength = 0;
     
     /** Temporizadores para la animación de texto */
     private float textTimer = 0f;
-    private float textSpeed = 0.05f;
+    private float textSpeed = 0.03f;
     private boolean textFullyVisible = false;
 
     /** Sistema de paginación para textos largos */
@@ -68,6 +72,8 @@ public class DialogManager {
     private Texture borderTexture;
     private Texture skipIndicatorTexture;
     private Texture flashbackBackground;
+
+    private Sound talkingSound;
 
     private boolean isFlashback = false;
 
@@ -146,6 +152,7 @@ public class DialogManager {
      * Inicia una nueva línea de diálogo con paginación automática.
      */
     private void startNewLine() {
+        previousTextLength = 0;
         String fullText = currentDialog.getLines().get(currentLineIndex)
             .replace("Roberto Julián", GlobalSettings.playerName);
         pages.clear();
@@ -190,6 +197,7 @@ public class DialogManager {
      * Inicia una nueva página del diálogo actual.
      */
     private void startPage() {
+        previousTextLength = 0;
         currentVisibleText = "";
         textTimer = 0f;
         textFullyVisible = false;
@@ -209,6 +217,10 @@ public class DialogManager {
                     startNewLine();
                 } else {
                     dialogActive = false;
+                    if (talkingSound != null) {
+                        talkingSound.stop();
+                        talkingSound = null;
+                    }
                 }
             }
         }
@@ -227,7 +239,18 @@ public class DialogManager {
         if (!dialogActive) return;
 
         if (textFullyVisible) {
+            if (talkingSound != null) {
+                talkingSound.stop();
+                talkingSound = null;
+            }
             return;
+        }
+
+        if (talkingSound == null) {
+            talkingSound = AudioManager.getInstance().getSound(AudioId.Talking);
+            if (talkingSound != null) {
+                talkingSound.loop();
+            }
         }
 
         textTimer += dt;
@@ -304,6 +327,10 @@ public class DialogManager {
      * Libera los recursos utilizados por el gestor de diálogos.
      */
     public void dispose() {
+        if (talkingSound != null) {
+            talkingSound.stop();
+            talkingSound = null;
+        }
         font.dispose();
         backgroundTexture.dispose();
         borderTexture.dispose();

@@ -15,10 +15,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.machinehunterdev.game.Audio.AudioData;
+import com.machinehunterdev.game.Audio.AudioId;
+import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.GameStates.MainMenuState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.Util.IState;
 import com.machinehunterdev.game.Util.StateMachine;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Controlador principal del juego que implementa ApplicationAdapter.
@@ -69,6 +73,26 @@ public class GameController extends ApplicationAdapter
 
         // Inicializar instancia singleton
         instance = this;
+
+        // Cargar assets de audio
+        Array<AudioData> sfxList = new Array<>();
+        sfxList.add(new AudioData(AudioId.Talking, "Audio/Sfx/Talking.wav"));
+        sfxList.add(new AudioData(AudioId.PlayerJump, "Audio/Sfx/PlayerJump.wav"));
+        sfxList.add(new AudioData(AudioId.PlayerHurt, "Audio/Sfx/PlayerHurt.wav"));
+        sfxList.add(new AudioData(AudioId.LaserAttack, "Audio/Sfx/LaserAttack.wav"));
+        sfxList.add(new AudioData(AudioId.IonAttack, "Audio/Sfx/IonAttack.wav"));
+        sfxList.add(new AudioData(AudioId.RailgunAttack, "Audio/Sfx/RailgunAttack.wav"));
+        sfxList.add(new AudioData(AudioId.EnemyJump, "Audio/Sfx/EnemyJump.wav"));
+        sfxList.add(new AudioData(AudioId.EnemyHurt, "Audio/Sfx/EnemyHurt.wav"));
+        sfxList.add(new AudioData(AudioId.Explosion, "Audio/Sfx/Explosion.wav"));
+        sfxList.add(new AudioData(AudioId.EnemyAttack, "Audio/Sfx/EnemyAttack.wav"));
+        sfxList.add(new AudioData(AudioId.BossDeath, "Audio/Sfx/BossDeath.wav"));
+        sfxList.add(new AudioData(AudioId.UIAccept, "Audio/Sfx/UIAccept.wav"));
+        sfxList.add(new AudioData(AudioId.UIChange, "Audio/Sfx/UIChange.wav"));
+        sfxList.add(new AudioData(AudioId.UICancel, "Audio/Sfx/UICancel.wav"));
+        sfxList.add(new AudioData(AudioId.NotAvailable, "Audio/Sfx/NotAvailable.wav"));
+
+        AudioManager.getInstance().loadAssets(sfxList);
         
         // Inicializar cámara y viewport
         camera = new OrthographicCamera();
@@ -138,6 +162,7 @@ public class GameController extends ApplicationAdapter
     public void dispose() 
     {
         batch.dispose();
+        AudioManager.getInstance().dispose();
 
         if (stage != null) {
             stage.dispose();

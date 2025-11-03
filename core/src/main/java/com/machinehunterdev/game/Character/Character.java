@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.machinehunterdev.game.Audio.AudioId;
+import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.DamageTriggers.DamageSystem;
@@ -513,6 +515,7 @@ public class Character
     /* Nota: Ajustar la posición de la bala para que se alinee correctamente con el sprite del personaje, -8 es una solucion temporal */
 
     private void shootThunder(ArrayList<Bullet> bullets) {
+        AudioManager.getInstance().playSfx(AudioId.EnemyAttack, this);
         float bulletX = position.x + (isSeeingRight ? getWidth() + ENEMY_BULLET_SPAWN_OFFSET.x - 8: 0 - ENEMY_BULLET_SPAWN_OFFSET.x);
         float bulletY = position.y + getHeight() - ENEMY_BULLET_SPAWN_OFFSET.y;
         bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.SHOOTER, this));
@@ -523,6 +526,7 @@ public class Character
      * @param bullets Lista de balas activas
      */
     private void shootRifle(ArrayList<Bullet> bullets) {
+        AudioManager.getInstance().playSfx(AudioId.LaserAttack, this);
         float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x - 8: 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
         float bulletY = position.y + getHeight() - PLAYER_BULLET_SPAWN_OFFSET.y;
         bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.LASER, this));
@@ -533,6 +537,7 @@ public class Character
      * @param bullets Lista de balas activas
      */
     private void shootShotgun(ArrayList<Bullet> bullets) {
+        AudioManager.getInstance().playSfx(AudioId.IonAttack, this);
         float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x - 8: 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
         float bulletY = position.y + getHeight() - PLAYER_BULLET_SPAWN_OFFSET.y;
         
@@ -549,6 +554,7 @@ public class Character
      * @param bullets Lista de balas activas
      */
     private void shootSniper(ArrayList<Bullet> bullets) {
+        AudioManager.getInstance().playSfx(AudioId.RailgunAttack, this);
         float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x - 8: 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
         float bulletY = position.y + getHeight() - PLAYER_BULLET_SPAWN_OFFSET.y;
         bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.RAILGUN, this));
@@ -662,6 +668,8 @@ public class Character
         if (onGround && !isCrouching && !isAttacking) {
             velocity.y = jumpForce;
             onGround = false;
+            if(isPlayer) AudioManager.getInstance().playSfx(AudioId.PlayerJump, this);
+            else AudioManager.getInstance().playSfx(AudioId.EnemyJump, this);
         }
     }
 

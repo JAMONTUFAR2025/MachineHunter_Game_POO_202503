@@ -3,6 +3,8 @@ package com.machinehunterdev.game.Character;
 import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.Environment.SolidObject;
+import com.machinehunterdev.game.Audio.AudioManager;
+import com.machinehunterdev.game.Audio.AudioId;
 
 import java.util.ArrayList;
 
@@ -68,6 +70,7 @@ public class ShooterEnemyController extends CharacterController {
 
                 int currentFrame = character.characterAnimator.getCurrentFrameIndex();
                 if (currentFrame == 1 && previousFrameIndex != 1) {
+                    AudioManager.getInstance().playSfx(AudioId.EnemyAttack, character);
                     Vector2 startPos = new Vector2(character.position.x + character.getWidth() / 2, character.position.y + 35);
                     Vector2 targetPos = new Vector2(playerCharacter.position.x + playerCharacter.getWidth() / 2, playerCharacter.position.y + 35);
 

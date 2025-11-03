@@ -18,16 +18,16 @@ public class GlobalSettings
     public static String playerName;
     
     /** Salud inicial del jugador */
-    public static final int PLAYER_HEALTH = 3;
+    public static final int PLAYER_HEALTH = 3; // 3
     
     /** Salud inicial de enemigos */
-    public static final int PATROLLER_HEALTH = 180;
-    public static final int SHOOTER_HEALTH = 120;
-    public static final int FLYING_HEALTH = 150;
+    public static final int PATROLLER_HEALTH = 1; // 180
+    public static final int SHOOTER_HEALTH = 1; // 120
+    public static final int FLYING_HEALTH = 1; // 150
 
     /** Salud de los jefes */
-    public static final int BOSS_GEMINI_HEALTH = 3000;
-    public static final int BOSS_CHATGPT_HEALTH = 4500;
+    public static final int BOSS_GEMINI_HEALTH = 3000; // 3000
+    public static final int BOSS_CHATGPT_HEALTH = 4500; // 4500
 
     /** Controles para el jugador */
     public static final int CONTROL_MOVE_LEFT = Keys.A;

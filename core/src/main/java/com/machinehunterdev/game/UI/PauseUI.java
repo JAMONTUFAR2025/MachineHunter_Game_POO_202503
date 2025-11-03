@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.machinehunterdev.game.Audio.AudioId;
+import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.GameStates.GameplayState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
@@ -186,20 +188,26 @@ public class PauseUI implements InputProcessor {
      */
     private void handleMainMenuInput(int keycode) {
         if (keycode == GlobalSettings.CONTROL_JUMP) {
+            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
             selectedOption = (selectedOption - 1 + mainOptions.length) % mainOptions.length;
         } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
+            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
             selectedOption = (selectedOption + 1) % mainOptions.length;
         } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
             if (selectedOption == 0) { // Reanudar
+                AudioManager.getInstance().playSfx(AudioId.UICancel, null);
                 gameplayState.resumeGame();
             } else if (selectedOption == 1) { // Reintentar
+                AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                 currentState = MenuState.CONFIRM_RETRY;
                 selectedOption = 0;
             } else if (selectedOption == 2) { // Salir
+                AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                 currentState = MenuState.CONFIRM_EXIT;
                 selectedOption = 0;
             }
         } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
+            AudioManager.getInstance().playSfx(AudioId.UICancel, null);
             gameplayState.resumeGame();
         }
     }
@@ -210,17 +218,22 @@ public class PauseUI implements InputProcessor {
      */
     private void handleConfirmExitInput(int keycode) {
         if (keycode == GlobalSettings.CONTROL_JUMP) {
+            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
             selectedOption = (selectedOption - 1 + confirmOptions.length) % confirmOptions.length;
         } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
+            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
             selectedOption = (selectedOption + 1) % confirmOptions.length;
         } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
             if (selectedOption == 0) { // Si
+                AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                 gameplayState.exitToMainMenu();
             } else if (selectedOption == 1) { // No
+                AudioManager.getInstance().playSfx(AudioId.UICancel, null);
                 currentState = MenuState.MAIN;
                 selectedOption = 0;
             }
         } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
+            AudioManager.getInstance().playSfx(AudioId.UICancel, null);
             currentState = MenuState.MAIN;
             selectedOption = 0;
         }
@@ -228,17 +241,22 @@ public class PauseUI implements InputProcessor {
 
     private void handleConfirmRetryInput(int keycode) {
         if (keycode == GlobalSettings.CONTROL_JUMP) {
+            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
             selectedOption = (selectedOption - 1 + confirmOptions.length) % confirmOptions.length;
         } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
+            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
             selectedOption = (selectedOption + 1) % confirmOptions.length;
         } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
             if (selectedOption == 0) { // Si
+                AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                 gameplayState.restartLevel();
             } else if (selectedOption == 1) { // No
+                AudioManager.getInstance().playSfx(AudioId.UICancel, null);
                 currentState = MenuState.MAIN;
                 selectedOption = 0;
             }
         } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
+            AudioManager.getInstance().playSfx(AudioId.UICancel, null);
             currentState = MenuState.MAIN;
             selectedOption = 0;
         }

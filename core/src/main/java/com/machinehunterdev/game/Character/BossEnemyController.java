@@ -1,6 +1,9 @@
 package com.machinehunterdev.game.Character;
 
+import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.math.Vector2;
+import com.machinehunterdev.game.Audio.AudioId;
+import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.Environment.SolidObject;
@@ -174,10 +177,10 @@ public class BossEnemyController extends CharacterController {
 
         switch (attackType) {
             case 0:
-            attackType1(bullets, playerCharacter, enemyCount);
-                // Nada
+                attackType1(bullets, playerCharacter, enemyCount);
                 break;
             case 1:
+                AudioManager.getInstance().playSfx(AudioId.EnemyAttack, character);
                 attackType2(bullets, playerCharacter, enemyCount);
                 break;
             case 2:

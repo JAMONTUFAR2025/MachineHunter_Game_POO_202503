@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.machinehunterdev.game.Audio.AudioId;
+import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.GameStates.CreditState;
@@ -148,9 +150,12 @@ public class MainMenuUI implements InputProcessor {
     public void manejarEntrada(int keycode) {
         if (keycode == GlobalSettings.CONTROL_JUMP) {
             selected = (selected - 1 + options.length) % options.length;
+            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
         } else if (keycode == GlobalSettings.CONTROL_CROUCH) {
             selected = (selected + 1) % options.length;
+            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
         } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
+            AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
             if (selected == 0) {
                 starGame();
             }else if (selected == 1) {

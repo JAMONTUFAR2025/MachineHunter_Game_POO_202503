@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameStates.GameplayState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
+import com.machinehunterdev.game.Audio.AudioId;
+import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.GameStates.DialogState;
 
 /**
@@ -131,6 +133,7 @@ public class NextLevelUI implements InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == GlobalSettings.CONTROL_INTERACT) {
+            AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
             if (selectedOption == 0) { // Siguiente Nivel
                 com.machinehunterdev.game.Levels.LevelData currentLevel = gameplayState.getCurrentLevel();
                 if (currentLevel != null && currentLevel.nextLevel != null && !currentLevel.nextLevel.isEmpty()) {

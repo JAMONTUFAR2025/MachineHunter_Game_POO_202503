@@ -3,6 +3,8 @@ package com.machinehunterdev.game.Character;
 import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.machinehunterdev.game.Audio.AudioId;
+import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.Environment.SolidObject;
@@ -55,10 +57,13 @@ public class PlayerController extends CharacterController {
     private void handleInput(ArrayList<Bullet> bullets) {
         // Cambio de armas con teclas numéricas (mientras no este atacando)
         if (Gdx.input.isKeyJustPressed(GlobalSettings.CHANGE_WEAPON_LASER) && !character.isAttacking) {
+            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
             character.switchWeapon(WeaponType.LASER);
         } else if (Gdx.input.isKeyJustPressed(GlobalSettings.CHANGE_WEAPON_ION) && !character.isAttacking) {
+            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
             character.switchWeapon(WeaponType.ION);
         } else if (Gdx.input.isKeyJustPressed(GlobalSettings.CHANGE_WEAPON_RAILGUN) && !character.isAttacking) {
+            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
             character.switchWeapon(WeaponType.RAILGUN);
         }
 

@@ -1,5 +1,6 @@
 package com.machinehunterdev.game.UI;
 
+import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
@@ -8,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.Character.Character;
 import com.machinehunterdev.game.GameController;
+import com.machinehunterdev.game.Audio.AudioId;
+import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.GameStates.GameplayState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
@@ -164,19 +167,23 @@ public class NameInputUI implements InputProcessor {
             case NAME_INPUT:
                 if (keycode == GlobalSettings.CONTROL_CONFIRM) {
                     if (playerName.length() > 0) {
+                        AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                         GlobalSettings.playerName = playerName.toString();
                         currentState = State.TUTORIAL_CONFIRM;
                     }
                 } else if (keycode == GlobalSettings.CONTROL_BACKSPACE) {
                     if (playerName.length() > 0) {
+                        AudioManager.getInstance().playSfx(AudioId.UICancel, null);
                         playerName.setLength(playerName.length() - 1);
                     }
                 }
                 break;
             case TUTORIAL_CONFIRM:
                 if (keycode == GlobalSettings.CONTROL_JUMP || keycode == GlobalSettings.CONTROL_CROUCH) {
+                    AudioManager.getInstance().playSfx(AudioId.UIChange, null);
                     tutorialConfirmSelection = 1 - tutorialConfirmSelection;
                 } else if (keycode == GlobalSettings.CONTROL_INTERACT) {
+                    AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                     if (tutorialConfirmSelection == 0) { // Sí
                         // Cargar nivel 0 (tutorial)
                         GameplayState tutorial = GameplayState.createForLevel("Levels/Level 0.json");
@@ -192,6 +199,7 @@ public class NameInputUI implements InputProcessor {
                         }
                     }
                 } else if (keycode == GlobalSettings.CONTROL_CANCEL) {
+                    AudioManager.getInstance().playSfx(AudioId.UICancel, null);
                     currentState = State.NAME_INPUT;
                     ignoreInput = true;
                 }
@@ -214,6 +222,7 @@ public class NameInputUI implements InputProcessor {
         if (currentState == State.NAME_INPUT) {
             if (playerName.length() < 15 && (java.lang.Character.isLetterOrDigit(character) || character == ' ')) {
                 playerName.append(character);
+                AudioManager.getInstance().playSfx(AudioId.UIChange, null);
             }
         }
         return true;
