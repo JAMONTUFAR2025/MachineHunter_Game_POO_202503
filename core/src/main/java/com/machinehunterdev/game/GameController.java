@@ -118,8 +118,6 @@ public class GameController extends ApplicationAdapter
         Gdx.input.setCursorCatched(true);
     }
 
-
-
     public AudioManager getAudioManager() {
         return AudioManager.getInstance();
     }
@@ -148,17 +146,6 @@ public class GameController extends ApplicationAdapter
 
         // Mostrar depuración de estados
         showStateStack();
-
-        // Manejo del cursor del ratón
-        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ESCAPE))
-        {
-            Gdx.input.setCursorCatched(false);
-        }
-
-        if (Gdx.input.isButtonJustPressed(com.badlogic.gdx.Input.Buttons.LEFT))
-        {
-            Gdx.input.setCursorCatched(true);
-        }
     }
 
     /**
