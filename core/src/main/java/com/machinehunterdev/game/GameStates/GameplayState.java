@@ -613,7 +613,6 @@ public class GameplayState implements IState<GameController> {
 
     private void checkLevelCompletion() {
         if (enemyManager.getEnemies().isEmpty()) {
-            AudioManager.getInstance().pauseMusic(false);
             AudioManager.getInstance().playMusic("Audio/Soundtrack/LevelCompleted.mp3", false, false);
             levelCompleted = true;
             Gdx.input.setInputProcessor(nextLevelUI);
@@ -962,7 +961,6 @@ public class GameplayState implements IState<GameController> {
 
     @Override
     public void exit() {
-        AudioManager.getInstance().pauseMusic(false);
         disposeTexture(backgroundTexture);
         disposeTexture(blackTexture);
         disposeTexture(groundTexture);

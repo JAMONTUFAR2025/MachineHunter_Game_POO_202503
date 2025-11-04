@@ -104,7 +104,6 @@ public class NameInputState implements IState<GameController> {
             backgroundTexture.dispose();
         }
         Gdx.input.setInputProcessor(null);
-        AudioManager.getInstance().pauseMusic(false);
     }
 
     @Override

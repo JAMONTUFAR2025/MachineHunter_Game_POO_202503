@@ -14,6 +14,9 @@ public class GlobalSettings
     public static final int VIRTUAL_WIDTH = 480;
     public static final int VIRTUAL_HEIGHT = 270;
 
+    /** Volumen de todos los disparos */
+    public static float GLOBAL_SHOOT_VOLUME = 0.4f;
+
     /** Nombre del jugador (para clasificaciones) */
     public static String playerName;
     
@@ -21,13 +24,13 @@ public class GlobalSettings
     public static final int PLAYER_HEALTH = 3; // 3
     
     /** Salud inicial de enemigos */
-    public static final int PATROLLER_HEALTH = 1; // 180
-    public static final int SHOOTER_HEALTH = 1; // 120
-    public static final int FLYING_HEALTH = 1; // 150
+    public static final int PATROLLER_HEALTH = 0; // 180
+    public static final int SHOOTER_HEALTH = 0; // 120
+    public static final int FLYING_HEALTH = 0; // 150
 
     /** Salud de los jefes */
-    public static final int BOSS_GEMINI_HEALTH = 3000; // 3000
-    public static final int BOSS_CHATGPT_HEALTH = 4500; // 4500
+    public static final int BOSS_GEMINI_HEALTH = 2; // 3000
+    public static final int BOSS_CHATGPT_HEALTH = 2; // 4500
 
     /** Controles para el jugador */
     public static final int CONTROL_MOVE_LEFT = Keys.A;

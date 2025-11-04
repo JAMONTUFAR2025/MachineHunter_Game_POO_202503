@@ -66,7 +66,6 @@ public class MainMenuState implements IState<GameController>{
     public void exit() 
     {
         Gdx.input.setInputProcessor(null);
-        AudioManager.getInstance().pauseMusic(false);
     }
 
     @Override

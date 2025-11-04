@@ -13,11 +13,11 @@ public class AudioManager {
 
     private Music currentMusic;
     private String currentMusicPath;
+    private boolean isMusicPaused = false;
 
     // Sistema de Fade
-    private float normalVolume = 1.0f;
-    private float musicVolume = 0.7f;
-    private float soundVolume = 0.7f;
+    private float musicVolume = 0.2f;
+    private float soundVolume = 0.5f;
     private float volumeBeforeFade;
     private float targetVolume;
     private float fadeTimer;
@@ -40,13 +40,21 @@ public class AudioManager {
 
     public void setMusicVolume(float volume) {
         this.musicVolume = volume;
-        if (currentMusic != null) {
+        if (currentMusic != null && !isMusicPaused) {
             currentMusic.setVolume(musicVolume);
         }
     }
 
     public void setSoundVolume(float volume) {
         this.soundVolume = volume;
+    }
+
+    public float getMusicVolume() {
+        return musicVolume;
+    }
+
+    public float getSoundVolume() {
+        return soundVolume;
     }
 
     public void update(float delta) {
@@ -90,6 +98,7 @@ public class AudioManager {
         currentMusic = Gdx.audio.newMusic(Gdx.files.internal(path));
         currentMusicPath = path;
         currentMusic.setLooping(loop);
+        isMusicPaused = false;
         
         if (fade) {
             currentMusic.setVolume(0);
@@ -102,19 +111,21 @@ public class AudioManager {
 
     public void pauseMusic(boolean fade) {
         if (currentMusic == null) return;
+        isMusicPaused = true;
         if (fade) {
-            startFade(0.5f, 0.2f, null);
+            startFade(0.5f, 0.2f * musicVolume, null);
         } else {
-            currentMusic.setVolume(0.2f);
+            currentMusic.setVolume(0.2f * musicVolume);
         }
     }
 
     public void resumeMusic(boolean fade) {
         if (currentMusic == null) return;
+        isMusicPaused = false;
         if (fade) {
-            startFade(0.5f, normalVolume, null);
+            startFade(0.5f, musicVolume, null);
         } else {
-            currentMusic.setVolume(normalVolume);
+            currentMusic.setVolume(musicVolume);
         }
     }
 

@@ -30,8 +30,8 @@ public class OptionState implements IState<GameController> {
         this.optionUI = new OptionUI(gameController);
 
         prefs = Gdx.app.getPreferences("GameOptions");
-        musicVolume = prefs.getInteger("musicVolume", 7);
-        soundVolume = prefs.getInteger("soundVolume", 7);
+        musicVolume = (int) (gameController.getAudioManager().getMusicVolume() * 10);
+        soundVolume = (int) (gameController.getAudioManager().getSoundVolume() * 10);
 
         Gdx.input.setInputProcessor(null);
     }

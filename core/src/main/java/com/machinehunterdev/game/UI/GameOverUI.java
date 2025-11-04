@@ -262,7 +262,7 @@ public class GameOverUI implements InputProcessor {
         if (talkingSound == null) {
             talkingSound = AudioManager.getInstance().getSound(AudioId.Talking);
             if (talkingSound != null) {
-                talkingSound.loop();
+                talkingSound.loop(AudioManager.getInstance().getSoundVolume() * 0.75f);
             }
         }
 

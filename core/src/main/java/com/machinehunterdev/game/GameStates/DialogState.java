@@ -129,9 +129,6 @@ public class DialogState implements IState<GameController>, InputProcessor {
     public void exit() {
         dialogManager.dispose(); // Libera la fuente (BitmapFont), etc.
         Gdx.input.setInputProcessor(null); // Deja de escuchar eventos de input
-        if (isFlashback) {
-            AudioManager.getInstance().pauseMusic(false);
-        }
     }
 
     @Override

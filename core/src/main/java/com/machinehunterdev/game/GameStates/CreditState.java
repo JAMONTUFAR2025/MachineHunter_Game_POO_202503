@@ -37,7 +37,6 @@ public class CreditState implements IState<GameController> {
         if (creditUI != null) {
             creditUI.dispose();
         }
-        AudioManager.getInstance().pauseMusic(false);
     }
 
     @Override

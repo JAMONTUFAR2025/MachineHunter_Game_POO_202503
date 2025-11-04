@@ -122,7 +122,6 @@ public class GameOverState implements IState<GameController> {
      */
     @Override
     public void exit() {
-        AudioManager.getInstance().pauseMusic(false);
         if (gameOverUI != null) {
             gameOverUI.dispose();
         }
