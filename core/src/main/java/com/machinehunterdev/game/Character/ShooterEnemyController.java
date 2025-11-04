@@ -71,7 +71,7 @@ public class ShooterEnemyController extends CharacterController {
 
                 int currentFrame = character.characterAnimator.getCurrentFrameIndex();
                 if (currentFrame == 1 && previousFrameIndex != 1) {
-                    AudioManager.getInstance().playSfx(AudioId.EnemyAttack, character, GlobalSettings.GLOBAL_SHOOT_VOLUME);
+                    AudioManager.getInstance().playSfx(AudioId.EnemyAttack, character, GlobalSettings.ANNOYING_VOLUME * 2f);
                     Vector2 startPos = new Vector2(character.position.x + character.getWidth() / 2, character.position.y + 35);
                     Vector2 targetPos = new Vector2(playerCharacter.position.x + playerCharacter.getWidth() / 2, playerCharacter.position.y + 35);
 

@@ -60,20 +60,38 @@ public class OptionState implements IState<GameController> {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
             if (currentSelection == 0) {
-                musicVolume = Math.max(0, musicVolume - 1);
+                if (musicVolume > 0) {
+                    musicVolume = Math.max(0, musicVolume - 1);
+                    AudioManager.getInstance().playSfx(AudioId.UIChange, null);
+                } else {
+                    AudioManager.getInstance().playSfx(AudioId.NotAvailable, null);
+                }
             } else {
-                soundVolume = Math.max(0, soundVolume - 1);
+                if (soundVolume > 0) {
+                    soundVolume = Math.max(0, soundVolume - 1);
+                    AudioManager.getInstance().playSfx(AudioId.UIChange, null);
+                } else {
+                    AudioManager.getInstance().playSfx(AudioId.NotAvailable, null);
+                }
             }
-            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
             if (currentSelection == 0) {
-                musicVolume = Math.min(10, musicVolume + 1);
+                if (musicVolume < 10) {
+                    musicVolume = Math.min(10, musicVolume + 1);
+                    AudioManager.getInstance().playSfx(AudioId.UIChange, null);
+                } else {
+                    AudioManager.getInstance().playSfx(AudioId.NotAvailable, null);
+                }
             } else {
-                soundVolume = Math.min(10, soundVolume + 1);
+                if (soundVolume < 10) {
+                    soundVolume = Math.min(10, soundVolume + 1);
+                    AudioManager.getInstance().playSfx(AudioId.UIChange, null);
+                } else {
+                    AudioManager.getInstance().playSfx(AudioId.NotAvailable, null);
+                }
             }
-            AudioManager.getInstance().playSfx(AudioId.UIChange, null);
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) {

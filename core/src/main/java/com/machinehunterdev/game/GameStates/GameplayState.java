@@ -302,14 +302,7 @@ public class GameplayState implements IState<GameController> {
                 enemy.velocity.y = 0;
             }
 
-            ArrayList<Vector2> patrolPoints = new ArrayList<>();
-            if (enemyData.patrolPoints != null) {
-                for (LevelData.Point point : enemyData.patrolPoints) {
-                    patrolPoints.add(new Vector2(point.x, point.y));
-                }
-            }
-
-            enemyManager.addEnemy(enemyData.type, enemy, patrolPoints, enemyData.waitTime, enemyData.shootInterval, enemyData.shootTime);
+            enemyManager.addEnemy(enemyData.type, enemy, enemyData.patrolPoints, enemyData.waitTime, enemyData.shootInterval, enemyData.shootTime);
 
             if (enemyData.type == EnemyType.BOSS_GEMINI || enemyData.type == EnemyType.BOSS_CHATGPT) {
                 gameplayUI.setBoss((com.machinehunterdev.game.Character.Character) enemy, enemyData.name, enemyData.type);
@@ -580,16 +573,20 @@ public class GameplayState implements IState<GameController> {
             enemy2.switchWeapon(com.machinehunterdev.game.DamageTriggers.WeaponType.SHOOTER);
         }
 
-        ArrayList<Vector2> patrolPoints1 = new ArrayList<>();
-        ArrayList<Vector2> patrolPoints2 = new ArrayList<>();
+        ArrayList<LevelData.Point> patrolPoints1 = new ArrayList<>();
+        ArrayList<LevelData.Point> patrolPoints2 = new ArrayList<>();
         float waitTime = 0, shootInterval = 0, shootTime = 0;
 
         switch (type) {
             case PATROLLER:
-                patrolPoints1.add(new Vector2(352, 32));
-                patrolPoints1.add(new Vector2(88, 32));
-                patrolPoints2.add(new Vector2(88, 32));
-                patrolPoints2.add(new Vector2(352, 32));
+                LevelData.Point p1 = new LevelData.Point();
+                p1.x = 352; p1.y = 32; p1.action = "Jump"; patrolPoints1.add(p1);
+                LevelData.Point p2 = new LevelData.Point();
+                p2.x = 88; p2.y = 32; p2.action = "Jump"; patrolPoints1.add(p2);
+                LevelData.Point p3 = new LevelData.Point();
+                p3.x = 88; p3.y = 32; p3.action = "Jump"; patrolPoints2.add(p3);
+                LevelData.Point p4 = new LevelData.Point();
+                p4.x = 352; p4.y = 32; p4.action = "Jump"; patrolPoints2.add(p4);
                 waitTime = 3.0f;
                 break;
             case SHOOTER:
@@ -597,10 +594,14 @@ public class GameplayState implements IState<GameController> {
                 shootTime = 1f;
                 break;
             case FLYING:
-                patrolPoints1.add(new Vector2(138, 168));
-                patrolPoints1.add(new Vector2(138, 96));
-                patrolPoints2.add(new Vector2(302, 96));
-                patrolPoints2.add(new Vector2(302, 168));
+                LevelData.Point p5 = new LevelData.Point();
+                p5.x = 138; p5.y = 168; patrolPoints1.add(p5);
+                LevelData.Point p6 = new LevelData.Point();
+                p6.x = 138; p6.y = 96; patrolPoints1.add(p6);
+                LevelData.Point p7 = new LevelData.Point();
+                p7.x = 302; p7.y = 96; patrolPoints2.add(p7);
+                LevelData.Point p8 = new LevelData.Point();
+                p8.x = 302; p8.y = 168; patrolPoints2.add(p8);
                 waitTime = 0.5f;
                 break;
             default:
@@ -862,7 +863,7 @@ public class GameplayState implements IState<GameController> {
                                 enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
                                 if (enemyCharacter.isAlive()) {
                                     if (!enemiesHitThisFrame.contains(enemyCharacter)) {
-                                        AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter, 0.5f);
+                                        AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter, GlobalSettings.ANNOYING_VOLUME / 2f);
                                         enemiesHitThisFrame.add(enemyCharacter);
                                     }
                                 } else {

@@ -519,7 +519,7 @@ public class Character
      * @param bullets Lista de balas activas
      */
     private void shootRifle(ArrayList<Bullet> bullets) {
-        AudioManager.getInstance().playSfx(AudioId.LaserAttack, this, GlobalSettings.GLOBAL_SHOOT_VOLUME);
+        AudioManager.getInstance().playSfx(AudioId.LaserAttack, this, GlobalSettings.ANNOYING_VOLUME);
         float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x - 8: 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
         float bulletY = position.y + getHeight() - PLAYER_BULLET_SPAWN_OFFSET.y;
         bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.LASER, this));
@@ -530,7 +530,7 @@ public class Character
      * @param bullets Lista de balas activas
      */
     private void shootShotgun(ArrayList<Bullet> bullets) {
-        AudioManager.getInstance().playSfx(AudioId.IonAttack, this, GlobalSettings.GLOBAL_SHOOT_VOLUME);
+        AudioManager.getInstance().playSfx(AudioId.IonAttack, this, GlobalSettings.ANNOYING_VOLUME);
         float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x - 8: 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
         float bulletY = position.y + getHeight() - PLAYER_BULLET_SPAWN_OFFSET.y;
         
@@ -547,7 +547,7 @@ public class Character
      * @param bullets Lista de balas activas
      */
     private void shootSniper(ArrayList<Bullet> bullets) {
-        AudioManager.getInstance().playSfx(AudioId.RailgunAttack, this, GlobalSettings.GLOBAL_SHOOT_VOLUME);
+        AudioManager.getInstance().playSfx(AudioId.RailgunAttack, this, GlobalSettings.ANNOYING_VOLUME);
         float bulletX = position.x + (isSeeingRight ? getWidth() + PLAYER_BULLET_SPAWN_OFFSET.x - 8: 0 - PLAYER_BULLET_SPAWN_OFFSET.x);
         float bulletY = position.y + getHeight() - PLAYER_BULLET_SPAWN_OFFSET.y;
         bullets.add(new Bullet(bulletX, bulletY, isSeeingRight, WeaponType.RAILGUN, this));

@@ -33,16 +33,20 @@ public class EnemyManager {
      * @param shootInterval Intervalo de disparo para enemigos que disparan.
      * @param shootTime Duración del ataque para enemigos que disparan.
      */
-    public void addEnemy(EnemyType type, Character character, ArrayList<Vector2> patrolPoints, float waitTime, float shootInterval, float shootTime) {
+    public void addEnemy(EnemyType type, Character character, java.util.List<com.machinehunterdev.game.Levels.LevelData.Point> patrolPoints, float waitTime, float shootInterval, float shootTime) {
         switch (type) {
             case PATROLLER:
-                enemies.add(new PatrollerEnemy(character, patrolPoints, waitTime, type));
+                enemies.add(new PatrollerEnemy(character, (java.util.ArrayList<com.machinehunterdev.game.Levels.LevelData.Point>) patrolPoints, waitTime, type));
                 break;
             case SHOOTER:
                 enemies.add(new ShooterEnemy(character, shootInterval, shootTime, type));
                 break;
             case FLYING:
-                enemies.add(new FlyingEnemy(character, patrolPoints, waitTime, type));
+                ArrayList<Vector2> flyingPatrolPoints = new ArrayList<>();
+                for (com.machinehunterdev.game.Levels.LevelData.Point point : patrolPoints) {
+                    flyingPatrolPoints.add(new Vector2(point.x, point.y));
+                }
+                enemies.add(new FlyingEnemy(character, flyingPatrolPoints, waitTime, type));
                 break;
             case BOSS_GEMINI:
                 enemies.add(new BossEnemy(character, EnemyType.BOSS_GEMINI));

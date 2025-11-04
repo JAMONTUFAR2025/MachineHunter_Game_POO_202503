@@ -89,6 +89,7 @@ public class LevelData {
      */
     public static class Point {
         public float x, y;
+        public String action;
     }
 
     /**

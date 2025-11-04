@@ -18,7 +18,7 @@ public class PatrollerEnemy extends BaseEnemy {
      * @param waitTime Tiempo de espera en cada punto.
      * @param type El tipo de enemigo.
      */
-    public PatrollerEnemy(Character character, ArrayList<Vector2> patrolPoints, float waitTime, EnemyType type) {
+    public PatrollerEnemy(Character character, java.util.ArrayList<com.machinehunterdev.game.Levels.LevelData.Point> patrolPoints, float waitTime, EnemyType type) {
         super(character, new PatrollerEnemyController(character, patrolPoints, waitTime), type);
     }
 }
