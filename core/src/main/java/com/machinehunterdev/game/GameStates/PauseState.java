@@ -3,6 +3,7 @@ package com.machinehunterdev.game.GameStates;
 import com.badlogic.gdx.Gdx;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.UI.PauseUI;
+import com.machinehunterdev.game.GameStates.OptionState;
 import com.machinehunterdev.game.Util.IState;
 import com.machinehunterdev.game.Audio.AudioManager;
 
@@ -19,7 +20,7 @@ public class PauseState implements IState<GameController> {
     @Override
     public void enter(GameController owner) {
         this.owner = owner;
-        this.pauseUI = new PauseUI(this, owner.batch);
+        this.pauseUI = new PauseUI(this, owner, owner.batch);
         Gdx.input.setInputProcessor(pauseUI);
         AudioManager.getInstance().pauseMusic(false);
     }
@@ -41,6 +42,11 @@ public class PauseState implements IState<GameController> {
         if (pauseUI != null) {
             pauseUI.dispose();
         }
+    }
+
+    @Override
+    public void resume() {
+        Gdx.input.setInputProcessor(pauseUI);
     }
 
     public void resumeGame() {

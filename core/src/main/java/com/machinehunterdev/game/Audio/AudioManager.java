@@ -16,6 +16,8 @@ public class AudioManager {
 
     // Sistema de Fade
     private float normalVolume = 1.0f;
+    private float musicVolume = 0.7f;
+    private float soundVolume = 0.7f;
     private float volumeBeforeFade;
     private float targetVolume;
     private float fadeTimer;
@@ -35,6 +37,17 @@ public class AudioManager {
     }
 
     private AudioManager() {}
+
+    public void setMusicVolume(float volume) {
+        this.musicVolume = volume;
+        if (currentMusic != null) {
+            currentMusic.setVolume(musicVolume);
+        }
+    }
+
+    public void setSoundVolume(float volume) {
+        this.soundVolume = volume;
+    }
 
     public void update(float delta) {
         if (isFading && currentMusic != null) {
@@ -80,9 +93,9 @@ public class AudioManager {
         
         if (fade) {
             currentMusic.setVolume(0);
-            startFade(1.0f, normalVolume, null);
+            startFade(1.0f, musicVolume, null);
         } else {
-            currentMusic.setVolume(normalVolume);
+            currentMusic.setVolume(musicVolume);
         }
         currentMusic.play();
     }
@@ -133,13 +146,13 @@ public class AudioManager {
     }
 
     public void playSfx(AudioId id, Character source) {
-        playSfx(id, source, 1.0f);
+        playSfx(id, source, soundVolume);
     }
 
     public void playSfx(AudioId id, Character source, float volume) {
         if (source != null && source.isPlayer) {
             Sound sound = sfxMap.get(id);
-            if (sound != null) sound.play(volume);
+            if (sound != null) sound.play(soundVolume * volume);
             return;
         }
 
@@ -149,11 +162,11 @@ public class AudioManager {
             float cameraRight = camera.position.x + camera.viewportWidth / 2 + tolerance;
             if (source.getX() >= cameraLeft && source.getX() <= cameraRight) {
                 Sound sound = sfxMap.get(id);
-                if (sound != null) sound.play(volume);
+                if (sound != null) sound.play(soundVolume * volume);
             }
         } else {
             Sound sound = sfxMap.get(id);
-            if (sound != null) sound.play(volume);
+            if (sound != null) sound.play(soundVolume * volume);
         }
     }
 

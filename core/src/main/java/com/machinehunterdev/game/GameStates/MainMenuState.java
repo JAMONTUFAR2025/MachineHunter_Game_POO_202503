@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.UI.MainMenuUI;
+import com.machinehunterdev.game.GameStates.OptionState;
 import com.machinehunterdev.game.Util.IState;
 import com.machinehunterdev.game.Audio.AudioManager;
 
@@ -66,5 +67,10 @@ public class MainMenuState implements IState<GameController>{
     {
         Gdx.input.setInputProcessor(null);
         AudioManager.getInstance().pauseMusic(false);
+    }
+
+    @Override
+    public void resume() {
+        Gdx.input.setInputProcessor(this.menuUI);
     }
 }

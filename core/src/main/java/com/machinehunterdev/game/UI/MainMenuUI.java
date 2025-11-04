@@ -14,6 +14,7 @@ import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.GameStates.CreditState;
+import com.machinehunterdev.game.GameStates.OptionState;
 
 /**
  * Interfaz de usuario para el menú principal del juego.
@@ -24,7 +25,7 @@ import com.machinehunterdev.game.GameStates.CreditState;
 public class MainMenuUI implements InputProcessor {
     
     /** Opciones del menú principal */
-    private String[] options = {"Iniciar partida", "Créditos", "Salir"};
+    private String[] options = {"Iniciar partida", "Opciones", "Créditos", "Salir"};
     
     /** Índice de la opción seleccionada actualmente */
     private int selected = 0;
@@ -96,7 +97,7 @@ public class MainMenuUI implements InputProcessor {
         float titleY = screenHeight * 0.9f;
         titleFont.draw(batch, layout, titleX, titleY);
 
-        float startY = screenHeight * 0.6f;
+        float startY = screenHeight * 0.7f;
         float lineHeight = 110f;
 
         // Dibujar opciones con resaltado de selección
@@ -158,9 +159,11 @@ public class MainMenuUI implements InputProcessor {
             AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
             if (selected == 0) {
                 starGame();
-            }else if (selected == 1) {
+            } else if (selected == 1) {
+                gameController.stateMachine.push(com.machinehunterdev.game.GameStates.OptionState.instance);
+            }else if (selected == 2) {
                 gameController.stateMachine.changeState(CreditState.instance);
-            } else if (selected == 2) {
+            } else if (selected == 3) {
                 exitGame();
             }
         }

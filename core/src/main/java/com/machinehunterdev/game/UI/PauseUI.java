@@ -1,5 +1,6 @@
 package com.machinehunterdev.game.UI;
 
+import com.machinehunterdev.game.GameController;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -12,11 +13,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.Audio.AudioId;
 import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.GameStates.PauseState;
+import com.machinehunterdev.game.GameStates.OptionState;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 public class PauseUI implements InputProcessor {
 
     private PauseState pauseState;
+    private GameController gameController;
     private SpriteBatch batch;
     private BitmapFont font;
     private Texture backgroundTexture;
@@ -24,13 +27,14 @@ public class PauseUI implements InputProcessor {
     private enum MenuState { MAIN, CONFIRM_EXIT, CONFIRM_RETRY }
     private MenuState currentState = MenuState.MAIN;
 
-    private String[] mainOptions = {"Reanudar","Reintentar", "Salir"};
+    private String[] mainOptions = {"Reanudar", "Opciones", "Reintentar", "Salir"};
     private String[] confirmOptions = {"Si", "No"};
     
     private int selectedOption = 0;
 
-    public PauseUI(PauseState pauseState, SpriteBatch batch) { // Changed constructor parameter
+    public PauseUI(PauseState pauseState, GameController gameController, SpriteBatch batch) { // Changed constructor parameter
         this.pauseState = pauseState;
+        this.gameController = gameController;
         this.batch = batch;
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -136,11 +140,13 @@ public class PauseUI implements InputProcessor {
             if (selectedOption == 0) { // Reanudar
                 AudioManager.getInstance().playSfx(AudioId.UICancel, null);
                 pauseState.resumeGame();
-            } else if (selectedOption == 1) { // Reintentar
+            } else if (selectedOption == 1) { // Opciones
+                gameController.stateMachine.push(com.machinehunterdev.game.GameStates.OptionState.instance);
+            } else if (selectedOption == 2) { // Reintentar
                 AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                 currentState = MenuState.CONFIRM_RETRY;
                 selectedOption = 0;
-            } else if (selectedOption == 2) { // Salir
+            } else if (selectedOption == 3) { // Salir
                 AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                 currentState = MenuState.CONFIRM_EXIT;
                 selectedOption = 0;

@@ -107,6 +107,11 @@ public class NameInputState implements IState<GameController> {
         AudioManager.getInstance().pauseMusic(false);
     }
 
+    @Override
+    public void resume() {
+        Gdx.input.setInputProcessor(nameInputUI);
+    }
+
     /**
      * Carga frames de animación desde archivos numerados.
      */
@@ -117,4 +122,5 @@ public class NameInputState implements IState<GameController> {
         }
         return frames;
     }
+    
 }

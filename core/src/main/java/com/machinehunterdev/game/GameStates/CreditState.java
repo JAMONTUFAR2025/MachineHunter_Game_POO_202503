@@ -39,4 +39,8 @@ public class CreditState implements IState<GameController> {
         }
         AudioManager.getInstance().pauseMusic(false);
     }
+
+    @Override
+    public void resume() {
+    }
 }

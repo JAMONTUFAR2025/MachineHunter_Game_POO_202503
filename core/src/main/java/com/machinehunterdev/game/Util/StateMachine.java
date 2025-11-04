@@ -62,6 +62,7 @@ public class StateMachine<T>
             stateStack.pop();
             if (!stateStack.isEmpty()) {
                 currentState = stateStack.peek();
+                currentState.resume();
             } else {
                 currentState = null;
             }

@@ -11,7 +11,7 @@ public interface IState<T>
 {
     /**
      * Se ejecuta una vez cuando se entra en el estado.
-     * Se utiliza para inicializar recursos y configurar el estado.
+     * Se utiliza para inicializar recursos y configurar el estadsessssssso.
      * @param owner Objeto propietario que utiliza la máquina de estados
      */
     void enter(T owner);
@@ -27,4 +27,10 @@ public interface IState<T>
      * Se utiliza para liberar recursos y limpiar el estado.
      */
     void exit();
+
+    /**
+     * Se ejecuta cuando se vuelve a este estado desde otro.
+     * Se utiliza para restaurar el estado, como el procesador de entrada.
+     */
+    void resume();
 }

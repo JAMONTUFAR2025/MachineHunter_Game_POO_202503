@@ -134,6 +134,11 @@ public class DialogState implements IState<GameController>, InputProcessor {
         }
     }
 
+    @Override
+    public void resume() {
+        Gdx.input.setInputProcessor(this);
+    }
+
     // --- Métodos de la interfaz InputProcessor ---
 
     /**

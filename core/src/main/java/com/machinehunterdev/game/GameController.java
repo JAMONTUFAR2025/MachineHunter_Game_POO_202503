@@ -118,6 +118,16 @@ public class GameController extends ApplicationAdapter
         Gdx.input.setCursorCatched(true);
     }
 
+
+
+    public AudioManager getAudioManager() {
+        return AudioManager.getInstance();
+    }
+
+    public SpriteBatch getSpriteBatch() {
+        return batch;
+    }
+
     /**
      * Método llamado en cada frame para renderizar el juego.
      */

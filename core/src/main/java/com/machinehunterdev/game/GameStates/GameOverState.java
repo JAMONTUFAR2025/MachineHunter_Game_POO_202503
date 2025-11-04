@@ -135,4 +135,9 @@ public class GameOverState implements IState<GameController> {
         }
         Gdx.input.setInputProcessor(null);
     }
+
+    @Override
+    public void resume() {
+        Gdx.input.setInputProcessor(gameOverUI);
+    }
 }

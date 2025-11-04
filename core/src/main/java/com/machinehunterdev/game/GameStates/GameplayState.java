@@ -1059,4 +1059,8 @@ public class GameplayState implements IState<GameController> {
     public GameController getOwner() {
         return owner;
     }
+
+    @Override
+    public void resume() {
+    }
 }
