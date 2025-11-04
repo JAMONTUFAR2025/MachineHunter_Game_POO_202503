@@ -75,11 +75,14 @@ public class DialogState implements IState<GameController>, InputProcessor {
      * @param flashbackDialogueSection El nombre de la sección en el JSON de flashbacks.
      * @param levelFile                La ruta al archivo .tmx del nivel a cargar al finalizar.
      */
-    public DialogState(String flashbackDialogueSection, String levelFile) {
+    public DialogState(String dialogueSection, String levelFile) {
         this.levelFile = levelFile;
         this.isFlashback = true;
-        // Carga el diálogo desde el archivo JSON
-        this.currentDialog = loadFlashbackDialog(flashbackDialogueSection);
+        if (dialogueSection.equals("Final")) {
+            this.currentDialog = loadDialog("Dialogos/Dialogos_personajes.json", "Dialogos_final", null);
+        } else {
+            this.currentDialog = loadDialog("Dialogos/Diagolos_flahsbacks.json", "Flashbacks", dialogueSection);
+        }
     }
 
     // --- Métodos de la interfaz IState ---
@@ -168,31 +171,31 @@ public class DialogState implements IState<GameController>, InputProcessor {
      * @param sectionName El nombre (identificador) del flashback a cargar.
      * @return Un objeto Dialog con las líneas cargadas.
      */
-    private Dialog loadFlashbackDialog(String sectionName) {
+    private Dialog loadDialog(String fileName, String sectionName, String filter) {
         List<String> lines = new ArrayList<>();
         try {
             JsonReader jsonReader = new JsonReader();
-            // Carga el archivo JSON interno
-            JsonValue base = jsonReader.parse(Gdx.files.internal("Dialogos/Diagolos_flahsbacks.json"));
-            JsonValue flashbacks = base.get("Flashbacks");
+            JsonValue base = jsonReader.parse(Gdx.files.internal(fileName));
+            JsonValue section = base.get(sectionName);
 
-            // Itera sobre todos los flashbacks definidos en el JSON
-            for (JsonValue flashback : flashbacks) {
-                // Busca el que coincida con el nombre solicitado
-                if (flashback.getString("Name").equals(sectionName)) {
-                    JsonValue texto = flashback.get("Texto");
-                    // Agrega cada línea de texto a la lista
-                    for (JsonValue line : texto) {
-                        lines.add(line.asString());
+            for (JsonValue dialogValue : section) {
+                if (filter == null || dialogValue.getString("Name").equals(filter)) {
+                    JsonValue texto = dialogValue.get("Texto");
+                    if (texto.isArray()) {
+                        for (JsonValue line : texto) {
+                            lines.add(line.asString());
+                        }
+                    } else {
+                        lines.add(texto.asString());
                     }
-                    break; // Deja de buscar una vez encontrado
+                    if (filter != null) {
+                        break; // Stop after finding the filtered dialog
+                    }
                 }
             }
         } catch (Exception e) {
-            // Registra un error si el archivo no se encuentra o el JSON es inválido
-            Gdx.app.error("DialogState", "Error al cargar el diálogo de flashback: " + sectionName, e);
+            Gdx.app.error("DialogState", "Error al cargar el diálogo: " + sectionName, e);
         }
-        // Devuelve un nuevo objeto Dialog, incluso si la lista está vacía
         return new Dialog(lines);
     }
 

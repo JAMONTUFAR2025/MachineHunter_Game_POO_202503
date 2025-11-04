@@ -5,6 +5,7 @@
   "playerStartX": 50,
   "playerStartY": 100,
   "nextLevel": null,
+  "flashbackDialogueSection": "Flashback5",
   "solidObjectsData": [
     { "type":"Chain_Green_Type2", "x": 32, "y": 96, "walkable": false },
     { "type":"Chain_Green_Type2", "x": 120, "y": 96, "walkable": false },
