@@ -1,28 +1,62 @@
 {
-    "Dialogos_Tutorial": [
+    "Dialogos_Tutorial":
+    [
         {
             "ID": 1,
             "Name": "TUTORIAL_1",
-            "Texto": ["Controles: W:  Para saltar A: Para moverse a la izquierda S: Para agacharse D: Para moverse a la derecha ESPACIO: Para disparar MECANICA: Si presionas s y espacio, bajaras de la plataforma"]
+            "Texto": [
+                    "INFO-BOT: ¡Hola, INFO-BOT comunicándose!", 
+                    "INFO-BOT: Controles: A/D: Para moverse.",
+                    "INFO-BOT: W/S: Para saltar y agacharse.",
+                    "INFO-BOT: Si presionas S + ESPACIO, bajarás de una plataforma."
+                    ]
         },{
             "ID": 2,
             "Name": "TUTORIAL_2",
-            "Texto": ["El disparo normal (J) hace una cierta cantidad de daño y es de largo alcance.", "El patrullero no ataca, pero se mueve en ciertos patrones. Recibes daño si chocas contra ellos."]
+            "Texto": [
+                    "INFO-BOT: ¡Cuidado! Ese de ahí es un enemigo.",
+                    "INFO-BOT: Los PATRU-BOT no atacan, pero se mueven en ciertos patrones y pueden saltar o bajar de plataformas.", 
+                    "INFO-BOT: Recibes daño si chocas contra ellos.",
+                    "INFO-BOT: Ubícate al frente de estos y MANTÉN presionado ESPACIO para disparar. ",
+                    "INFO-BOT: El CAÑÓN LÁSER (J) hace una cierta cantidad de daño y es de largo alcance."
+                    ]
         },{
             "ID": 3,
             "Name": "TUTORIAL_3",
-            "Texto": ["Los disparadores lanzan bolas de plasma que van directo a tu cabeza. Será mejor que te agaches o los esquives cuando te disparen."]
+            "Texto": [
+                    "INFO-BOT: Los LEVITA-BOTS se mueven en ciertos patrones en el aire, generalmente de arriba hacia abajo o diagonal.",
+                    "INFO-BOT: El CAÑÓN DE IONES (K) consiste en tres bolitas que, separadas, no hacen tanto daño, pero juntas son el tipo de disparo que hace más daño. Son de corto alcance.",
+                    "INFO-BOT: Intenta destruirlos con el CAÑÓN DE IONES. Recuerda MANTENER presionado ESPACIO para disparar."
+                    ]
         },{
             "ID": 4,
             "Name": "TUTORIAL_4",
-            "Texto": ["El disparo de ion (K) consiste en tres bolitas que, separadas, no hacen tanto daño, pero juntas son el tipo de disparo que hace más daño. Son de corto alcance.", "Los enemigos voladores solo se mueven de arriba hacia abajo."]
+            "Texto": [
+                    "INFO-BOT: Los PLASMA-BOTS lanzan bolas de plasma que van directo a tu cabeza. Será mejor que te agaches o los esquives cuando te disparen.",
+                    "INFO-BOT: Estos enemigos siempre están quietos. Intenta acercarte a ellos y esquiva sus balas agachándote con S."
+                    ]
         },{
             "ID": 5,
             "Name": "TUTORIAL_5",
-            "Texto": ["Va a haber momentos donde haya bastantes enemigos cerca; a eso se le llama horda.", "Con estas hordas, es recomendable que utilices el cañón de riel (L). Este último hace poco daño, pero tiene sus ventajas: dispara más largo, más rápido y puede traspasar enemigos."]
+            "Texto": [
+                    "INFO-BOT: Va a haber momentos donde haya bastantes enemigos cerca; a eso se le llama horda.",
+                    "INFO-BOT: Con estas hordas, es recomendable que utilices el CAÑÓN DE RIEL (L).",
+                    "INFO-BOT: Este último hace poco daño, pero tiene sus ventajas: dispara más largo, más rápido y puede traspasar enemigos."
+                    ]
         }
     ],
-    "Dialogos_acto2": [
+    "Dialogos_acto1":
+    [
+        {
+            "ID": 1,
+            "Name": "Diálogo 1 – Info-Bot",
+            "Texto": [
+                    "INFO-BOT: Destruye todos los enemigos para pasar de nivel."
+                    ]
+        }
+    ],
+    "Dialogos_acto2":
+    [
         {
             "ID": 1,
             "Name": "Diálogo 1 – Científico",
@@ -49,7 +83,9 @@
             "Name": "Diálogo 4 – Científico",
             "Texto": "Te deseo mucha suerte, fallo de injerto humano . . . digo, digo . . . Roberto Julián."
         }
-    ],"Dialogos_Acto_4":[
+    ],
+    "Dialogos_Acto_4":
+    [
         {
             "ID": 10,
             "Name": "Dialogo 5 - Científico",
@@ -64,7 +100,8 @@
             ]
         }
     ],
-    "Dialogos_jefe_final": [
+    "Dialogos_jefe_final":
+    [
         {
             "ID": 13,
             "Name": "Diálogo 1 – ChatGPT.exe",
@@ -97,7 +134,8 @@
             ]
         }
     ],
-    "Dialogos_final": [
+    "Dialogos_final":
+    [
         {
             "ID": 18,
             "Name": "Diálogo 1 – ChatGPT.exe",
@@ -114,5 +152,4 @@
             "Texto": "Roberto Julián: Hasta la vista, baby."
         }
     ]
-    
 }

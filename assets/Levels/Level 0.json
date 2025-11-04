@@ -40,7 +40,7 @@
   ],
   "npcs": [
     
-    { "idleFrames": "NPC/Info-Bot/Info-BotIdle", "x": 80, "y": 72, "dialogues": ["TUTORIAL_1"] },
+    { "idleFrames": "NPC/Info-Bot/Info-BotIdle", "x": 152, "y": 72, "dialogues": ["TUTORIAL_1"] },
 
     { "idleFrames": "NPC/Info-Bot/Info-BotIdle", "x": 532, "y": 72, "dialogues": ["TUTORIAL_2"] },
 
