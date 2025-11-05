@@ -168,7 +168,7 @@ public class NameInputUI implements InputProcessor {
                     String trimmedName = playerName.toString().trim();
                     if (!trimmedName.isEmpty()) {
                         AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
-                        GlobalSettings.playerName = playerName.toString();
+                        GlobalSettings.playerName = trimmedName;
                         currentState = State.TUTORIAL_CONFIRM;
                     }else{
                         AudioManager.getInstance().playSfx(AudioId.NotAvailable, null);
