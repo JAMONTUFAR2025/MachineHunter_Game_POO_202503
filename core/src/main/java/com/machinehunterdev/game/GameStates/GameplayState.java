@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.machinehunterdev.game.Audio.AudioId;
@@ -42,7 +41,6 @@ import com.machinehunterdev.game.Levels.LevelData;
 import com.machinehunterdev.game.Levels.LevelLoader;
 import com.machinehunterdev.game.UI.GameplayUI;
 import com.machinehunterdev.game.UI.NextLevelUI;
-import com.machinehunterdev.game.UI.PauseUI;
 import com.machinehunterdev.game.Util.IState;
 
 public class GameplayState implements IState<GameController> {
@@ -1061,5 +1059,6 @@ public class GameplayState implements IState<GameController> {
 
     @Override
     public void resume() {
+        this.ignoreInputOnFirstFrame = true;
     }
 }

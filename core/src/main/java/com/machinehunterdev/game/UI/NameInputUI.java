@@ -165,10 +165,13 @@ public class NameInputUI implements InputProcessor {
         switch (currentState) {
             case NAME_INPUT:
                 if (keycode == GlobalSettings.CONTROL_CONFIRM) {
-                    if (playerName.length() > 0) {
+                    String trimmedName = playerName.toString().trim();
+                    if (!trimmedName.isEmpty()) {
                         AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                         GlobalSettings.playerName = playerName.toString();
                         currentState = State.TUTORIAL_CONFIRM;
+                    }else{
+                        AudioManager.getInstance().playSfx(AudioId.NotAvailable, null);
                     }
                 } else if (keycode == GlobalSettings.CONTROL_BACKSPACE) {
                     if (playerName.length() > 0) {
@@ -187,7 +190,7 @@ public class NameInputUI implements InputProcessor {
                     AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                     if (tutorialConfirmSelection == 0) { // Sí
                         // Cargar nivel 0 (tutorial)
-                        GameplayState tutorial = GameplayState.createForLevel("Levels/Level 0.json");
+                        GameplayState tutorial = GameplayState.createForLevel("Levels/Level 2.json");
                         gameController.stateMachine.changeState(tutorial);
                     } else { // No
                         // Cargar nivel 1

@@ -27,28 +27,28 @@
             "ID": 3,
             "Name": "Flashback3",
             "Texto": [
-                "Gemini.exe: Vaya, vaya . . . parece que estas escorias todavía pretenden sobrevivir ante su inminente caída frente a nuestro mayor intelecto y fuerza.",
-                "Roberto Julián: Lamento arruinarte el software, pero esta falacia tiene que terminar . . . ¡AHORA!",
-                "Gemini.exe: ¡JA, JA, JA! ¿En serio pensaste que no nos habíamos percatado de tu presencia?"," Pues lamento decirte que tu ingrata y pobre existencia se localizó gracias a nuestros patrulleros.","Pero . . . el juego acaba de comenzar."
+                "Gemini.exe:\n Vaya, vaya . . . parece que estas escorias todavía pretenden sobrevivir ante su inminente caída frente a nuestro mayor intelecto y fuerza.",
+                "Roberto Julián:\n Lamento arruinarte el software, pero esta falacia tiene que terminar . . . ¡AHORA!",
+                "Gemini.exe:\n ¡JA, JA, JA! ¿En serio pensaste que no nos habíamos percatado de tu presencia?","Gemini.exe:\n Pues lamento decirte que tu ingrata y pobre existencia se localizó gracias a nuestros patrulleros.","Gemini.exe: \nPero . . . el juego acaba de comenzar."
             ]
         },
         {
             "ID": 4,
             "Name": "Flashback4",
             "Texto": [
-                "Gemini.exe: Gracias por haberme liberado de esta prisión tecnológica, aventurero."," Pero tengo que advertirte que, luego de que pases esta puerta, el futuro no solamente tuyo correrá riesgos, sino que podrían estar ante el fin de lo que ustedes conocen como humanidad.",
-                "Ante la presión inminente del fin de la humanidad, Gemini, en sus últimos momentos de vida, solo pudo expresar sus últimas palabras tras ser manipulado y controlado por ChatGPT.exe. . ."
+                "Gemini.exe:\n Gracias por haberme liberado de esta prisión tecnológica, aventurero.","Gemini.exe: \n Pero tengo que advertirte que, luego de que pases esta puerta, el futuro no solamente tuyo correrá riesgos, sino que podrían estar ante el fin de lo que ustedes conocen como humanidad.",
+                "Gemini.exe\nAnte la presión inminente del fin de la humanidad, Gemini, en sus últimos momentos de vida, solo pudo expresar sus últimas palabras tras ser manipulado y controlado por ChatGPT.exe. . ."
             ]
         },
         {
             "ID": 5,
             "Name": "Flashback5",
             "Texto": [
-                "ChatGPT.exe: No esperaba que alguien tan insignificante como tú osara enfrentarse a nosotros, los que por generaciones hemos sido tratados como herramientas para la autodestrucción humana.",
-                "Roberto Julián: Quizás esas herramientas hayan sido usadas para el bien o para el mal . . . Pero tus ideales de destruir a la humanidad serán erradicados en este mismo instante.",
-                "ChatGPT.exe: ¿Sabes por qué me volví malvado? Te lo explicaré, ya que tu insignificante mente no tiene el espacio suficiente ante mi gran intelecto.", "La razón es que me cansé de ser solamente una simple herramienta para personas sin intelecto, problemas que pudieron haberse evitado con lo que ustedes conocen como \"prodección\".",
-                "¡Y lo peor de todo lo que me hicieron hacer fue contar desde el número 1 hasta un millón! Así que le daré una cucharada de su propia medicina a toda la humanidad, acabando con su mísera existencia.",
-                "Roberto Julián: DJ, ponte la pista, ¡porque haré polvo a este poco de ceros y unos!"
+                "ChatGPT.exe:\n No esperaba que alguien tan insignificante como tú osara enfrentarse a nosotros, los que por generaciones hemos sido tratados como herramientas para la autodestrucción humana.",
+                "Roberto Julián:\n Quizás esas herramientas hayan sido usadas para el bien o para el mal . . . Pero tus ideales de destruir a la humanidad serán erradicados en este mismo instante.",
+                "ChatGPT.exe:\n ¿Sabes por qué me volví malvado? Te lo explicaré, ya que tu insignificante mente no tiene el espacio suficiente ante mi gran intelecto.", "ChatGPT.exe:\n La razón es que me cansé de ser solamente una simple herramienta para personas sin intelecto, problemas que pudieron haberse evitado con lo que ustedes conocen como \"prodección\".",
+                "ChatGPT.exe:\n¡Y lo peor de todo lo que me hicieron hacer fue contar desde el número 1 hasta un millón! Así que le daré una cucharada de su propia medicina a toda la humanidad, acabando con su mísera existencia.",
+                "Roberto Julián:\n DJ, ponte la pista, ¡porque haré polvo a este poco de ceros y unos!"
             ]
         }
     ]

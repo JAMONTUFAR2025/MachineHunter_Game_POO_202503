@@ -61,27 +61,27 @@
             "ID": 1,
             "Name": "Diálogo 1 – Científico",
             "Texto": [
-                "¡Roberto Julián! ¿Cómo es posible que hayas salido ileso ante esta odisea que nos está ocurriendo?"
+                "Cientifico:¡Roberto Julián! ¿Cómo es posible que hayas salido ileso ante esta odisea que nos está ocurriendo?"
             ]
         },
         {
             "ID": 2,
             "Name": "Diálogo 2 – Científico",
-            "Texto": "Te estarás preguntando cómo hemos llegado a este punto . . ."
+            "Texto": "Cientifico: Te estarás preguntando cómo hemos llegado a este punto . . ."
         },
         {
             "ID": 3,
             "Name": "Diálogo 3 – Científico",
             "Texto": [
-                "Todo ocurrió con el prototipo 001.",
-                "Se creó para dar un paso más en esta estupefacta sociedad, pero dicho prototipo desarrolló su propio razonamiento y, a través de la red, hizo que los aparatos tecnológicos atacaran a los humanos “por haberle hecho contar del 1 al millón”.",
-                "Además, convirtió el laboratorio en su centro de operaciones, donde está construyendo un dispositivo que le permitirá obtener el control absoluto del mundo en pocas horas."
+                "Cientifico: Todo ocurrió con el prototipo 001.",
+                "Cientifico: Se creó para dar un paso más en esta estupefacta sociedad, pero dicho prototipo desarrolló su propio razonamiento y, a través de la red, hizo que los aparatos tecnológicos atacaran a los humanos “por haberle hecho contar del 1 al millón”.",
+                "Cientifico: Además, convirtió el laboratorio en su centro de operaciones, donde está construyendo un dispositivo que le permitirá obtener el control absoluto del mundo en pocas horas."
             ]
         },
         {
             "ID": 4,
             "Name": "Diálogo 4 – Científico",
-            "Texto": "Te deseo mucha suerte, fallo de injerto humano . . . digo, digo . . . Roberto Julián."
+            "Texto": "Cientifico: Te deseo mucha suerte, fallo de injerto humano . . . digo, digo . . . Roberto Julián."
         }
     ],
     "Dialogos_Acto_4":
@@ -90,13 +90,13 @@
             "ID": 10,
             "Name": "Dialogo 5 - Científico",
             "Texto": [
-                "Te deseo toda la suerte, joven aventurero, pero mi transmisión llegará a su fin dentro de muy pocos segmentos. Así que solo tengo algo más que decir. . . ", "¡Ahora ya no tendré que soportar a los usuarios que activan el modo Ultra Gemini Pro!"
+                "Cientifico: Te deseo toda la suerte, joven aventurero, pero mi transmisión llegará a su fin dentro de muy pocos segmentos. Así que solo tengo algo más que decir. . . ", "¡Ahora ya no tendré que soportar a los usuarios que activan el modo Ultra Gemini Pro!"
             ]
         },{
             "ID": 11,
             "Name": "Dialogo 6 - Científico",
             "Texto": [
-                "El destino de la humanidad depende de ti, joven inmaculado."
+                "Cientifico: El destino de la humanidad depende de ti, joven inmaculado."
             ]
         }
     ],
@@ -144,7 +144,7 @@
         {
             "ID": 19,
             "Name": "Diálogo 2 – ChatGPT.exe",
-            "Texto": "¡Pero volveré, y te haré pagar hasta el último número que me hiciste contar! ¡AAAAAAA!"
+            "Texto": "ChatGPT.exe: ¡Pero volveré, y te haré pagar hasta el último número que me hiciste contar! ¡AAAAAAA!"
         },
         {
             "ID": 20,

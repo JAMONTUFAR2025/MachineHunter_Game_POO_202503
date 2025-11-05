@@ -306,7 +306,10 @@ public class DialogManager {
 
         if (textFullyVisible && isFlashback) {
             font.getData().setScale(0.5f);
-            font.draw(batch, "Presiona E para continuar...", 0, glyphLayout.height + 20, Gdx.graphics.getWidth(), Align.center, false);
+            glyphLayout.setText(font, "Presiona E para continuar");
+            float promptX = (Gdx.graphics.getWidth() - glyphLayout.width) / 2f;
+            float promptY = 40;
+            font.draw(batch, glyphLayout, promptX, promptY);
             font.getData().setScale(1.0f);
         }
         
