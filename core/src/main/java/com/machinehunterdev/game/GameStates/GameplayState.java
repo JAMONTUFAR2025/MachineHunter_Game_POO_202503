@@ -384,7 +384,7 @@ public class GameplayState implements IState<GameController> {
     public void execute() {
         AudioManager.getInstance().update(Gdx.graphics.getDeltaTime());
 
-        if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_PAUSE) && !levelCompleted) {
+        if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_PAUSE) && !levelCompleted && !isDialogActive) {
             owner.stateMachine.push(new PauseState(this));
             return; // Stop executing the rest of the frame
         }
