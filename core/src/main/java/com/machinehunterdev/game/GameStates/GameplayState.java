@@ -262,6 +262,8 @@ public class GameplayState implements IState<GameController> {
                 attack1Frames = loadSpriteFrames(skin.attack1Frames, 8); // Assuming 8 frames
                 attack2Frames = loadSpriteFrames(skin.attack2Frames, 8); // Assuming 8 frames
                 summonFrames = loadSpriteFrames(skin.summonFrames, 8); // Assuming 8 frames
+            } else if (enemyData.type == EnemyType.SHOOTER) {
+                summonFrames = loadSpriteFrames(skin.summonFrames, 3);
             }
 
             CharacterAnimator enemyAnimator = new CharacterAnimator(

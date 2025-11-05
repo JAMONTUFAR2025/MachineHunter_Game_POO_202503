@@ -23,7 +23,7 @@ public class ShooterEnemyController extends CharacterController {
     private int previousFrameIndex = -1;
     private float visionRange = 220f; // Rango de visión en el eje X
 
-    private enum State { IDLE, SHOOTING }
+    private enum State { IDLE, DETECTING, READY, SHOOTING }
     private State currentState = State.IDLE;
 
     /**
@@ -53,24 +53,51 @@ public class ShooterEnemyController extends CharacterController {
         handleHurtAnimation();
         checkCollisions(solidObjects);
 
+        float distanceX = Math.abs(playerCharacter.position.x - character.position.x);
+
         switch (currentState) {
             case IDLE:
-                float distanceX = Math.abs(playerCharacter.position.x - character.position.x);
                 if (distanceX <= visionRange) {
-                    shootCooldown -= delta;
-                    if (shootCooldown <= 0) {
-                        currentState = State.SHOOTING;
-                        shootDuration = shootTime;
-                        character.attack();
-                    }
-                } else {
-                    shootCooldown = shootInterval;
+                    currentState = State.DETECTING;
+                    character.isPerformingSpecialAttack = true;
+                    character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.SUMMON);
+                    AudioManager.getInstance().playSfx(AudioId.Exclamation, null);
                 }
                 break;
+
+            case DETECTING:
+                if (distanceX > visionRange) {
+                    currentState = State.IDLE;
+                    character.isPerformingSpecialAttack = false;
+                    character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE);
+                    break;
+                }
+
+                if (character.characterAnimator.isAnimationFinished(CharacterAnimator.AnimationState.SUMMON)) {
+                    character.isPerformingSpecialAttack = false;
+                    currentState = State.READY;
+                    shootCooldown = shootInterval; // Start cooldown timer
+                }
+                break;
+
+            case READY:
+                if (distanceX > visionRange) {
+                    currentState = State.IDLE;
+                    break;
+                }
+
+                shootCooldown -= delta;
+                if (shootCooldown <= 0) {
+                    currentState = State.SHOOTING;
+                    shootDuration = shootTime;
+                    character.attack();
+                }
+                break;
+
             case SHOOTING:
                 shootDuration -= delta;
                 if (shootDuration <= 0) {
-                    currentState = State.IDLE;
+                    currentState = State.READY; // Go back to ready state
                     shootCooldown = shootInterval;
                     character.stopAttacking();
                 }

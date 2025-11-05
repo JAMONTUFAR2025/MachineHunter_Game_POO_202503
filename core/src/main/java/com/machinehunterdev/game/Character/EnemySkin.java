@@ -18,7 +18,7 @@ public enum EnemySkin {
      * Skin del enemigo tirador
      * Idle, Run, Dead, Hurt, Attack
      */
-    SHOOTER("Enemy/Shooter/ShooterIdle", "Enemy/Shooter/ShooterRun", "Enemy/Explosion", "Enemy/Shooter/ShooterHurt", null, null, "Enemy/Shooter/ShooterAttack", new HitboxData(9, 0, 23, 35), null, null, null, null),
+    SHOOTER("Enemy/Shooter/ShooterIdle", "Enemy/Shooter/ShooterRun", "Enemy/Explosion", "Enemy/Shooter/ShooterHurt", null, null, "Enemy/Shooter/ShooterAttack", new HitboxData(9, 0, 23, 35), null, null, null, "Enemy/Shooter/ShooterSpot"),
     /**
      * Skin del enemigo volador
      * Idle, Dead, Hurt
