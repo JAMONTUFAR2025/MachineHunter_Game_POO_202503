@@ -1,50 +1,93 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
-  "groundTexture": "Environment/FloorBlue320.png",
-  "levelWidth": 3000,
+  "groundTexture": "Environment/FloorGray320.png",
+  "levelWidth": 1896,
   "playerStartX": 50,
   "playerStartY": 100,
   "nextLevel": "Levels/Level 2.json",
   "flashbackDialogueSection": "Flashback1",
   "solidObjectsData": [
     
-    {"type":"Platform_White_Small", "x": 150, "y": 80 },
-    {"type":"Platform_White_Large", "x": 300, "y": 144 },
-    {"type":"Platform_White_Medium", "x": 450, "y": 208 },
-    {"type":"Platform_White_Medium", "x": 580, "y": 144 },
+    { "type":"Chain_Gray_Type2", "x": 150, "y": 96, "walkable": false },
+    { "type":"Chain_Gray_Type2", "x": 430, "y": 96, "walkable": false },
+    { "type":"Chain_Gray_Type1", "x": 238, "y": 160, "walkable": false },
+    { "type":"Chain_Gray_Type1", "x": 342, "y": 160, "walkable": false },
 
-    
-    {"type":"Platform_Blue_Large", "x": 650, "y": 80 },
-    {"type":"Platform_Blue_Tiny", "x": 800, "y": 144 },
+    { "type": "Platform_Gray_Huge", "x": 150, "y": 80 },
+    { "type": "Platform_Gray_Small", "x": 150, "y": 144 },
+    { "type": "Platform_Gray_Small", "x": 342, "y": 144 },
 
-    
-    {"type":"Platform_White_Medium", "x": 1000, "y": 80 },
-    {"type":"Platform_White_Small", "x": 1150, "y": 144 },
-    {"type":"Platform_White_Huge", "x": 1350, "y": 208 },
-    {"type":"Platform_Blue_Small", "x": 1500, "y": 80 },
-    {"type":"Platform_Blue_Medium", "x": 1650, "y": 144 },
 
-    
-    {"type":"Platform_White_Large", "x": 1850, "y": 80 },
-    {"type":"Platform_Blue_Huge", "x": 2100, "y": 80 },
-    {"type":"Platform_White_Medium", "x": 2300, "y": 144 },
-    {"type":"Platform_Green_Huge", "x": 2600, "y": 80 }
+
+    { "type":"Chain_Gray_Type3", "x": 488, "y": 96, "walkable": false },
+    { "type":"Chain_Gray_Type3", "x": 544, "y": 96, "walkable": false },
+
+    { "type": "Platform_Gray_Tiny", "x": 488, "y": 80 },
+    { "type": "Platform_Gray_Tiny", "x": 488, "y": 144 },
+    { "type": "Platform_Gray_Tiny", "x": 488, "y": 208 },
+
+
+
+    { "type":"Chain_Gray_Type3", "x": 842, "y": 96, "walkable": false },
+    { "type":"Chain_Gray_Type3", "x": 898, "y": 96, "walkable": false },
+
+    { "type": "Platform_Gray_Tiny", "x": 842, "y": 80 },
+    { "type": "Platform_Gray_Tiny", "x": 842, "y": 144 },
+    { "type": "Platform_Gray_Tiny", "x": 842, "y": 208 },
+
+
+
+    { "type":"Chain_Gray_Type4", "x": 956, "y": 96, "walkable": false },
+    { "type":"Chain_Gray_Type3", "x": 1108, "y": 96, "walkable": false },
+    { "type":"Chain_Gray_Type1", "x": 1196, "y": 160, "walkable": false },
+
+    { "type": "Platform_Gray_Medium", "x": 956, "y": 80 },
+    { "type": "Platform_Gray_Small", "x": 1108, "y": 144 },
+    { "type": "Platform_Gray_Medium", "x": 956, "y": 208 },
+
+
+
+    { "type":"Chain_Gray_Type3", "x": 1254, "y": 96, "walkable": false },
+    { "type":"Chain_Gray_Type3", "x": 1534, "y": 96, "walkable": false },
+
+    { "type": "Platform_Gray_Huge", "x": 1254, "y": 80 },
+    { "type": "Platform_Gray_Huge", "x": 1254, "y": 144 },
+    { "type": "Platform_Gray_Huge", "x": 1254, "y": 208 },
+
+
+    { "type":"Chain_Gray_Type3", "x": 1682, "y": 96, "walkable": false },
+    { "type":"Chain_Gray_Type3", "x": 1738, "y": 96, "walkable": false },
+
+    { "type": "Platform_Gray_Tiny", "x": 1682, "y": 80 },
+    { "type": "Platform_Gray_Tiny", "x": 1682, "y": 144 },
+    { "type": "Platform_Gray_Tiny", "x": 1682, "y": 208 }
+
   ],
   "enemies": [
-    
-    {"type": "PATROLLER", "x": 700, "y": 112, "patrolPoints": [{"x": 670, "y": 112}, {"x": 730, "y": 112}]},
-    {"type": "PATROLLER", "x": 1100, "y": 112, "patrolPoints": [{"x": 1070, "y": 112}, {"x": 1130, "y": 112}]},
-    {"type": "PATROLLER", "x": 1550, "y": 112, "patrolPoints": [{"x": 1520, "y": 112}, {"x": 1580, "y": 112}]},
-    {"type": "PATROLLER", "x": 2600, "y": 112, "patrolPoints": [{"x": 2620, "y": 112}, {"x": 2800, "y": 112}]},
 
-    
-    {"type": "SHOOTER", "x": 450, "y": 240 },
-    {"type": "SHOOTER", "x": 1400, "y": 176 },
-    {"type": "SHOOTER", "x": 2000, "y": 176 },
+    { "type": "PATROLLER", "x": 150, "y": 96, "patrolPoints": [{"x": 206, "y": 96, "action": "Jump"}, {"x": 150, "y": 96, "action": "Fall"}] },
+    { "type": "PATROLLER", "x": 342, "y": 96, "patrolPoints": [{"x": 398, "y": 96, "action": "Jump"}, {"x": 342, "y": 96, "action": "Fall"}] },
 
-    {"type": "FLYING", "x": 900, "y": 180, "patrolPoints": [{"x": 870, "y": 180}, {"x": 930, "y": 144}]},
-    {"type": "FLYING", "x": 1700, "y": 210, "patrolPoints": [{"x": 1670, "y": 210}, {"x": 1730, "y": 144}]},
-    {"type": "FLYING", "x": 2400, "y": 180, "patrolPoints": [{"x": 2370, "y": 180}, {"x": 2430, "y": 80}]}
+
+    { "type": "FLYING", "x": 602, "y": 96, "patrolPoints": [{"x": 602, "y": 224}, {"x": 602, "y": 96}]},
+    { "type": "FLYING", "x": 652, "y": 224, "patrolPoints": [{"x": 652, "y": 96}, {"x": 652, "y": 224}]},
+    { "type": "FLYING", "x": 702, "y": 96, "patrolPoints": [{"x": 702, "y": 224}, {"x": 702, "y": 96}]},
+    { "type": "FLYING", "x": 752, "y": 224, "patrolPoints": [{"x": 752, "y": 96}, {"x": 752, "y": 224}]},
+    { "type": "PATROLLER", "x": 500, "y": 32, "patrolPoints": [{"x": 500, "y": 32 }, {"x": 854, "y": 96 }], "waitTime": 1.0 },
+
+    {"type": "SHOOTER", "x": 1164, "y": 160 },
+    { "type": "PATROLLER", "x": 956, "y": 96, "patrolPoints": [{"x": 1076, "y": 96 }, {"x": 956, "y": 96 }], "waitTime": 1.0 },
+    { "type": "PATROLLER", "x": 956, "y": 260, "patrolPoints": [{"x": 1076, "y": 260 }, {"x": 956, "y": 260 }], "waitTime": 1.0 },
+
+    { "type": "PATROLLER", "x": 1254, "y": 260, "patrolPoints": [{"x": 1502, "y": 260 }, {"x": 1254, "y": 260 }], "waitTime": 1.0 },
+    { "type": "PATROLLER", "x": 1502, "y": 96, "patrolPoints": [{"x": 1254, "y": 96 }, {"x": 1502, "y": 96 }], "waitTime": 1.0 },
+
+    { "type": "FLYING", "x": 1592, "y": 96, "patrolPoints": [{"x": 1592, "y": 224}, {"x": 1592, "y": 96}]},
+
+    {"type": "SHOOTER", "x": 1694, "y": 96 },
+    {"type": "SHOOTER", "x": 1694, "y": 260 }
   ],
-  "npcs": []
+  "npcs": [
+    { "idleFrames": "NPC/Info-Bot/Info-BotIdle", "x": 110, "y": 72, "dialogues": ["NIVEL_1_INFO-BOT"] }
+  ]
 }

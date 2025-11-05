@@ -898,7 +898,7 @@ public class GameplayState implements IState<GameController> {
 
     private void handleEnemyDeath(com.machinehunterdev.game.Character.IEnemy enemy, Character enemyCharacter) {
         if (enemy.getType() == EnemyType.BOSS_GEMINI || enemy.getType() == EnemyType.BOSS_CHATGPT) {
-            AudioManager.getInstance().playSfx(AudioId.BossDeath, enemyCharacter);
+            AudioManager.getInstance().playSfx(AudioId.BossDeath, enemyCharacter, GlobalSettings.ANNOYING_VOLUME * 6f);
 
             // Eliminar a todos los enemigos restantes al morir el jefe
             for (com.machinehunterdev.game.Character.IEnemy remainingEnemy : enemyManager.getEnemies()) {

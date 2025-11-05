@@ -49,7 +49,7 @@
     [
         {
             "ID": 1,
-            "Name": "Diálogo 1 – Info-Bot",
+            "Name": "NIVEL_1_INFO-BOT",
             "Texto": [
                     "INFO-BOT: Destruye todos los enemigos para pasar de nivel."
                     ]

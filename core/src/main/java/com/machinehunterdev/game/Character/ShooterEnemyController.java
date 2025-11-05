@@ -21,6 +21,7 @@ public class ShooterEnemyController extends CharacterController {
     private float shootCooldown;
     private float shootInterval;
     private int previousFrameIndex = -1;
+    private float visionRange = 220f; // Rango de visión en el eje X
 
     private enum State { IDLE, SHOOTING }
     private State currentState = State.IDLE;
@@ -54,11 +55,16 @@ public class ShooterEnemyController extends CharacterController {
 
         switch (currentState) {
             case IDLE:
-                shootCooldown -= delta;
-                if (shootCooldown <= 0) {
-                    currentState = State.SHOOTING;
-                    shootDuration = shootTime;
-                    character.attack();
+                float distanceX = Math.abs(playerCharacter.position.x - character.position.x);
+                if (distanceX <= visionRange) {
+                    shootCooldown -= delta;
+                    if (shootCooldown <= 0) {
+                        currentState = State.SHOOTING;
+                        shootDuration = shootTime;
+                        character.attack();
+                    }
+                } else {
+                    shootCooldown = shootInterval;
                 }
                 break;
             case SHOOTING:
