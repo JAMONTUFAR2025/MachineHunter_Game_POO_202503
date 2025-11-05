@@ -87,6 +87,11 @@ public class Character
     public boolean readyForGameOverTransition = false; // Indica si el personaje está listo para la pantalla de Game Over
     public boolean isPlayer = false;
     public boolean isPaused = false;
+    private EnemyType enemyType;
+
+    public void setEnemyType(EnemyType enemyType) {
+        this.enemyType = enemyType;
+    }
 
     // === SISTEMA DE INVULNERABILIDAD ===
     
@@ -343,8 +348,7 @@ public class Character
             hurtTimer -= delta;
             velocity.x = 0; // Detener movimiento horizontal
             
-            // Si no es el jugador
-            if(!isPlayer) {
+            if(this.enemyType == EnemyType.FLYING) {
                 velocity.y = 0; // Detener movimiento vertical
             }
 

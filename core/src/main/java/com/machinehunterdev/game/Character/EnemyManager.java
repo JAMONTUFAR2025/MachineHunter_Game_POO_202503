@@ -34,6 +34,7 @@ public class EnemyManager {
      * @param shootTime Duración del ataque para enemigos que disparan.
      */
     public void addEnemy(EnemyType type, Character character, java.util.List<com.machinehunterdev.game.Levels.LevelData.Point> patrolPoints, float waitTime, float shootInterval, float shootTime) {
+        character.setEnemyType(type);
         switch (type) {
             case PATROLLER:
                 enemies.add(new PatrollerEnemy(character, (java.util.ArrayList<com.machinehunterdev.game.Levels.LevelData.Point>) patrolPoints, waitTime, type));

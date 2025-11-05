@@ -79,11 +79,15 @@ public class GameplayState implements IState<GameController> {
     private ArrayList<Bullet> bullets;
     private ImpactEffectManager impactEffectManager;
     private ShapeRenderer shapeRenderer;
+    private Texture thunderWarningTexture;
+    private Texture summonWarningTexture;
+    private List<Sprite> thunderAttackFrames;
+    private float thunderAnimationTime = 0;
 
     // === CONTROL DE ESTADO ===
     private GameController owner;
     private boolean ignoreInputOnFirstFrame = true;
-    private boolean isBossPhase2 = false;
+    //private boolean isBossPhase2 = false;
 
 
     private GameplayState() {}
@@ -119,14 +123,18 @@ public class GameplayState implements IState<GameController> {
         this.camera = owner.camera;
         AudioManager.getInstance().setCamera(this.camera);
 
+        // Melodia normal para los niveles 0, 1, 2 y 4
+        // Melodia de jefe Gemini para el nivel 3
+        // Melodia de jefe ChatGPT para el nivel 5
         if (currentLevelFile.equals("Levels/Level 0.json") || 
             currentLevelFile.equals("Levels/Level 1.json") || 
             currentLevelFile.equals("Levels/Level 2.json") || 
             currentLevelFile.equals("Levels/Level 4.json")) {
             AudioManager.getInstance().playMusic("Audio/Soundtrack/NormalBattleTheme.mp3", true, false);
-        } else if (currentLevelFile.equals("Levels/Level 3.json") || 
-            currentLevelFile.equals("Levels/Level 5.json")) {
-            AudioManager.getInstance().playMusic("Audio/Soundtrack/BossPhase1.mp3", true, false);
+        } else if (currentLevelFile.equals("Levels/Level 3.json")) {
+            AudioManager.getInstance().playMusic("Audio/Soundtrack/GeminiBattle.mp3", true, false);
+        } else if (currentLevelFile.equals("Levels/Level 5.json")) {
+            AudioManager.getInstance().playMusic("Audio/Soundtrack/ChatGPTBattle.mp3", true, false);
         }
 
         loadLevel(currentLevelFile);
@@ -148,8 +156,10 @@ public class GameplayState implements IState<GameController> {
         bullets = new ArrayList<>();
         interactionFont = new BitmapFont(Gdx.files.internal("fonts/OrangeKid32.fnt"));
         impactEffectManager = new ImpactEffectManager(0.1f);
-        shapeRenderer = new ShapeRenderer();
         groundTexture = new Texture(currentLevel.groundTexture);
+        thunderWarningTexture = new Texture("FX/ThunderWarning.png");
+        summonWarningTexture = new Texture("FX/SummonWarning.png");
+        thunderAttackFrames = loadSpriteFrames("FX/ThunderAttack", 5);
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(0, 0, 0, 0.7f);
@@ -411,18 +421,19 @@ public class GameplayState implements IState<GameController> {
             owner.stateMachine.changeState(GameOverState.instance);
         }
 
-        if (!isBossPhase2 && (currentLevelFile.equals("Levels/Level 3.json") || currentLevelFile.equals("Levels/Level 5.json"))) {
-            for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
-                if (enemy instanceof com.machinehunterdev.game.Character.BossEnemy) {
-                    Character boss = enemy.getCharacter();
-                    if (boss.getHealth() <= boss.getMaxHealth() / 2) {
-                        AudioManager.getInstance().playMusic("Audio/Soundtrack/BossPhase2.mp3", true, false);
-                        isBossPhase2 = true;
-                        break;
-                    }
-                }
-            }
-        }
+        // if (!isBossPhase2 && (currentLevelFile.equals("Levels/Level 3.json") || currentLevelFile.equals("Levels/Level 5.json"))) {
+        //     for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+        //         if (enemy instanceof com.machinehunterdev.game.Character.BossEnemy) {
+        //             Character boss = enemy.getCharacter();
+        //             if (boss.getHealth() <= boss.getMaxHealth() / 2) {
+        //                 /* Esto no se usara de momento */
+        //                 //AudioManager.getInstance().playMusic("Audio/Soundtrack/BossPhase2.mp3", true, false);
+        //                 isBossPhase2 = true;
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     private void updateGameLogic() {
@@ -696,41 +707,35 @@ public class GameplayState implements IState<GameController> {
         drawBullets();
         impactEffectManager.draw(gameBatch);
 
-        gameBatch.end();
-
-        // Render hitboxes for debugging
-        debugRenderHitboxes();
-
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
         for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
             if (enemy instanceof com.machinehunterdev.game.Character.BossEnemy) {
                 BossEnemyController controller = (BossEnemyController) ((BaseEnemy) enemy).getController();
                 if (controller.isLightningAttackActive()) {
                     if (controller.isLightningWarning()) {
-                        shapeRenderer.setColor(1, 0, 0, 0.8f);
                         float x = controller.getLightningPlayerX();
-                        shapeRenderer.rect(x, 32, 40, 448); // Ajustar para 32 de ancho
+                        gameBatch.draw(thunderWarningTexture, x, 32, 40, 448);
                     } else if (controller.isLightningStriking()) {
-                        shapeRenderer.setColor(Color.YELLOW);
+                        thunderAnimationTime += Gdx.graphics.getDeltaTime();
+                        int frameIndex = (int) ((thunderAnimationTime / 0.5f) * thunderAttackFrames.size()) % thunderAttackFrames.size();
+                        Sprite frame = thunderAttackFrames.get(frameIndex);
                         float x = controller.getLightningPlayerX();
-                        shapeRenderer.rect(x, 32, 40, 448); // Ajustar para 32 de ancho
+                        frame.setPosition(x, 32);
+                        frame.setSize(40, 448);
+                        frame.draw(gameBatch);
                     }
                 }
 
                 if (controller.isSummonWarning()) {
-                    shapeRenderer.setColor(Color.BLACK);
-                    shapeRenderer.rect(88, 32, 40, 448); // Ajustar para 32 de ancho
-                    shapeRenderer.rect(352, 32, 40, 448); // Ajustar para 32 de ancho
+                    gameBatch.draw(summonWarningTexture, 88, 32, 40, 448);
+                    gameBatch.draw(summonWarningTexture, 352, 32, 40, 448);
                 }
             }
         }
 
-        shapeRenderer.end();
-        Gdx.gl.glDisable(GL20.GL_BLEND);
+        gameBatch.end();
+
+        // Render hitboxes for debugging
+        //debugRenderHitboxes();
     }
 
     private void drawNPCInteractionPrompt(NPCController npcController) {
@@ -977,7 +982,14 @@ public class GameplayState implements IState<GameController> {
 
         if (nextLevelUI != null) nextLevelUI.dispose();
         if (impactEffectManager != null) impactEffectManager.dispose();
-        if (shapeRenderer != null) shapeRenderer.dispose();
+
+        disposeTexture(thunderWarningTexture);
+        disposeTexture(summonWarningTexture);
+        if (thunderAttackFrames != null) {
+            for (Sprite frame : thunderAttackFrames) {
+                frame.getTexture().dispose();
+            }
+        }
         
         for (Bullet bullet : bullets) {
             bullet.dispose();
@@ -1021,29 +1033,29 @@ public class GameplayState implements IState<GameController> {
         return closestGroundY;
     }
 
-    private void debugRenderHitboxes() {
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.RED);
+    // private void debugRenderHitboxes() {
+    //     shapeRenderer.setProjectionMatrix(camera.combined);
+    //     shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+    //     shapeRenderer.setColor(Color.RED);
 
-        // Draw player hitbox
-        if (playerCharacter != null) {
-            Rectangle playerBounds = playerCharacter.getBounds();
-            shapeRenderer.rect(playerBounds.x, playerBounds.y, playerBounds.width, playerBounds.height);
-        }
+    //     // Draw player hitbox
+    //     if (playerCharacter != null) {
+    //         Rectangle playerBounds = playerCharacter.getBounds();
+    //         shapeRenderer.rect(playerBounds.x, playerBounds.y, playerBounds.width, playerBounds.height);
+    //     }
 
-        // Draw enemy hitboxes
-        if (enemyManager != null) {
-            for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
-                if (enemy != null && enemy.getCharacter() != null) {
-                    Rectangle enemyBounds = enemy.getCharacter().getBounds();
-                    shapeRenderer.rect(enemyBounds.x, enemyBounds.y, enemyBounds.width, enemyBounds.height);
-                }
-            }
-        }
+    //     // Draw enemy hitboxes
+    //     if (enemyManager != null) {
+    //         for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+    //             if (enemy != null && enemy.getCharacter() != null) {
+    //                 Rectangle enemyBounds = enemy.getCharacter().getBounds();
+    //                 shapeRenderer.rect(enemyBounds.x, enemyBounds.y, enemyBounds.width, enemyBounds.height);
+    //             }
+    //         }
+    //     }
 
-        shapeRenderer.end();
-    }
+    //     shapeRenderer.end();
+    // }
 
     public String getCurrentLevelFile() {
         return currentLevelFile;

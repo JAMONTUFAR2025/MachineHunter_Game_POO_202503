@@ -52,6 +52,7 @@ public class DialogState implements IState<GameController>, InputProcessor {
      * Bandera para indicar si el diálogo es un flashback (puede tener un estilo visual diferente).
      */
     private boolean isFlashback = false;
+    private String dialogueSection;
 
     // --- Constructores ---
 
@@ -78,6 +79,7 @@ public class DialogState implements IState<GameController>, InputProcessor {
     public DialogState(String dialogueSection, String levelFile) {
         this.levelFile = levelFile;
         this.isFlashback = true;
+        this.dialogueSection = dialogueSection;
         if (dialogueSection.equals("Final")) {
             this.currentDialog = loadDialog("Dialogos/Dialogos_personajes.json", "Dialogos_final", null);
         } else {
@@ -103,7 +105,14 @@ public class DialogState implements IState<GameController>, InputProcessor {
         Gdx.input.setInputProcessor(this);
 
         if (isFlashback) {
-            AudioManager.getInstance().playMusic("Audio/Soundtrack/Flashback.mp3", true, false);
+            // Melodia de Warning Gemini para el nivel 3 y Melodia de Warning ChatGPT para el nivel 5
+            if ("Flashback3".equals(dialogueSection)) {
+                AudioManager.getInstance().playMusic("Audio/Soundtrack/WarningGemini.mp3", true, false);
+            } else if ("Flashback5".equals(dialogueSection)) {
+                AudioManager.getInstance().playMusic("Audio/Soundtrack/WarningChatGPT.mp3", true, false);
+            } else {
+                AudioManager.getInstance().playMusic("Audio/Soundtrack/Flashback.mp3", true, false);
+            }
         }
     }
 
