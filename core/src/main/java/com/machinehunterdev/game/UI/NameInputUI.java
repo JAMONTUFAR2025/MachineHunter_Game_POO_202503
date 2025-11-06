@@ -225,8 +225,13 @@ public class NameInputUI implements InputProcessor {
         }
         if (currentState == State.NAME_INPUT) {
             if (playerName.length() < 15 && (java.lang.Character.isLetterOrDigit(character) || character == ' ')) {
-                playerName.append(character);
-                AudioManager.getInstance().playSfx(AudioId.UIChange, null);
+                // Prevent adding a space as the first character
+                if (playerName.length() == 0 && character == ' ') {
+                    AudioManager.getInstance().playSfx(AudioId.NotAvailable, null);
+                } else {
+                    playerName.append(character);
+                    AudioManager.getInstance().playSfx(AudioId.UIChange, null);
+                }
             } else if (playerName.length() >= 15) {
                 AudioManager.getInstance().playSfx(AudioId.NotAvailable, null);
             }
