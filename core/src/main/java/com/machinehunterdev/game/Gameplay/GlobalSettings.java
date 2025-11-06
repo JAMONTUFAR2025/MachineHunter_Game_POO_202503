@@ -29,7 +29,7 @@ public class GlobalSettings
     public static final int FLYING_HEALTH = 150; // 150
 
     /** Salud de los jefes */
-    public static final int BOSS_GEMINI_HEALTH = 3000; // 3000
+    public static final int BOSS_GEMINI_HEALTH = 1000; // 3000
     public static final int BOSS_CHATGPT_HEALTH = 4500; // 4500
 
     /** Controles para el jugador */

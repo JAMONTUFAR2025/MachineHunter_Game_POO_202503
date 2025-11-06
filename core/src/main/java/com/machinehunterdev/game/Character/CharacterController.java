@@ -98,6 +98,9 @@ public abstract class CharacterController {
                 character.isAttacking = false;
                 character.isPerformingSpecialAttack = false;
             }
+        } else if (currentAnimation == CharacterAnimator.AnimationState.ANGRY_HURT && character.characterAnimator.isAnimationFinished(CharacterAnimator.AnimationState.ANGRY_HURT)) {
+            character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE_RAGE);
+            character.isPerformingSpecialAttack = false;
         }
     }
 }

@@ -240,6 +240,9 @@ public class Character
             if (isKnockedBack && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT)) {
                 // Prioridad máxima: Animación de empuje
                 newState = CharacterAnimator.AnimationState.HURT;
+            } else if (isBossInPhaseTwo() && isHurt && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.ANGRY_HURT) 
+                        && !(isPerformingSpecialAttack || (isAttacking && !isPlayer))) {
+                newState = CharacterAnimator.AnimationState.ANGRY_HURT;
             } else if (!isAlive) {
                 newState = CharacterAnimator.AnimationState.DEAD;
                 if (!isPlayer) {
@@ -247,7 +250,8 @@ public class Character
                     velocity.y = 0;
                 }
             } else { // Only determine other states if character is alive
-                if (isHurt && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT) && !(isPerformingSpecialAttack || (isAttacking && !isPlayer))) {
+                if (isHurt && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.HURT) 
+                            && !(isPerformingSpecialAttack || (isAttacking && !isPlayer))) {
                     // Prioridad: Animación de daño
                     newState = CharacterAnimator.AnimationState.HURT;
                 } else if (isCrouching && characterAnimator.hasAnimation(CharacterAnimator.AnimationState.CROUCH)) {
@@ -726,6 +730,15 @@ public class Character
     public boolean isInvulnerable() { return invulnerable; }
     public boolean isFlashingTransparent() { return flashTransparent; }
     public boolean isHurt() { return isHurt; }
+
+    public boolean isBossInPhaseTwo() {
+        if (enemyType == null) return false;
+
+        boolean isBoss = enemyType == EnemyType.BOSS_GEMINI || enemyType == EnemyType.BOSS_CHATGPT;
+        if (!isBoss) return false;
+
+        return (float) health / maxHealth <= 0.5f;
+    }
 
     public float getWidth() { 
         if (characterAnimator != null) {

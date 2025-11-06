@@ -209,7 +209,7 @@ public class GameplayState implements IState<GameController> {
             playerIdleFrames, playerRunFrames, playerDeadFrames,
             playerJumpFrames, playerFallFrames, null,
             playerLaserAttackFrames, playerIonAttackFrames, playerRailgunAttackFrames,
-            playerHurtFrames, playerCrouchFrames, null, null, null, null
+            playerHurtFrames, null, playerCrouchFrames, null, null, null, null
         );
 
         playerCharacter = new Character(GlobalSettings.PLAYER_HEALTH, playerAnimator, null, 
@@ -249,6 +249,7 @@ public class GameplayState implements IState<GameController> {
             List<Sprite> enemyJumpFrames = loadSpriteFrames(skin.jumpFrames, 1);
             List<Sprite> enemyFallFrames = loadSpriteFrames(skin.fallFrames, 1);
             List<Sprite> enemyHurtFrames = loadSpriteFrames(skin.hurtFrames, 1);
+            List<Sprite> enemyAngryHurtFrames = loadSpriteFrames(skin.angryHurtFrames, 1);
             List<Sprite> enemyAttackFrames = loadSpriteFrames(skin.attackFrames, 2);
 
             // Load boss-specific animations
@@ -270,7 +271,7 @@ public class GameplayState implements IState<GameController> {
                 enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
                 enemyJumpFrames, enemyFallFrames, enemyAttackFrames,
                 null, null, null,
-                enemyHurtFrames, null,
+                enemyHurtFrames, enemyAngryHurtFrames, null,
                 idleRageFrames, attack1Frames, attack2Frames, summonFrames
             );
 
@@ -333,7 +334,7 @@ public class GameplayState implements IState<GameController> {
                 npcIdleFrames, null, null,
                 null, null, null,
                 null, null, null,
-                null, null, null, null, null, null
+                null, null, null, null, null, null, null
             );
             
             Character npcCharacter = new Character(100, npcAnimator, null, npcData.x, npcData.y, false);
@@ -530,19 +531,25 @@ public class GameplayState implements IState<GameController> {
         List<Sprite> enemyFallFrames = loadSpriteFrames(skin.fallFrames, 1);
         List<Sprite> enemyHurtFrames = loadSpriteFrames(skin.hurtFrames, 1);
         List<Sprite> enemyAttackFrames = loadSpriteFrames(skin.attackFrames, 2);
+        List<Sprite> summonFrames = null;
+
+        if (type == EnemyType.SHOOTER)
+        {
+            summonFrames = loadSpriteFrames(skin.summonFrames, 3);
+        }
 
         CharacterAnimator enemyAnimator1 = new CharacterAnimator(
             enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
             enemyJumpFrames, enemyFallFrames, enemyAttackFrames,
             null, null, null,
-            enemyHurtFrames, null, null, null, null, null
+            enemyHurtFrames, null, null, null, null, null, summonFrames
         );
 
         CharacterAnimator enemyAnimator2 = new CharacterAnimator(
             enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
             enemyJumpFrames, enemyFallFrames, enemyAttackFrames,
             null, null, null,
-            enemyHurtFrames, null, null, null, null, null
+            enemyHurtFrames, null, null, null, null, null, summonFrames
         );
 
         int health = 1;
@@ -598,10 +605,10 @@ public class GameplayState implements IState<GameController> {
                 p3.x = 88; p3.y = 32; p3.action = "Jump"; patrolPoints2.add(p3);
                 LevelData.Point p4 = new LevelData.Point();
                 p4.x = 352; p4.y = 32; p4.action = "Jump"; patrolPoints2.add(p4);
-                waitTime = 3.0f;
+                waitTime = 1.0f;
                 break;
             case SHOOTER:
-                shootInterval = 5.0f;
+                shootInterval = 2.0f;
                 shootTime = 1f;
                 break;
             case FLYING:

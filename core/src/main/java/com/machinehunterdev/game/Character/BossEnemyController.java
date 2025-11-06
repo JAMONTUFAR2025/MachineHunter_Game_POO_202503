@@ -3,12 +3,15 @@ package com.machinehunterdev.game.Character;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.xml.bind.JAXBElement.GlobalScope;
+
 import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.Audio.AudioId;
 import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.Environment.SolidObject;
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 public class BossEnemyController extends CharacterController {
 
@@ -27,6 +30,8 @@ public class BossEnemyController extends CharacterController {
     private float summonWarningTimer = 0f;
     private int previousSummonFlashCount = -1;
     private EnemyType pendingEnemyToSummon = null;
+
+    private boolean hasEnteredPhaseTwo = false;
 
     private EnemyType enemyToSummon = null;
 
@@ -109,6 +114,10 @@ public class BossEnemyController extends CharacterController {
         CharacterAnimator.AnimationState currentAnimation = character.characterAnimator.getCurrentState();
 
         if (isPhaseTwo) {
+            if (!hasEnteredPhaseTwo) {
+                AudioManager.getInstance().playSfx(AudioId.BossAngry, character, GlobalSettings.ANNOYING_VOLUME * 6f);
+                hasEnteredPhaseTwo = true;
+            }
             if (currentAnimation == CharacterAnimator.AnimationState.IDLE) {
                 character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE_RAGE);
             }

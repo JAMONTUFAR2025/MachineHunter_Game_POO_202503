@@ -62,7 +62,7 @@ public class NameInputState implements IState<GameController> {
                 playerIdleFrames, null, null,
                 null, null, null, null, null,
                 null, null, null, null, null, 
-                null, null
+                null, null, null
         );
         float charX = (Gdx.graphics.getWidth() / 2f) - (playerIdleFrames.get(0).getWidth() / 2f);
         float charY = (Gdx.graphics.getHeight() / 2f) - (playerIdleFrames.get(0).getHeight() / 2f);

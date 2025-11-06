@@ -94,6 +94,7 @@ public class GameController extends ApplicationAdapter
         sfxList.add(new AudioData(AudioId.BossSummonWarning, "Audio/Sfx/BossSummonWarning.wav"));
         sfxList.add(new AudioData(AudioId.BossSummonAttack, "Audio/Sfx/BossSummonAttack.wav"));
         sfxList.add(new AudioData(AudioId.BossDeath, "Audio/Sfx/BossDeath.wav"));
+        sfxList.add(new AudioData(AudioId.BossAngry, "Audio/Sfx/BossAngry.wav"));
         sfxList.add(new AudioData(AudioId.UIAccept, "Audio/Sfx/UIAccept.wav"));
         sfxList.add(new AudioData(AudioId.UIChange, "Audio/Sfx/UIChange.wav"));
         sfxList.add(new AudioData(AudioId.UICancel, "Audio/Sfx/UICancel.wav"));
