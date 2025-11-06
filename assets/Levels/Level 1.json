@@ -69,10 +69,10 @@
     { "type": "PATROLLER", "x": 342, "y": 96, "patrolPoints": [{"x": 398, "y": 96, "action": "Jump"}, {"x": 342, "y": 96, "action": "Fall"}] },
 
 
-    { "type": "FLYING", "x": 602, "y": 96, "patrolPoints": [{"x": 602, "y": 224}, {"x": 602, "y": 96}]},
-    { "type": "FLYING", "x": 652, "y": 224, "patrolPoints": [{"x": 652, "y": 96}, {"x": 652, "y": 224}]},
-    { "type": "FLYING", "x": 702, "y": 96, "patrolPoints": [{"x": 702, "y": 224}, {"x": 702, "y": 96}]},
-    { "type": "FLYING", "x": 752, "y": 224, "patrolPoints": [{"x": 752, "y": 96}, {"x": 752, "y": 224}]},
+    { "type": "FLYING", "x": 602, "y": 116, "patrolPoints": [{"x": 602, "y": 224}, {"x": 602, "y": 96}]},
+    { "type": "FLYING", "x": 652, "y": 244, "patrolPoints": [{"x": 652, "y": 96}, {"x": 652, "y": 224}]},
+    { "type": "FLYING", "x": 702, "y": 116, "patrolPoints": [{"x": 702, "y": 224}, {"x": 702, "y": 96}]},
+    { "type": "FLYING", "x": 752, "y": 244, "patrolPoints": [{"x": 752, "y": 96}, {"x": 752, "y": 224}]},
     { "type": "PATROLLER", "x": 500, "y": 32, "patrolPoints": [{"x": 500, "y": 32 }, {"x": 854, "y": 96 }], "waitTime": 1.0 },
 
     {"type": "SHOOTER", "x": 1164, "y": 160 },
@@ -82,7 +82,7 @@
     { "type": "PATROLLER", "x": 1254, "y": 260, "patrolPoints": [{"x": 1502, "y": 260 }, {"x": 1254, "y": 260 }], "waitTime": 1.0 },
     { "type": "PATROLLER", "x": 1502, "y": 96, "patrolPoints": [{"x": 1254, "y": 96 }, {"x": 1502, "y": 96 }], "waitTime": 1.0 },
 
-    { "type": "FLYING", "x": 1592, "y": 96, "patrolPoints": [{"x": 1592, "y": 224}, {"x": 1592, "y": 96}]},
+    { "type": "FLYING", "x": 1592, "y": 116, "patrolPoints": [{"x": 1592, "y": 224}, {"x": 1592, "y": 96}]},
 
     {"type": "SHOOTER", "x": 1694, "y": 96 },
     {"type": "SHOOTER", "x": 1694, "y": 260 }

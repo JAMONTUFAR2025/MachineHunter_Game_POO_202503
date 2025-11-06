@@ -17,7 +17,7 @@ public class FlyingEnemyController extends CharacterController {
     /* Puntos de patrullaje */
     private ArrayList<Vector2> patrolPoints;
     /* Estado del enemigo volador */
-    private enum State { PATROLLING, WAITING, HURT }
+    private enum State { PATROLLING, WAITING }
     /* Estado actual del enemigo */
     private State currentState;
 
@@ -62,10 +62,6 @@ public class FlyingEnemyController extends CharacterController {
         handleHurtAnimation();
         // No se necesitan colisiones para enemigos voladores
 
-        if (character.isHurt()) {
-            currentState = State.HURT;
-        }
-
         if (patrolPoints == null || patrolPoints.isEmpty()) {
             character.stopMoving();
             return;
@@ -77,9 +73,6 @@ public class FlyingEnemyController extends CharacterController {
                 break;
             case WAITING:
                 handleWaitingState(delta);
-                break;
-            case HURT:
-                handleHurtState(delta);
                 break;
         }
     }
@@ -114,13 +107,6 @@ public class FlyingEnemyController extends CharacterController {
         if (waitTimer >= waitTime) {
             currentTargetIndex = (currentTargetIndex + 1) % patrolPoints.size();
             currentTarget = patrolPoints.get(currentTargetIndex);
-            currentState = State.PATROLLING;
-        }
-    }
-
-    private void handleHurtState(float delta) {
-        character.stopMoving();
-        if (!character.isHurt()) {
             currentState = State.PATROLLING;
         }
     }

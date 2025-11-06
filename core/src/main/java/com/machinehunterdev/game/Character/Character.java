@@ -350,10 +350,9 @@ public class Character
         // --- MANEJO DEL ESTADO DE DAÑO ---
         if (isHurt) {
             hurtTimer -= delta;
-            velocity.x = 0; // Detener movimiento horizontal
-            
-            if(this.enemyType == EnemyType.FLYING) {
-                velocity.y = 0; // Detener movimiento vertical
+
+            if (this.enemyType != EnemyType.FLYING) {
+                velocity.x = 0; // Detener movimiento horizontal para no voladores
             }
 
             if (hurtTimer <= 0) {
