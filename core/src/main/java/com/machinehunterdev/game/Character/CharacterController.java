@@ -82,6 +82,10 @@ public abstract class CharacterController {
      */
     public abstract void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount);
 
+    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount, ArrayList<IEnemy> enemies) {
+        update(delta, solidObjects, bullets, playerCharacter, enemyCount);
+    }
+
     protected void handleHurtAnimation() {
         CharacterAnimator.AnimationState currentAnimation = character.characterAnimator.getCurrentState();
         if (currentAnimation == CharacterAnimator.AnimationState.HURT && character.characterAnimator.isAnimationFinished(CharacterAnimator.AnimationState.HURT)) {

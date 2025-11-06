@@ -99,6 +99,10 @@ public class BossEnemyController extends CharacterController {
 
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
+        // This method is now empty, the logic is in the other update method
+    }
+
+    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount, ArrayList<IEnemy> enemies) {
         handleHurtAnimation();
 
         if (playerCharacter != null) {
@@ -115,7 +119,7 @@ public class BossEnemyController extends CharacterController {
 
         if (isPhaseTwo) {
             if (!hasEnteredPhaseTwo) {
-                AudioManager.getInstance().playSfx(AudioId.BossAngry, character, GlobalSettings.ANNOYING_VOLUME * 6f);
+                AudioManager.getInstance().playSfx(AudioId.BossAngry, character);
                 hasEnteredPhaseTwo = true;
             }
             if (currentAnimation == CharacterAnimator.AnimationState.IDLE) {
@@ -136,7 +140,8 @@ public class BossEnemyController extends CharacterController {
             character.isPerformingSpecialAttack = false;
             if (isPhaseTwo) {
                 character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE_RAGE);
-            } else {
+            }
+            else {
                 character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE);
             }
         }
@@ -203,13 +208,21 @@ public class BossEnemyController extends CharacterController {
         // Si esta vivo, atacar cada cierto intervalo
         if (attackTimer >= currentAttackInterval && character.getHealth() > 0) {
             attackTimer = 0f;
-            performRandomAttack(bullets, playerCharacter, enemyCount);
+            performRandomAttack(bullets, playerCharacter, enemyCount, enemies);
         }
     }
 
-    private void performRandomAttack(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
-        boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
-        int numberOfAttacks = isPhaseTwo && enemyCount == 1 ? 3 : 2; // Si no hay otros enemigos en pantalla, desbloquear el ataque de invocación
+    private void performRandomAttack(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount, ArrayList<IEnemy> enemies) {
+        boolean isLowHealth = (float) character.getHealth() / maxHealth <= 0.3f;
+
+        boolean canSummon = false;
+        if (isLowHealth) {
+            canSummon = true;
+        } else if (enemyCount == 1 ) {
+            canSummon = true;
+        }
+
+        int numberOfAttacks = canSummon ? 3 : 2;
         int attackType = random.nextInt(numberOfAttacks);
 
         switch (attackType) {
@@ -220,7 +233,7 @@ public class BossEnemyController extends CharacterController {
                 attackType2(bullets, playerCharacter, enemyCount);
                 break;
             case 2:
-                attackType3(bullets, playerCharacter, enemyCount);
+                attackType3(bullets, playerCharacter, enemyCount, enemies);
             break;
             default:
                 break;
@@ -267,9 +280,11 @@ public class BossEnemyController extends CharacterController {
         }
     }
 
-    private void attackType3(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
-        if (enemyCount > 1) {
-            // Do nothing if there are other enemies
+    private void attackType3(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount, ArrayList<IEnemy> enemies) {
+        boolean isLowHealth = (float) character.getHealth() / maxHealth <= 0.3f;
+
+        if (!isLowHealth && enemyCount > 1) {
+            // Do nothing if there are other enemies and health is not low
             character.isPerformingSpecialAttack = false; // Also reset this, otherwise boss might get stuck
             return;
         }
@@ -280,17 +295,42 @@ public class BossEnemyController extends CharacterController {
         summonWarningActive = true;
         summonWarningTimer = 0f;
 
-        int randomEnemy = random.nextInt(3);
-        switch (randomEnemy) {
-            case 0:
-                pendingEnemyToSummon = EnemyType.PATROLLER;
-                break;
-            case 1:
-                pendingEnemyToSummon = EnemyType.SHOOTER;
-                break;
-            case 2:
-                pendingEnemyToSummon = EnemyType.FLYING;
-                break;
+        if (isLowHealth) {
+            // New logic: summon an enemy type that is not present
+            ArrayList<EnemyType> availableToSummon = new ArrayList<>();
+            availableToSummon.add(EnemyType.PATROLLER);
+            availableToSummon.add(EnemyType.SHOOTER);
+            availableToSummon.add(EnemyType.FLYING);
+
+            for (IEnemy enemy : enemies) {
+                if (enemy.getCharacter() != character) { // Don't check the boss itself
+                    availableToSummon.remove(enemy.getType());
+                }
+            }
+
+            if (!availableToSummon.isEmpty()) {
+                int randomEnemy = random.nextInt(availableToSummon.size());
+                pendingEnemyToSummon = availableToSummon.get(randomEnemy);
+            } else {
+                // All enemy types are present, do nothing
+                character.isPerformingSpecialAttack = false;
+                return;
+            }
+
+        } else {
+            // Old logic: summon a random enemy
+            int randomEnemy = random.nextInt(3);
+            switch (randomEnemy) {
+                case 0:
+                    pendingEnemyToSummon = EnemyType.PATROLLER;
+                    break;
+                case 1:
+                    pendingEnemyToSummon = EnemyType.SHOOTER;
+                    break;
+                case 2:
+                    pendingEnemyToSummon = EnemyType.FLYING;
+                    break;
+            }
         }
     }
 }
