@@ -686,7 +686,7 @@ public class GameplayState implements IState<GameController> {
         gameBatch.setProjectionMatrix(camera.combined);
         gameBatch.begin();
 
-        gameBatch.setColor(1, 1, 1, 0.5f);
+        gameBatch.setColor(1, 1, 1, 0.75f);
         int backgroundWidth = GlobalSettings.VIRTUAL_WIDTH;
         int mapWidth = GlobalSettings.levelWidth;
         int backgroundCount = (int) Math.ceil((float) mapWidth / backgroundWidth) + 1;

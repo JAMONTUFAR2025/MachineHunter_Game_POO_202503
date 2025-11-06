@@ -20,14 +20,20 @@ public class PauseState implements IState<GameController> {
     @Override
     public void enter(GameController owner) {
         this.owner = owner;
+        this.owner.clearScreen = false;
         this.pauseUI = new PauseUI(this, owner, owner.batch);
         Gdx.input.setInputProcessor(pauseUI);
         AudioManager.getInstance().pauseMusic(false);
+        draw();
     }
 
     @Override
     public void execute() {
         AudioManager.getInstance().update(Gdx.graphics.getDeltaTime());
+        draw();
+    }
+
+    private void draw() {
         // Render the gameplay state in the background
         gameplayState.drawGameWorld();
 
@@ -37,6 +43,7 @@ public class PauseState implements IState<GameController> {
 
     @Override
     public void exit() {
+        owner.clearScreen = true;
         AudioManager.getInstance().resumeMusic(false);
         Gdx.input.setInputProcessor(null);
         if (pauseUI != null) {

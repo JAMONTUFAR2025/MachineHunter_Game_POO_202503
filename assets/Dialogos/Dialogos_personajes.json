@@ -14,11 +14,12 @@
             "ID": 2,
             "Name": "TUTORIAL_2",
             "Texto": [
-                    "INFO-BOT: ¡Cuidado! Ese de ahí es un enemigo.",
+                    "INFO-BOT: ¡Cuidado! Esos de ahí son enemigos.",
                     "INFO-BOT: Los PATRU-BOT no atacan, pero se mueven en ciertos patrones y pueden saltar o bajar de plataformas.", 
                     "INFO-BOT: Recibes daño si chocas contra ellos.",
                     "INFO-BOT: Ubícate al frente de estos y MANTÉN presionado ESPACIO para disparar. ",
-                    "INFO-BOT: El CAÑÓN LÁSER (J) hace una cierta cantidad de daño y es de largo alcance."
+                    "INFO-BOT: El CAÑÓN LÁSER (J) hace una cierta cantidad de daño y es de largo alcance.",
+                    "INFO-BOT: ¡Ah! Otra cosa ¡No puedes disparar en el aire o moviéndote! Solo estando quieto en el suelo."
                     ]
         },{
             "ID": 3,
@@ -26,7 +27,7 @@
             "Texto": [
                     "INFO-BOT: Los LEVITA-BOTS se mueven en ciertos patrones en el aire, generalmente de arriba hacia abajo o diagonal.",
                     "INFO-BOT: El CAÑÓN DE IONES (K) consiste en tres bolitas que, separadas, no hacen tanto daño, pero juntas son el tipo de disparo que hace más daño. Son de corto alcance.",
-                    "INFO-BOT: Intenta destruirlos con el CAÑÓN DE IONES. Recuerda MANTENER presionado ESPACIO para disparar."
+                    "INFO-BOT: Intenta destruirlos con el CAÑÓN DE IONES. Recuerda MANTENER presionado ESPACIO en el SUELO para disparar."
                     ]
         },{
             "ID": 4,

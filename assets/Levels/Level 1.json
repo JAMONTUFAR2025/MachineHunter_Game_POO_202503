@@ -1,5 +1,5 @@
 {
-  "backgroundTexture": "Fondos/FondoJuego.png",
+  "backgroundTexture": "Fondos/Level1.png",
   "groundTexture": "Environment/FloorGray320.png",
   "levelWidth": 1896,
   "playerStartX": 50,
