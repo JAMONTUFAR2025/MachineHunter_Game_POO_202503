@@ -3,15 +3,12 @@ package com.machinehunterdev.game.Character;
 import java.util.ArrayList;
 import java.util.Random;
 
-import javax.xml.bind.JAXBElement.GlobalScope;
-
 import com.badlogic.gdx.math.Vector2;
 import com.machinehunterdev.game.Audio.AudioId;
 import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
 import com.machinehunterdev.game.DamageTriggers.WeaponType;
 import com.machinehunterdev.game.Environment.SolidObject;
-import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 public class BossEnemyController extends CharacterController {
 
@@ -20,6 +17,7 @@ public class BossEnemyController extends CharacterController {
     private final float attackIntervalPhase2;
     private final int maxHealth;
     private final Random random = new Random();
+    private final EnemyType BossType;
 
     private boolean lightningAttackActive = false;
     private float lightningAttackTimer = 0f;
@@ -85,14 +83,17 @@ public class BossEnemyController extends CharacterController {
             case BOSS_GEMINI:
                 this.attackInterval = 4.0f;
                 this.attackIntervalPhase2 = 2.0f;
+                this.BossType = type;
                 break;
             case BOSS_CHATGPT:
                 this.attackInterval = 3.0f;
                 this.attackIntervalPhase2 = 1.5f;
+                this.BossType = type;
                 break;
             default:
                 this.attackInterval = 5.0f;
                 this.attackIntervalPhase2 = 2.5f;
+                this.BossType = type;
                 break;
         }
     }
@@ -200,8 +201,9 @@ public class BossEnemyController extends CharacterController {
 
         float currentAttackInterval = isPhaseTwo ? attackIntervalPhase2 : attackInterval;
 
-        // Si hay otros enemigos y su salud esta arriba del 30%, aumentar el intervalo de ataque (nerfeo)
-        if (enemyCount > 1 && (float) character.getHealth() / maxHealth > 0.3f) {
+        // Si hay otros enemigos y su salud esta arriba del 30%, aumentar el intervalo de ataque
+        // Nerfeo solo para GeminiEXE
+        if (enemyCount > 1 && (float) character.getHealth() / maxHealth > 0.3f && BossType == EnemyType.BOSS_GEMINI) {
             currentAttackInterval *= 2;
         }
 
@@ -212,14 +214,58 @@ public class BossEnemyController extends CharacterController {
         }
     }
 
+    /* Ejecutar ataque aleatorio */
     private void performRandomAttack(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount, ArrayList<IEnemy> enemies) {
-        boolean isLowHealth = (float) character.getHealth() / maxHealth <= 0.3f;
+        boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
+        boolean isLowHealth = (float) character.getHealth() / maxHealth <= 0.25f;
 
+        /* INVOCACION */
+        // GeminiEXE invoca un solo enemigo en fase 2, invoca cualquier tipo de enemigo con salud baja
+        // ChatGPT invoca un solo enemigo en fase 1, invoca cualquier tipo de enemigo en fase 2
         boolean canSummon = false;
-        if (isLowHealth) {
-            canSummon = true;
-        } else if (enemyCount == 1 ) {
-            canSummon = true;
+
+        switch (BossType) {
+            /* El jefe Gemini puede invocar dependiendo */
+            case BOSS_GEMINI:
+                if (isLowHealth) {
+                    canSummon = true;
+                } else if (enemyCount == 1 && isPhaseTwo) {
+                    canSummon = true;
+                }
+                break;
+
+            /* El jefe ChatGPT puede invocar dependiendo */
+            case BOSS_CHATGPT:
+                if (isPhaseTwo) {
+                    canSummon = true;
+                } else if (enemyCount == 1) {
+                    canSummon = true;
+                }
+                break;
+        
+            default:
+                break;
+        }
+
+        // Pre-verificación para prevenir la animación de invocación si todos los tipos de enemigos ya están presentes
+        if (canSummon) {
+            boolean summonAll = (BossType == EnemyType.BOSS_GEMINI && isLowHealth) || (BossType == EnemyType.BOSS_CHATGPT && isPhaseTwo);
+            if (summonAll) {
+                ArrayList<EnemyType> availableToSummon = new ArrayList<>();
+                availableToSummon.add(EnemyType.PATROLLER);
+                availableToSummon.add(EnemyType.SHOOTER);
+                availableToSummon.add(EnemyType.FLYING);
+
+                for (IEnemy enemy : enemies) {
+                    if (enemy.getCharacter() != character) {
+                        availableToSummon.remove(enemy.getType());
+                    }
+                }
+
+                if (availableToSummon.isEmpty()) {
+                    canSummon = false;
+                }
+            }
         }
 
         int numberOfAttacks = canSummon ? 3 : 2;
@@ -233,13 +279,14 @@ public class BossEnemyController extends CharacterController {
                 attackType2(bullets, playerCharacter, enemyCount);
                 break;
             case 2:
-                attackType3(bullets, playerCharacter, enemyCount, enemies);
+                attackType3(enemyCount, enemies);
             break;
             default:
                 break;
         }
     }
 
+    /* Ataque rayo */
     private void attackType1(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK1);
@@ -250,7 +297,10 @@ public class BossEnemyController extends CharacterController {
         }
     }
 
+    /* Ataque volea de balas */
     private void attackType2(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
+        boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
+
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK2);
         AudioManager.getInstance().playSfx(AudioId.EnemyAttack, character); // No cambiar esto
@@ -264,13 +314,35 @@ public class BossEnemyController extends CharacterController {
 
         int bulletCount;
         float angleIncrement;
+        
+        switch (BossType) {
+            /* Logica disparo GeminiEXE */
+            case BOSS_GEMINI:
+                if (isPhaseTwo) {
+                    bulletCount = 12;
+                    angleIncrement = 30f;
+                } else {
+                    bulletCount = 10;
+                    angleIncrement = 36f;
+                }
+                break;
 
-        if ((float) character.getHealth() / maxHealth <= 0.5f) {
-            bulletCount = 12;
-            angleIncrement = 30f;
-        } else {
-            bulletCount = 10;
-            angleIncrement = 36f;
+            /* Logica disparo ChatGPT */
+            case BOSS_CHATGPT:
+                if (isPhaseTwo) {
+                    bulletCount = 14;
+                    angleIncrement = 25.7f;
+                } else {
+                    bulletCount = 12;
+                    angleIncrement = 30f;
+                }
+                break;
+            
+            /* Para evitar errores */
+            default:
+                bulletCount = 12;
+                angleIncrement = 30f;
+                break;
         }
 
         for (int i = 0; i < bulletCount; i++) {
@@ -280,14 +352,10 @@ public class BossEnemyController extends CharacterController {
         }
     }
 
-    private void attackType3(ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount, ArrayList<IEnemy> enemies) {
-        boolean isLowHealth = (float) character.getHealth() / maxHealth <= 0.3f;
-
-        if (!isLowHealth && enemyCount > 1) {
-            // Do nothing if there are other enemies and health is not low
-            character.isPerformingSpecialAttack = false; // Also reset this, otherwise boss might get stuck
-            return;
-        }
+    /* Ataque invocacion */
+    private void attackType3(int enemyCount, ArrayList<IEnemy> enemies) {
+        boolean isPhaseTwo = (float) character.getHealth() / maxHealth <= 0.5f;
+        boolean isLowHealth = (float) character.getHealth() / maxHealth <= 0.25f;
 
         character.isPerformingSpecialAttack = true;
         character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.SUMMON);
@@ -295,42 +363,71 @@ public class BossEnemyController extends CharacterController {
         summonWarningActive = true;
         summonWarningTimer = 0f;
 
-        if (isLowHealth) {
-            // New logic: summon an enemy type that is not present
-            ArrayList<EnemyType> availableToSummon = new ArrayList<>();
-            availableToSummon.add(EnemyType.PATROLLER);
-            availableToSummon.add(EnemyType.SHOOTER);
-            availableToSummon.add(EnemyType.FLYING);
-
-            for (IEnemy enemy : enemies) {
-                if (enemy.getCharacter() != character) { // Don't check the boss itself
-                    availableToSummon.remove(enemy.getType());
+        switch (BossType) {
+            /* Logica invocacion GeminiEXE */
+            case BOSS_GEMINI:
+                if (isLowHealth) {
+                summonAllMissingEnemies(enemies);
+                } else if (enemyCount == 1 && isPhaseTwo) {
+                    summonOneRandomEnemy();
                 }
-            }
+                break;
 
-            if (!availableToSummon.isEmpty()) {
-                int randomEnemy = random.nextInt(availableToSummon.size());
-                pendingEnemyToSummon = availableToSummon.get(randomEnemy);
-            } else {
-                // All enemy types are present, do nothing
-                character.isPerformingSpecialAttack = false;
-                return;
-            }
+            /* Logica invocacion ChatGPT */
+            case BOSS_CHATGPT:
+                if (isPhaseTwo) {
+                    summonAllMissingEnemies(enemies);
+                } else if (enemyCount == 1 ) {
+                    summonOneRandomEnemy();
+                }
+                break;
+            /* Para evitar errores */
+            default:
+                break;
+        }
+    }
 
+    /* INVOCACIONES */
+    /* Invocar un solo enemigo */
+    private void summonOneRandomEnemy() 
+    {
+        // Old logic: summon a random enemy
+        int randomEnemy = random.nextInt(3);
+        switch (randomEnemy) {
+            case 0:
+                pendingEnemyToSummon = EnemyType.PATROLLER;
+                break;
+            case 1:
+                pendingEnemyToSummon = EnemyType.SHOOTER;
+                break;
+            case 2:
+                pendingEnemyToSummon = EnemyType.FLYING;
+                break;
+        }
+    }
+
+    /* Invocar cualquier tipo de enemigo */
+    private void summonAllMissingEnemies(ArrayList<IEnemy> enemies) 
+    {
+        // New logic: summon an enemy type that is not present
+        ArrayList<EnemyType> availableToSummon = new ArrayList<>();
+        availableToSummon.add(EnemyType.PATROLLER);
+        availableToSummon.add(EnemyType.SHOOTER);
+        availableToSummon.add(EnemyType.FLYING);
+
+        for (IEnemy enemy : enemies) {
+            if (enemy.getCharacter() != character) { // Don't check the boss itself
+                availableToSummon.remove(enemy.getType());
+            }
+        }
+
+        if (!availableToSummon.isEmpty()) {
+            int randomEnemy = random.nextInt(availableToSummon.size());
+            pendingEnemyToSummon = availableToSummon.get(randomEnemy);
         } else {
-            // Old logic: summon a random enemy
-            int randomEnemy = random.nextInt(3);
-            switch (randomEnemy) {
-                case 0:
-                    pendingEnemyToSummon = EnemyType.PATROLLER;
-                    break;
-                case 1:
-                    pendingEnemyToSummon = EnemyType.SHOOTER;
-                    break;
-                case 2:
-                    pendingEnemyToSummon = EnemyType.FLYING;
-                    break;
-            }
+            // All enemy types are present, do nothing
+            character.isPerformingSpecialAttack = false;
+            return;
         }
     }
 }

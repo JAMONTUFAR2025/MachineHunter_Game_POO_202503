@@ -849,7 +849,13 @@ public class GameplayState implements IState<GameController> {
         for (int i = bullets.size() - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
             
-            if (bullet.update(deltaTime) || bullet.position.x < camera.position.x - GlobalSettings.VIRTUAL_WIDTH / 2 - 100 || bullet.position.x > camera.position.x + GlobalSettings.VIRTUAL_WIDTH / 2 + 100) {
+            /* DESTRUIR BALA SI */
+            // 1. Ha salido de la pantalla
+            // 2. Ha chocado con el suelo
+            if (bullet.update(deltaTime) 
+            || bullet.position.x < camera.position.x - GlobalSettings.VIRTUAL_WIDTH / 2 - 100 
+            || bullet.position.x > camera.position.x + GlobalSettings.VIRTUAL_WIDTH / 2 + 100
+            || bullet.position.y < GlobalSettings.GROUND_LEVEL) {
                 bullets.remove(i);
                 bullet.dispose();
             }
