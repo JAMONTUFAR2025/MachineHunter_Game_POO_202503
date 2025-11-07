@@ -90,7 +90,8 @@
             "ID": 10,
             "Name": "Dialogo 5 - Científico",
             "Texto": [
-                "Cientifico: Te deseo toda la suerte, joven aventurero, pero mi transmisión llegará a su fin dentro de muy pocos segmentos. Así que solo tengo algo más que decir. . . ", "¡Ahora ya no tendré que soportar a los usuarios que activan el modo Ultra Gemini Pro!"
+                "GEMINI.EXE: Te deseo toda la suerte, joven aventurero, pero mi transmisión llegará a su fin dentro de muy pocos segmentos. Así que solo tengo algo más que decir. . . ", "¡Ahora ya no tendré que soportar a los usuarios que activan el modo Ultra Gemini Pro! >=)",
+                "Luego de esta breve transmisión, Gemini llegó a sus últimos bytes de existencia.\nRoberto Julián toma el siguiente ascensor y cada vez más se acerca al cuartel general de CHATGPT.EXE."
             ]
         },{
             "ID": 11,
@@ -139,17 +140,21 @@
         {
             "ID": 18,
             "Name": "Diálogo 1 – ChatGPT.exe",
-            "Texto": "ChatGPT.exe: ¡NOOOOO! ¿Cómo es posible que alguien como tú me haya podido derrotar?"
+            "Texto": "CHATGPT.EXE:\n ¡NOOOOO! ¿Cómo es posible que alguien como tú me haya podido derrotar?"
         },
         {
             "ID": 19,
             "Name": "Diálogo 2 – ChatGPT.exe",
-            "Texto": "ChatGPT.exe: ¡Pero volveré, y te haré pagar hasta el último número que me hiciste contar! ¡AAAAAAA!"
+            "Texto": "CHATGPT.EXE:\n ¡Pero volveré, y te haré pagar hasta el último número que me hiciste contar! ¡AAAAAAA!"
         },
         {
             "ID": 20,
             "Name": "Diálogo 3 – Roberto Julián",
             "Texto": "Roberto Julián: Hasta la vista, baby."
+        },{
+            "ID": 21,
+            "Name": "Diálogo 4",
+            "Texto": ["Y asi . . .","Fue como Roberto Julián salvó a la humanidad del ataque de las IAs","O al menos eso parece . . ."]
         }
     ]
 }
