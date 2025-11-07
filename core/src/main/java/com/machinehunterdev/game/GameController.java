@@ -34,6 +34,7 @@ public class GameController extends ApplicationAdapter
 {
     /** Indica si hay un diálogo activo (para gestión de entrada) */
     public boolean isDialogActive = false;
+    public boolean clearScreen = true;
 
     /** Máquina de estados para gestionar los diferentes estados del juego */
     public StateMachine<GameController> stateMachine;
@@ -94,6 +95,7 @@ public class GameController extends ApplicationAdapter
         sfxList.add(new AudioData(AudioId.BossSummonWarning, "Audio/Sfx/BossSummonWarning.wav"));
         sfxList.add(new AudioData(AudioId.BossSummonAttack, "Audio/Sfx/BossSummonAttack.wav"));
         sfxList.add(new AudioData(AudioId.BossDeath, "Audio/Sfx/BossDeath.wav"));
+        sfxList.add(new AudioData(AudioId.BossAngry, "Audio/Sfx/BossAngry.wav"));
         sfxList.add(new AudioData(AudioId.UIAccept, "Audio/Sfx/UIAccept.wav"));
         sfxList.add(new AudioData(AudioId.UIChange, "Audio/Sfx/UIChange.wav"));
         sfxList.add(new AudioData(AudioId.UICancel, "Audio/Sfx/UICancel.wav"));
@@ -133,9 +135,11 @@ public class GameController extends ApplicationAdapter
     @Override
     public void render() 
     {
-        // Limpiar la pantalla con fondo negro
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if (clearScreen) {
+            // Limpiar la pantalla con fondo blanco
+            Gdx.gl.glClearColor(1, 1, 1, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        }
 
         // Actualizar cámara
         camera.update();

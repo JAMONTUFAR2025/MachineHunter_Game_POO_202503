@@ -19,7 +19,7 @@ public class CharacterAnimator {
      * Enumeración de estados de animación soportados.
      */
     public enum AnimationState {
-        IDLE, RUN, DEAD, JUMP, FALL, ATTACK, LASER_ATTACK, ION_ATTACK, RAILGUN_ATTACK, HURT, CROUCH, IDLE_RAGE, ATTACK1, ATTACK2, SUMMON
+        IDLE, RUN, DEAD, JUMP, FALL, ATTACK, LASER_ATTACK, ION_ATTACK, RAILGUN_ATTACK, HURT, ANGRY_HURT, CROUCH, IDLE_RAGE, ATTACK1, ATTACK2, SUMMON
     }
 
     /** Mapa que asocia estados de animación con sus respectivos animadores */
@@ -62,6 +62,7 @@ public class CharacterAnimator {
         List<Sprite> attackIonFrames,
         List<Sprite> attackRailgunFrames,
         List<Sprite> hurtFrames,
+        List<Sprite> angryHurtFrames,
         List<Sprite> crouchFrames,
         List<Sprite> idleRageFrames,
         List<Sprite> attack1Frames,
@@ -102,6 +103,9 @@ public class CharacterAnimator {
         }
         if (hurtFrames != null && !hurtFrames.isEmpty()) {
             this.animators.put(AnimationState.HURT, new SpriteAnimator(hurtFrames, 0.1f, false));
+        }
+        if (angryHurtFrames != null && !angryHurtFrames.isEmpty()) {
+            this.animators.put(AnimationState.ANGRY_HURT, new SpriteAnimator(angryHurtFrames, 0.1f, false));
         }
         if (crouchFrames != null && !crouchFrames.isEmpty()) {
             this.animators.put(AnimationState.CROUCH, new SpriteAnimator(crouchFrames));

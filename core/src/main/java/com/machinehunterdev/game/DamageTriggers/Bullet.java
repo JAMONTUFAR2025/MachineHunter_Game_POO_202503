@@ -67,7 +67,6 @@ public class Bullet
      * @param seeingRight Dirección de disparo.
      */
     private void configureBullet(boolean seeingRight) {
-        float speed = 0;
         this.maxDistance = 0;
         this.piercing = false;
         String basePath = "Bullets/"; // Carpeta base para las texturas de las balas
@@ -75,30 +74,24 @@ public class Bullet
 
         switch (weaponType) {
             case LASER:
-                speed = 200f;
                 maxDistance = 400f;
                 textureName = "Laser";
                 break;
             case ION:
-                speed = 150f;
                 maxDistance = 100f;
                 textureName = "Ion";
                 break;
             case RAILGUN:
-                speed = 250f;
                 maxDistance = 600f;
                 piercing = true;
                 textureName = "Railgun";
                 break;
             case SHOOTER:
-                speed = 100f;
                 maxDistance = 350f;
                 textureName = "Thunder";
                 break;
             default:
         }
-
-
 
         // Cargar las texturas de la bala según el tipo de arma
         List<Sprite> frames = loadBulletFrames(basePath + textureName, 2, !seeingRight);

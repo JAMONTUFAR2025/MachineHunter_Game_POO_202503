@@ -82,6 +82,10 @@ public abstract class CharacterController {
      */
     public abstract void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount);
 
+    public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount, ArrayList<IEnemy> enemies) {
+        update(delta, solidObjects, bullets, playerCharacter, enemyCount);
+    }
+
     protected void handleHurtAnimation() {
         CharacterAnimator.AnimationState currentAnimation = character.characterAnimator.getCurrentState();
         if (currentAnimation == CharacterAnimator.AnimationState.HURT && character.characterAnimator.isAnimationFinished(CharacterAnimator.AnimationState.HURT)) {
@@ -98,6 +102,9 @@ public abstract class CharacterController {
                 character.isAttacking = false;
                 character.isPerformingSpecialAttack = false;
             }
+        } else if (currentAnimation == CharacterAnimator.AnimationState.ANGRY_HURT && character.characterAnimator.isAnimationFinished(CharacterAnimator.AnimationState.ANGRY_HURT)) {
+            character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.IDLE_RAGE);
+            character.isPerformingSpecialAttack = false;
         }
     }
 }

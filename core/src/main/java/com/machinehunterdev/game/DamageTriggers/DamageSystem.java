@@ -153,8 +153,13 @@ public class DamageSystem
      * @param target Personaje objetivo.
      */
     private static void activateHurtAnimation(Character target) {
-        target.setHurt(true);
-        target.setHurtTimer(0.1f); // Duración de la animación de daño
+        if (target.isBossInPhaseTwo()) {
+            target.setHurt(true);
+            target.setHurtTimer(0.1f); // Duración de la animación de daño
+        } else {
+            target.setHurt(true);
+            target.setHurtTimer(0.1f); // Duración de la animación de daño
+        }
     }
 
     /**

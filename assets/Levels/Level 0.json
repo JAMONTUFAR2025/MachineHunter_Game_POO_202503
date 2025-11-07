@@ -65,8 +65,8 @@
     { "type": "PATROLLER", "x": 772, "y": 144, "patrolPoints": [{"x": 906, "y": 144, "action": "Fall"}, {"x": 772, "y": 96, "action": "Jump"}]},
     { "type": "PATROLLER", "x": 906, "y": 96, "patrolPoints": [{"x": 772, "y": 96, "action": "Jump"}, {"x": 906, "y": 144, "action": "Fall"}]},
 
-    { "type": "FLYING", "x": 1411, "y": 96, "patrolPoints": [{"x": 1411, "y": 224}, {"x": 1411, "y": 96}]},
-    { "type": "FLYING", "x": 1557, "y": 224, "patrolPoints": [{"x": 1557, "y": 96}, {"x": 1557, "y": 224}]},
+    { "type": "FLYING", "x": 1411, "y": 116, "patrolPoints": [{"x": 1411, "y": 224}, {"x": 1411, "y": 96}]},
+    { "type": "FLYING", "x": 1557, "y": 244, "patrolPoints": [{"x": 1557, "y": 96}, {"x": 1557, "y": 224}]},
     
     { "type": "SHOOTER", "x": 2092, "y": 96},
 

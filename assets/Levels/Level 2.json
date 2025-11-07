@@ -1,50 +1,48 @@
 {
   "backgroundTexture": "Fondos/FondoJuego.png",
-  "groundTexture": "Environment/FloorBlue320.png",
+  "groundTexture": "Environment/FloorRed320.png",
   "levelWidth": 3500,
   "playerStartX": 50,
   "playerStartY": 100,
   "nextLevel": "Levels/Level 3.json",
   "flashbackDialogueSection": "Flashback2",
   "solidObjectsData": [
-    {"type":"Platform_White_Huge", "x": 0, "y": 80 },
-    {"type":"Platform_White_Medium", "x": 300, "y": 144 },
-    {"type":"Platform_Blue_Medium", "x": 500, "y": 80 },
+    { "type":"Chain_Red_Type3", "x": 150, "y": 96, "walkable": false },
+    { "type":"Chain_Red_Type3", "x": 206, "y": 96, "walkable": false },
+    { "type":"Chain_Red_Type3", "x": 274, "y": 96, "walkable": false },
+    { "type":"Chain_Red_Type3", "x": 330, "y": 96, "walkable": false },
+    { "type":"Chain_Red_Type3", "x": 398, "y": 96, "walkable": false },
+    { "type":"Chain_Red_Type3", "x": 454, "y": 96, "walkable": false },
+    
+    { "type": "Platform_Red_Tiny", "x": 150, "y": 80 },
+    { "type": "Platform_Red_Tiny", "x": 150, "y": 144 },
+    { "type": "Platform_Red_Tiny", "x": 150, "y": 208 },
+    { "type": "Platform_Red_Tiny", "x": 274, "y": 80 },
+    { "type": "Platform_Red_Tiny", "x": 274, "y": 144 },
+    { "type": "Platform_Red_Tiny", "x": 274, "y": 208 },
+    { "type": "Platform_Red_Tiny", "x": 398, "y": 80 },
+    { "type": "Platform_Red_Tiny", "x": 398, "y": 144 },
+    { "type": "Platform_Red_Tiny", "x": 398, "y": 208 },
 
-    {"type":"Platform_White_Large", "x": 700, "y": 144 },
-    {"type":"Platform_Blue_Medium", "x": 900, "y": 208 },
-    {"type":"Platform_White_Tiny", "x": 1100, "y": 144 },
-
-    {"type":"Platform_Blue_Huge", "x": 1300, "y": 80 },
-    {"type":"Platform_White_Small", "x": 1550, "y": 144 },
-    {"type":"Platform_Blue_Medium", "x": 1700, "y": 208 }, 
-    {"type":"Platform_Blue_Large", "x": 1750, "y": 208 },
-    {"type":"Platform_White_Medium", "x": 1950, "y": 144 },
-
-    {"type":"Platform_White_Huge", "x": 2200, "y": 80 },
-    {"type":"Platform_Blue_Small", "x": 2400, "y": 144 },
-    {"type":"Platform_White_Tiny", "x": 2600, "y": 80 },
-
-
-    {"type":"Platform_Blue_Medium", "x": 2800, "y": 144 },
-    {"type":"Platform_White_Large", "x": 3000, "y": 208 },
-    {"type":"Platform_Green_Huge", "x": 3200, "y": 80 }
+    { "type":"Chain_Red_Type3", "x": 512, "y": 96, "walkable": false },
+    { "type":"Chain_Red_Type3", "x": 792, "y": 96, "walkable": false },
+    
+    { "type": "Platform_Red_Huge", "x": 512, "y": 80 },
+    { "type": "Platform_Red_Huge", "x": 512, "y": 144 },
+    { "type": "Platform_Red_Huge", "x": 512, "y": 208 }
   ],
   "enemies": [
     
-    {"type": "PATROLLER", "x": 800, "y": 112, "patrolPoints": [{"x": 750, "y": 112}, {"x": 850, "y": 112}]},
-    {"type": "PATROLLER", "x": 1400, "y": 112, "patrolPoints": [{"x": 1350, "y": 112}, {"x": 1450, "y": 112}]},
-    {"type": "PATROLLER", "x": 2300, "y": 112, "patrolPoints": [{"x": 2250, "y": 112}, {"x": 2350, "y": 112}]},
+    {"type": "PATROLLER", "x": 206, "y": 32, "patrolPoints": [{"x": 410, "y": 32}, {"x": 162, "y": 32}]},
+    {"type": "FLYING", "x": 224, "y": 116, "patrolPoints": [{"x": 348, "y": 96}, {"x": 348, "y": 224}, {"x": 224, "y": 224}, {"x": 224, "y": 96}], "waitTime": 1.0},
+    {"type": "FLYING", "x": 348, "y": 116, "patrolPoints": [{"x": 348, "y": 224}, {"x": 224, "y": 224}, {"x": 224, "y": 96}, {"x": 348, "y": 96}], "waitTime": 1.0},
+    {"type": "FLYING", "x": 224, "y": 244, "patrolPoints": [{"x": 224, "y": 96}, {"x": 348, "y": 96}, {"x": 348, "y": 224}, {"x": 224, "y": 224}], "waitTime": 1.0},
+    {"type": "FLYING", "x": 348, "y": 244, "patrolPoints": [{"x": 224, "y": 224}, {"x": 224, "y": 96}, {"x": 348, "y": 96}, {"x": 348, "y": 224}], "waitTime": 1.0},
+    {"type": "SHOOTER", "x": 410, "y": 160 },
 
-
-    {"type": "SHOOTER", "x": 600, "y": 176 },
-    {"type": "SHOOTER", "x": 1600, "y": 176 },
-    {"type": "SHOOTER", "x": 2500, "y": 176 },
-    {"type": "SHOOTER", "x": 3100, "y": 176 },
-
-    
-    {"type": "FLYING", "x": 1000, "y": 250, "patrolPoints": [{"x": 950, "y": 250}, {"x": 1050, "y": 80}]},
-    {"type": "FLYING", "x": 1800, "y": 250, "patrolPoints": [{"x": 1750, "y": 250}, {"x": 1850, "y": 144}]}
+    {"type": "PATROLLER", "x": 512, "y": 96, "patrolPoints": [{"x": 760, "y": 96, "action": "Jump"}, {"x": 512, "y": 160, "action": "Jump"}, {"x": 760, "y": 224, "action": "Fall"}, {"x": 512, "y": 160, "action": "Fall"}], "waitTime": 1.0},
+    {"type": "PATROLLER", "x": 760, "y": 160, "patrolPoints": [{"x": 512, "y": 160, "action": "Jump"}, {"x": 760, "y": 244, "action": "Fall"}, {"x": 512, "y": 160, "action": "Fall"}, {"x": 760, "y": 96, "action": "Jump"}], "waitTime": 1.0},
+    {"type": "SHOOTER", "x": 636, "y": 32 }
   ],
   "npcs": [
     {"idleFrames": "NPC/Doctor/DoctorIdle", "x": 100, "y": 100, "dialogues": ["Diálogo 1 – Científico", "Diálogo 2 – Científico", "Diálogo 3 – Científico", "Diálogo 4 – Científico"]}

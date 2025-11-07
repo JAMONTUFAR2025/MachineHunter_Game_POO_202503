@@ -75,8 +75,9 @@ public class ShooterEnemyController extends CharacterController {
 
                 if (character.characterAnimator.isAnimationFinished(CharacterAnimator.AnimationState.SUMMON)) {
                     character.isPerformingSpecialAttack = false;
-                    currentState = State.READY;
-                    shootCooldown = shootInterval; // Start cooldown timer
+                    currentState = State.SHOOTING;
+                    shootDuration = shootTime;
+                    character.attack();
                 }
                 break;
 

@@ -13,33 +13,34 @@ public enum EnemySkin {
      * Skin del enemigo patrullero
      * Idle, Run, Dead, Hurt
     */
-    PATROLLER("Enemy/Patroller/PatrollerIdle", "Enemy/Patroller/PatrollerRun", "Enemy/Explosion", "Enemy/Patroller/PatrollerHurt", "Enemy/Patroller/PatrollerJump", "Enemy/Patroller/PatrollerFall", null, new HitboxData(5, 0, 30, 35), null, null, null, null),
+    PATROLLER("Enemy/Patroller/PatrollerIdle", "Enemy/Patroller/PatrollerRun", "Enemy/Explosion", "Enemy/Patroller/PatrollerHurt", null, "Enemy/Patroller/PatrollerJump", "Enemy/Patroller/PatrollerFall", null, new HitboxData(5, 0, 30, 35), null, null, null, null),
     /**
      * Skin del enemigo tirador
      * Idle, Run, Dead, Hurt, Attack
      */
-    SHOOTER("Enemy/Shooter/ShooterIdle", "Enemy/Shooter/ShooterRun", "Enemy/Explosion", "Enemy/Shooter/ShooterHurt", null, null, "Enemy/Shooter/ShooterAttack", new HitboxData(9, 0, 23, 35), null, null, null, "Enemy/Shooter/ShooterSpot"),
+    SHOOTER("Enemy/Shooter/ShooterIdle", "Enemy/Shooter/ShooterRun", "Enemy/Explosion", "Enemy/Shooter/ShooterHurt", null, null, null, "Enemy/Shooter/ShooterAttack", new HitboxData(9, 0, 23, 35), null, null, null, "Enemy/Shooter/ShooterSpot"),
     /**
      * Skin del enemigo volador
      * Idle, Dead, Hurt
      */
-    FLYING("Enemy/Flying/FlyingIdle", null, "Enemy/Explosion", "Enemy/Flying/FlyingHurt", null, null, null, new HitboxData(3, 7, 34, 29), null, null, null, null),
+    FLYING("Enemy/Flying/FlyingIdle", null, "Enemy/Explosion", "Enemy/Flying/FlyingHurt", null, null, null, null, new HitboxData(3, 7, 34, 29), null, null, null, null),
     /**
      * Skin del jefe
      * Idle, Dead, Hurt
      */
-    BOSS_GEMINI("Enemy/GeminiEXE/GeminiEXEIdle", null, "Enemy/GeminiEXE/GeminiEXEDeath", "Enemy/GeminiEXE/GeminiEXEHurt", null, null, null, new HitboxData(0, 0, 80, 100), "Enemy/GeminiEXE/GeminiEXEIdleRage", "Enemy/GeminiEXE/GeminiEXEAttack", "Enemy/GeminiEXE/GeminiEXEAttackRage", "Enemy/GeminiEXE/GeminiEXESummon"),
+    BOSS_GEMINI("Enemy/GeminiEXE/GeminiEXEIdle", null, "Enemy/GeminiEXE/GeminiEXEDeath", "Enemy/GeminiEXE/GeminiEXEHurt", "Enemy/GeminiEXE/GeminiEXEHurtRage", null, null, null, new HitboxData(0, 0, 80, 100), "Enemy/GeminiEXE/GeminiEXEIdleRage", "Enemy/GeminiEXE/GeminiEXEAttackThunder", "Enemy/GeminiEXE/GeminiEXEAttackBalls", "Enemy/GeminiEXE/GeminiEXESummon"),
     /**
      * Skin del jefe ChatGPT
      * Idle, Dead, Hurt
      */
-    BOSS_CHATGPT("Enemy/ChatGPTEXE/ChatGPTEXEIdle", null, "Enemy/ChatGPTEXE/ChatGPTEXEDeath", "Enemy/ChatGPTEXE/ChatGPTEXEHurt", null, null, null, new HitboxData(0, 0, 80, 100), "Enemy/ChatGPTEXE/ChatGPTEXEIdleRage", "Enemy/ChatGPTEXE/ChatGPTEXEAttack", "Enemy/ChatGPTEXE/ChatGPTEXEAttackRage", "Enemy/ChatGPTEXE/ChatGPTEXESummon");
+    BOSS_CHATGPT("Enemy/ChatGPTEXE/ChatGPTEXEIdle", null, "Enemy/ChatGPTEXE/ChatGPTEXEDeath", "Enemy/ChatGPTEXE/ChatGPTEXEHurt", "Enemy/ChatGPTEXE/ChatGPTEXEHurtRage", null, null, null, new HitboxData(0, 0, 80, 100), "Enemy/ChatGPTEXE/ChatGPTEXEIdleRage", "Enemy/ChatGPTEXE/ChatGPTEXEAttack", "Enemy/ChatGPTEXE/ChatGPTEXEAttackRage", "Enemy/ChatGPTEXE/ChatGPTEXESummon");
 
     /** Rutas de los frames de animación */
     public final String idleFrames;
     public final String runFrames;
     public final String deadFrames;
     public final String hurtFrames;
+    public final String angryHurtFrames;
     public final String jumpFrames;
     public final String fallFrames;
     public final String attackFrames;
@@ -63,11 +64,12 @@ public enum EnemySkin {
      * @param attack2Frames Ruta de los frames de animación para el ataque 2
      * @param summonFrames Ruta de los frames de animación para la invocación
     */
-    EnemySkin(String idleFrames, String runFrames, String deadFrames, String hurtFrames, String jumpFrames, String fallFrames, String attackFrames, HitboxData hitbox, String idleRageFrames, String attack1Frames, String attack2Frames, String summonFrames) {
+    EnemySkin(String idleFrames, String runFrames, String deadFrames, String hurtFrames, String angryHurtFrames, String jumpFrames, String fallFrames, String attackFrames, HitboxData hitbox, String idleRageFrames, String attack1Frames, String attack2Frames, String summonFrames) {
         this.idleFrames = idleFrames;
         this.runFrames = runFrames;
         this.deadFrames = deadFrames;
         this.hurtFrames = hurtFrames;
+        this.angryHurtFrames = angryHurtFrames;
         this.jumpFrames = jumpFrames;
         this.fallFrames = fallFrames;
         this.attackFrames = attackFrames;

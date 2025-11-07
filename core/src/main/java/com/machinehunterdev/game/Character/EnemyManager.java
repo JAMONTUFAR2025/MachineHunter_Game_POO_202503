@@ -67,7 +67,11 @@ public class EnemyManager {
      */
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
         for (IEnemy enemy : enemies) {
-            ((BaseEnemy)enemy).getController().update(delta, solidObjects, bullets, playerCharacter, enemies.size());
+            if (enemy instanceof BossEnemy) {
+                ((BossEnemy) enemy).getController().update(delta, solidObjects, bullets, playerCharacter, enemies.size(), enemies);
+            } else {
+                ((BaseEnemy) enemy).getController().update(delta, solidObjects, bullets, playerCharacter, enemies.size());
+            }
         }
     }
 
