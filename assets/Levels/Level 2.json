@@ -24,12 +24,27 @@
     { "type": "Platform_Red_Tiny", "x": 398, "y": 144 },
     { "type": "Platform_Red_Tiny", "x": 398, "y": 208 },
 
+
+
     { "type":"Chain_Red_Type3", "x": 512, "y": 96, "walkable": false },
     { "type":"Chain_Red_Type3", "x": 792, "y": 96, "walkable": false },
     
     { "type": "Platform_Red_Huge", "x": 512, "y": 80 },
     { "type": "Platform_Red_Huge", "x": 512, "y": 144 },
-    { "type": "Platform_Red_Huge", "x": 512, "y": 208 }
+    { "type": "Platform_Red_Huge", "x": 512, "y": 208 },
+
+
+
+    { "type":"Chain_Red_Type4", "x": 910, "y": 96, "walkable": false },
+    { "type":"Chain_Red_Type2", "x": 998, "y": 96, "walkable": false },
+    { "type":"Chain_Red_Type3", "x": 1086, "y": 96, "walkable": false },
+    { "type":"Chain_Red_Type4", "x": 1174, "y": 96, "walkable": false },
+
+    { "type": "Platform_Red_Small", "x": 910, "y": 80 },
+    { "type": "Platform_Red_Small", "x": 910, "y": 208 },
+    { "type": "Platform_Red_Small", "x": 998, "y": 144 },
+    { "type": "Platform_Red_Small", "x": 1086, "y": 208 },
+    { "type": "Platform_Red_Small", "x": 1086, "y": 80 }
   ],
   "enemies": [
     
@@ -42,7 +57,10 @@
 
     {"type": "PATROLLER", "x": 512, "y": 96, "patrolPoints": [{"x": 760, "y": 96, "action": "Jump"}, {"x": 512, "y": 160, "action": "Jump"}, {"x": 760, "y": 224, "action": "Fall"}, {"x": 512, "y": 160, "action": "Fall"}], "waitTime": 1.0},
     {"type": "PATROLLER", "x": 760, "y": 160, "patrolPoints": [{"x": 512, "y": 160, "action": "Jump"}, {"x": 760, "y": 244, "action": "Fall"}, {"x": 512, "y": 160, "action": "Fall"}, {"x": 760, "y": 96, "action": "Jump"}], "waitTime": 1.0},
-    {"type": "SHOOTER", "x": 636, "y": 32 }
+    {"type": "SHOOTER", "x": 636, "y": 32 },
+
+    {"type": "FLYING", "x": 810, "y": 116, "patrolPoints": [{"x": 810, "y": 224}, {"x": 810, "y": 156}, {"x": 810, "y": 96}, {"x": 810, "y": 156}], "waitTime": 1.0},
+    {"type": "FLYING", "x": 860, "y": 244, "patrolPoints": [{"x": 860, "y": 96}, {"x": 860, "y": 164}, {"x": 860, "y": 224}, {"x": 860, "y": 156}], "waitTime": 1.0}
   ],
   "npcs": [
     {"idleFrames": "NPC/Doctor/DoctorIdle", "x": 100, "y": 100, "dialogues": ["Diálogo 1 – Científico", "Diálogo 2 – Científico", "Diálogo 3 – Científico", "Diálogo 4 – Científico"]}
