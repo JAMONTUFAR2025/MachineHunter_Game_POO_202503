@@ -161,7 +161,7 @@ public class GameplayUI {
             batch.draw(railgunIcon, startX + (2 * (iconSize + padding)), (float)padding, iconSize, iconSize);
         }
 
-        batch.setColor(Color.WHITE); // Reset color
+        batch.setColor(Color.WHITE); // Resetear color
         batch.end();
     }
 
