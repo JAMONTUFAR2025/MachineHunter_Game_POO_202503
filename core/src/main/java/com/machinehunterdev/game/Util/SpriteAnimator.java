@@ -12,29 +12,29 @@ import java.util.List;
  */
 public class SpriteAnimator
 {
-    /** Lista de fotogramas que componen la animación */
+    /** Lista de fotogramas que componen la animacion */
     private List<Sprite> frames;
     
     /** Tiempo entre frames en segundos */
     private float frameRate;
     
-    /** Indica si la animación debe repetirse indefinidamente */
+    /** Indica si la animacion debe repetirse indefinidamente */
     private boolean loop;
 
-    /** Frame actual que se está mostrando */
+    /** Frame actual que se esta mostrando */
     private int currentFrame;
     
-    /** Temporizador para controlar la velocidad de la animación */
+    /** Temporizador para controlar la velocidad de la animacion */
     private float timer;
     
-    /** Indica si una animación sin loop ha terminado */
+    /** Indica si una animacion sin loop ha terminado */
     private boolean finished;
 
     /**
-     * Constructor principal con todos los parámetros.
-     * @param frames Lista de fotogramas de la animación
+     * Constructor principal con todos los parametros.
+     * @param frames Lista de fotogramas de la animacion
      * @param frameRate Tiempo entre frames en segundos
-     * @param loop Indica si la animación debe repetirse
+     * @param loop Indica si la animacion debe repetirse
      */
     public SpriteAnimator(List<Sprite> frames, float frameRate, boolean loop) {
         this.frames = frames;
@@ -43,8 +43,8 @@ public class SpriteAnimator
     }
 
     /**
-     * Constructor con valores por defecto para loop (true)
-     * @param frames Lista de fotogramas de la animación
+     * Constructor con valores por defecto para loop (true).
+     * @param frames Lista de fotogramas de la animacion
      * @param frameRate Tiempo entre frames en segundos
      */
     public SpriteAnimator(List<Sprite> frames, float frameRate) {
@@ -53,14 +53,15 @@ public class SpriteAnimator
 
     /**
      * Constructor con valores por defecto para frameRate (0.16f) y loop (true).
-     * @param frames Lista de fotogramas de la animación
+     * @param frames Lista de fotogramas de la animacion
      */
     public SpriteAnimator(List<Sprite> frames) {
         this(frames, 0.16f, true);
     }
 
     /**
-     * Inicializa la animación al estado inicial.
+     * Inicializa la animacion al estado inicial.
+     * Reinicia el frame actual, el temporizador y el estado de finalizacion.
      */
     public void start() {
         currentFrame = 0;
@@ -69,8 +70,9 @@ public class SpriteAnimator
     }
 
     /**
-     * Actualiza la animación cada frame.
-     * @param deltaTime Tiempo transcurrido desde el último frame
+     * Actualiza la animacion cada frame.
+     * Avanza al siguiente frame segun el frameRate y el modo de loop.
+     * @param deltaTime Tiempo transcurrido desde el ultimo frame
      */
     public void handleUpdate(float deltaTime) {
         if (finished) return; // No actualizar si ya terminó
@@ -95,7 +97,7 @@ public class SpriteAnimator
     }
 
     /**
-     * Dibuja el sprite actual de la animación.
+     * Dibuja el sprite actual de la animacion en el SpriteBatch.
      * @param spriteBatch SpriteBatch para renderizado
      */
     public void draw(SpriteBatch spriteBatch) {
@@ -105,8 +107,9 @@ public class SpriteAnimator
     }
 
     /**
-     * Establece el frame actual de la animación.
-     * @param frameIndex Índice del frame a establecer
+     * Establece el frame actual de la animacion.
+     * Asegura que el indice del frame este dentro de los limites validos.
+     * @param frameIndex Indice del frame a establecer
      */
     public void setCurrentFrame(int frameIndex) {
         if (frameIndex >= 0 && frameIndex < frames.size()) {
@@ -115,7 +118,7 @@ public class SpriteAnimator
     }
 
     /**
-     * Obtiene la lista de frames de la animación.
+     * Obtiene la lista de frames de la animacion.
      * @return Lista de frames
      */
     public List<Sprite> getFrames() {
@@ -123,7 +126,7 @@ public class SpriteAnimator
     }
 
     /**
-     * Obtiene el sprite actual de la animación.
+     * Obtiene el sprite actual de la animacion.
      * @return Sprite actual o null si no hay frames
      */
     public Sprite getCurrentSprite() {
@@ -132,16 +135,16 @@ public class SpriteAnimator
     }
     
     /**
-     * Obtiene el índice del frame actual.
-     * @return Índice del frame actual
+     * Obtiene el indice del frame actual.
+     * @return Indice del frame actual
      */
     public int getCurrentFrameIndex() {
         return currentFrame;
     }
 
     /**
-     * Verifica si una animación sin loop ha terminado.
-     * @return true si la animación ha terminado
+     * Verifica si una animacion sin loop ha terminado.
+     * @return true si la animacion ha terminado
      */
     public boolean isFinished() {
         return finished;
@@ -149,6 +152,7 @@ public class SpriteAnimator
 
     /**
      * Libera los recursos de las texturas de los sprites.
+     * Itera sobre todos los sprites y libera sus texturas si no son nulas.
      */
     public void dispose() {
         for (Sprite sprite : frames) {

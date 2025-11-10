@@ -8,47 +8,53 @@ import com.machinehunterdev.game.Util.SpriteAnimator;
 import java.util.List;
 
 /**
- * Efecto visual de impacto en el juego.
- * Utiliza una animación de sprites para representar el efecto.
+ * Representa un efecto visual de impacto que se reproduce una vez y luego desaparece.
+ * Se utiliza para mostrar explosiones, chispas de impacto de balas, etc.
+ * Cada efecto tiene su propia posicion y animacion.
  * 
  * @author MachineHunterDev
  */
 public class ImpactEffect {
-    /* Posición en dos dimensiones */
+    
+    // La posicion en el mundo donde se muestra el efecto.
     private Vector2 position;
-    /* Animador de sprites */
+    
+    // El animador que gestiona la secuencia de sprites del efecto.
     private SpriteAnimator animator;
-    /* Banderín para indicar si la animación ha termiando, para hacer dispose */
+    
+    // Bandera que indica si la animacion del efecto ha terminado.
     private boolean isFinished;
 
     /**
-     * Constructor del efecto de impacto.
-     * @param x Posición X.
-     * @param y Posición Y.
-     * @param frames Lista de sprites para la animación.
-     * @param frameDuration Duración de cada frame en segundos.
+     * Constructor para crear un nuevo efecto de impacto.
+     * @param x La posicion inicial en el eje X.
+     * @param y La posicion inicial en el eje Y.
+     * @param frames La lista de sprites que componen la animacion del efecto.
+     * @param frameDuration La duracion de cada fotograma en la animacion.
      */
     public ImpactEffect(float x, float y, List<Sprite> frames, float frameDuration) {
         this.position = new Vector2(x, y);
-        this.animator = new SpriteAnimator(frames, frameDuration, false); // No está en bucle
+        // Se crea un animador que no se repite (isLooping = false).
+        this.animator = new SpriteAnimator(frames, frameDuration, false);
         this.animator.start();
         this.isFinished = false;
     }
 
     /**
-     * Actualiza el efecto de impacto.
-     * @param delta Tiempo transcurrido desde la última actualización.
+     * Actualiza el estado de la animacion del efecto.
+     * @param delta El tiempo transcurrido desde el ultimo fotograma.
      */
     public void update(float delta) {
         animator.handleUpdate(delta);
+        // Si el animador ha terminado su secuencia, marca este efecto como finalizado.
         if (animator.isFinished()) {
             isFinished = true;
         }
     }
 
     /**
-     * Dibuja el efecto de impacto.
-     * @param batch El SpriteBatch utilizado para el dibujo.
+     * Dibuja el fotograma actual de la animacion del efecto.
+     * @param batch El SpriteBatch utilizado para el renderizado.
      */
     public void draw(SpriteBatch batch) {
         if (!isFinished) {
@@ -59,9 +65,10 @@ public class ImpactEffect {
             }
         }
     }
+    
     /**
-     * Verifica si la animación ha terminado.
-     * @return true si la animación ha terminado.
+     * Comprueba si la animacion del efecto ha terminado.
+     * @return Verdadero si la animacion ha finalizado.
      */
     public boolean isFinished() {
         return isFinished;

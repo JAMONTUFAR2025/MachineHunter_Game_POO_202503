@@ -18,21 +18,38 @@ import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 public class PauseUI implements InputProcessor {
 
+    // Referencia al estado de pausa que gestiona esta UI
     private PauseState pauseState;
+    // Referencia al controlador principal del juego
     private GameController gameController;
+    // SpriteBatch para dibujar elementos
     private SpriteBatch batch;
+    // Fuente para renderizar el texto
     private BitmapFont font;
+    // Textura de fondo para la interfaz de pausa
     private Texture backgroundTexture;
 
+    // Enumeracion para los diferentes estados del menu de pausa
     private enum MenuState { MAIN, CONFIRM_EXIT, CONFIRM_RETRY }
+    // Estado actual del menu de pausa
     private MenuState currentState = MenuState.MAIN;
 
+    // Opciones del menu principal de pausa
     private String[] mainOptions = {"Reanudar", "Opciones", "Reintentar", "Salir"};
+    // Opciones para los menus de confirmacion
     private String[] confirmOptions = {"Si", "No"};
     
+    // Indice de la opcion actualmente seleccionada
     private int selectedOption = 0;
 
-    public PauseUI(PauseState pauseState, GameController gameController, SpriteBatch batch) { // Changed constructor parameter
+    /**
+     * Constructor de la interfaz de pausa.
+     * Inicializa el estado de pausa, el controlador del juego, el SpriteBatch y carga la fuente personalizada.
+     * @param pauseState El estado de pausa que gestiona esta UI.
+     * @param gameController El controlador principal del juego.
+     * @param batch El SpriteBatch para dibujar elementos.
+     */
+    public PauseUI(PauseState pauseState, GameController gameController, SpriteBatch batch) {
         this.pauseState = pauseState;
         this.gameController = gameController;
         this.batch = batch;
@@ -46,6 +63,10 @@ public class PauseUI implements InputProcessor {
         loadCustomBitmapFont();
     }
 
+    /**
+     * Carga la fuente personalizada para la interfaz.
+     * Si falla la carga, se utiliza una fuente por defecto.
+     */
     private void loadCustomBitmapFont() {
         try {
             this.font = new BitmapFont(Gdx.files.internal("fonts/OrangeKid64.fnt"));
@@ -54,6 +75,10 @@ public class PauseUI implements InputProcessor {
         }
     }
 
+    /**
+     * Renderiza la interfaz de pausa en pantalla.
+     * Dibuja el fondo, el menu principal o los menus de confirmacion, y los controles.
+     */
     public void draw() {
         batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         
@@ -76,6 +101,9 @@ public class PauseUI implements InputProcessor {
         batch.end();
     }
 
+    /**
+     * Dibuja las instrucciones de control en la parte inferior de la pantalla.
+     */
     private void drawControls() {
         String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_CANCEL) + "-Retroceder | " + Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + "-Seleccionar | " + Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + "/" + Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + "-Moverse";
         GlyphLayout layout = new GlyphLayout(font, controlsText);
@@ -86,12 +114,20 @@ public class PauseUI implements InputProcessor {
         font.draw(batch, controlsText, textX, textY);
     }
 
+    /**
+     * Dibuja un menu generico con las opciones dadas.
+     * @param options Las opciones a dibujar.
+     * @param startY La posicion Y inicial para dibujar las opciones.
+     */
     private void drawMenu(String[] options, float startY) {
         for (int i = 0; i < options.length; i++) {
             drawText(options[i], startY - (i * 80), i == selectedOption);
         }
     }
 
+    /**
+     * Dibuja el menu de confirmacion para salir del juego.
+     */
     private void drawConfirmationMenu() {
         float startY = Gdx.graphics.getHeight() / 2f + 80;
         drawText("¿Esta seguro?", startY, false);
@@ -101,6 +137,9 @@ public class PauseUI implements InputProcessor {
         }
     }
 
+    /**
+     * Dibuja el menu de confirmacion para reintentar el nivel.
+     */
     private void drawRetryConfirmationMenu() {
         float startY = Gdx.graphics.getHeight() / 2f + 80;
         drawText("¿Desea reintentar?", startY, false);
@@ -110,6 +149,13 @@ public class PauseUI implements InputProcessor {
         }
     }
 
+    /**
+     * Dibuja una linea de texto en pantalla.
+     * El color del texto cambia si la opcion esta seleccionada.
+     * @param text Texto a dibujar.
+     * @param y Posicion Y para dibujar el texto.
+     * @param isSelected Indica si la opcion esta seleccionada.
+     */
     private void drawText(String text, float y, boolean isSelected) {
         GlyphLayout layout = new GlyphLayout(font, text);
         float x = (Gdx.graphics.getWidth() - layout.width) / 2f;
@@ -129,6 +175,10 @@ public class PauseUI implements InputProcessor {
         return true;
     }
 
+    /**
+     * Maneja la entrada del teclado para el menu principal de pausa.
+     * @param keycode Codigo de la tecla presionada.
+     */
     private void handleMainMenuInput(int keycode) {
         if (keycode == GlobalSettings.CONTROL_JUMP) {
             AudioManager.getInstance().playSfx(AudioId.UIChange, null);
@@ -157,6 +207,10 @@ public class PauseUI implements InputProcessor {
         }
     }
 
+    /**
+     * Maneja la entrada del teclado para el menu de confirmacion de salida.
+     * @param keycode Codigo de la tecla presionada.
+     */
     private void handleConfirmExitInput(int keycode) {
         if (keycode == GlobalSettings.CONTROL_JUMP) {
             AudioManager.getInstance().playSfx(AudioId.UIChange, null);
@@ -180,6 +234,10 @@ public class PauseUI implements InputProcessor {
         }
     }
 
+    /**
+     * Maneja la entrada del teclado para el menu de confirmacion de reintento.
+     * @param keycode Codigo de la tecla presionada.
+     */
     private void handleConfirmRetryInput(int keycode) {
         if (keycode == GlobalSettings.CONTROL_JUMP) {
             AudioManager.getInstance().playSfx(AudioId.UIChange, null);
@@ -203,17 +261,29 @@ public class PauseUI implements InputProcessor {
         }
     }
 
+    /**
+     * Libera los recursos utilizados por la interfaz de pausa.
+     * Incluye la fuente y la textura de fondo.
+     */
     public void dispose() {
         font.dispose();
         backgroundTexture.dispose();
     }
 
+    // Metodo no utilizado: se llama cuando se suelta una tecla.
     @Override public boolean keyUp(int keycode) { return false; }
+    // Metodo no utilizado: se llama cuando se escribe un caracter.
     @Override public boolean keyTyped(char character) { return false; }
+    // Metodo no utilizado: se llama cuando se presiona la pantalla o un boton del raton.
     @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) { return false; }
+    // Metodo no utilizado: se llama cuando se suelta la pantalla o un boton del raton.
     @Override public boolean touchUp(int screenX, int screenY, int pointer, int button) { return false; }
+    // Metodo no utilizado: se llama cuando se arrastra el dedo o el raton.
     @Override public boolean touchDragged(int screenX, int screenY, int pointer) { return false; }
+    // Metodo no utilizado: se llama cuando el raton se mueve sin botones presionados.
     @Override public boolean mouseMoved(int screenX, int screenY) { return false; }
+    // Metodo no utilizado: se llama cuando se usa la rueda del raton.
     @Override public boolean scrolled(float amountX, float amountY) { return false; }
+    // Metodo no utilizado: se llama cuando un evento tactil es cancelado (ej. por una llamada telefonica).
     @Override public boolean touchCancelled(int screenX, int screenY, int pointer, int button) { return false; }
 }

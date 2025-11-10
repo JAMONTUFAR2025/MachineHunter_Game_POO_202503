@@ -10,11 +10,21 @@ import com.machinehunterdev.game.Character.EnemyType;
 
 public class BossHealthBar {
 
+    // Referencia al personaje jefe cuya vida se muestra
     private Character boss;
+    // Nombre del jefe a mostrar en la barra de vida
     private String bossName;
+    // Salud maxima del jefe al inicio
     private float maxHealth;
+    // Tipo de enemigo jefe para determinar el color de la barra
     private EnemyType enemyType;
 
+    /**
+     * Constructor para la barra de vida del jefe.
+     * @param boss El personaje jefe.
+     * @param bossName El nombre del jefe.
+     * @param enemyType El tipo de enemigo jefe.
+     */
     public BossHealthBar(Character boss, String bossName, EnemyType enemyType) {
         this.boss = boss;
         this.bossName = bossName;
@@ -22,6 +32,13 @@ public class BossHealthBar {
         this.enemyType = enemyType;
     }
 
+    /**
+     * Dibuja la forma de la barra de vida del jefe.
+     * Incluye el fondo, el borde y la barra de vida que representa la salud actual.
+     * @param shapeRenderer El ShapeRenderer para dibujar formas.
+     * @param viewportWidth Ancho del viewport.
+     * @param viewportHeight Alto del viewport.
+     */
     public void drawShapes(ShapeRenderer shapeRenderer, float viewportWidth, float viewportHeight) {
         float barWidth = 400;
         float barHeight = 20;
@@ -64,6 +81,13 @@ public class BossHealthBar {
         shapeRenderer.rect(x + barWidth / 2 - 1, y, 2, barHeight); // 2 pixels wide line
     }
 
+    /**
+     * Dibuja el texto (nombre del jefe) sobre la barra de vida.
+     * @param batch El SpriteBatch para dibujar texto.
+     * @param font La fuente a utilizar.
+     * @param viewportWidth Ancho del viewport.
+     * @param viewportHeight Alto del viewport.
+     */
     public void drawText(SpriteBatch batch, BitmapFont font, float viewportWidth, float viewportHeight) {
         float barWidth = 400;
         float barHeight = 20;
@@ -77,6 +101,10 @@ public class BossHealthBar {
         font.draw(batch, bossName, fontX, fontY);
     }
 
+    /**
+     * Libera los recursos utilizados por la barra de vida.
+     * En este caso, no hay recursos especificos que liberar.
+     */
     public void dispose() {
         // No resources to dispose
     }

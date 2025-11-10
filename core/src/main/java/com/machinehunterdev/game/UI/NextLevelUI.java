@@ -32,13 +32,14 @@ public class NextLevelUI implements InputProcessor {
     /** Textura de fondo */
     private Texture backgroundTexture;
 
-    /* Opciones del menú */
+    /* Opciones del menu */
     private String[] options = {"Continuar"};
-    /* Índice de la opción seleccionada */
+    /* Indice de la opcion seleccionada */
     private int selectedOption = 0;
 
     /**
      * Constructor de la interfaz de siguiente nivel.
+     * Inicializa el estado de juego, el SpriteBatch y carga la fuente personalizada.
      * @param gameplayState Estado de juego actual.
      * @param batch SpriteBatch para renderizado.
      */
@@ -57,6 +58,7 @@ public class NextLevelUI implements InputProcessor {
 
     /**
      * Carga la fuente personalizada para la interfaz.
+     * Si falla la carga, se utiliza una fuente por defecto.
      */
     private void loadCustomBitmapFont() {
         try {
@@ -68,6 +70,7 @@ public class NextLevelUI implements InputProcessor {
 
     /**
      * Renderiza la interfaz de siguiente nivel.
+     * Dibuja el fondo, el titulo "¡Nivel completado!", las opciones del menu y los controles.
      */
     public void draw() {
         batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -88,6 +91,7 @@ public class NextLevelUI implements InputProcessor {
 
     /**
      * Dibuja las instrucciones de control en pantalla.
+     * Muestra la tecla de interaccion para seleccionar opciones.
      */
     private void drawControls() {
         String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + "-Seleccionar";
@@ -100,9 +104,10 @@ public class NextLevelUI implements InputProcessor {
     }
 
     /**
-     * Dibuja el menú de opciones.
-     * @param options Opciones del menú.
-     * @param startY Posición Y inicial para dibujar las opciones.
+     * Dibuja el menu de opciones.
+     * Incluye el titulo "¡Nivel completado!" y las opciones seleccionables.
+     * @param options Opciones del menu.
+     * @param startY Posicion Y inicial para dibujar las opciones.
      */
     private void drawMenu(String[] options, float startY) {
         drawText("¡Nivel completado!", Gdx.graphics.getHeight() / 2f + 160, false);
@@ -112,10 +117,11 @@ public class NextLevelUI implements InputProcessor {
     }
 
     /**
-     * Dibuja una línea de texto en pantalla.
+     * Dibuja una linea de texto en pantalla.
+     * El color del texto cambia si la opcion esta seleccionada.
      * @param text Texto a dibujar.
-     * @param y Posición Y para dibujar el texto.
-     * @param isSelected Indica si la opción está seleccionada.
+     * @param y Posicion Y para dibujar el texto.
+     * @param isSelected Indica si la opcion esta seleccionada.
      */
     private void drawText(String text, float y, boolean isSelected) {
         GlyphLayout layout = new GlyphLayout(font, text);
@@ -126,8 +132,9 @@ public class NextLevelUI implements InputProcessor {
 
     // === Manejo de entrada ===
     /**
-     * Maneja la entrada del teclado para la selección de opciones.
-     * @param keycode Código de la tecla presionada.
+     * Maneja la entrada del teclado para la seleccion de opciones.
+     * Al presionar la tecla de interaccion, avanza al siguiente nivel o a la pantalla de creditos.
+     * @param keycode Codigo de la tecla presionada.
      * @return true si la entrada fue procesada.
      */
     @Override
@@ -154,13 +161,14 @@ public class NextLevelUI implements InputProcessor {
 
     /**
      * Libera los recursos utilizados por la interfaz.
+     * Incluye la fuente y la textura de fondo.
      */
     public void dispose() {
         font.dispose();
         backgroundTexture.dispose();
     }
 
-    // === Métodos de InputProcessor no utilizados ===
+    // === Metodos de InputProcessor no utilizados ===
     @Override public boolean keyUp(int keycode) { return false; }
     @Override public boolean keyTyped(char character) { return false; }
     @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) { return false; }

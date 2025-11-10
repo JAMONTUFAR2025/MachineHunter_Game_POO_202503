@@ -16,46 +16,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Estado del juego para la entrada del nombre del jugador.
- * Muestra un personaje animado mientras el jugador ingresa su nombre.
+ * Estado del juego para la pantalla de entrada de nombre del jugador.
+ * En este estado, el jugador puede introducir su nombre, que se utilizara
+ * en los dialogos y posiblemente en futuras clasificaciones.
+ * Muestra un personaje animado en el centro para darle un toque visual.
  * 
  * @author MachineHunterDev
  */
 public class NameInputState implements IState<GameController> {
 
-    /** Instancia singleton del estado */
+    /** Instancia unica de este estado (patron Singleton). */
     public static NameInputState instance = new NameInputState();
     
-    /** Componentes del estado */
-    //private GameController owner;
-    private NameInputUI nameInputUI;
-    private SpriteBatch batch;
-    private Character playerCharacter;
-    private Texture backgroundTexture;
+    // === COMPONENTES DEL ESTADO ===
+    private NameInputUI nameInputUI; // La interfaz de usuario que maneja el campo de texto y los botones.
+    private SpriteBatch batch; // El SpriteBatch para dibujar.
+    private Character playerCharacter; // Un personaje animado que se muestra en el fondo.
+    private Texture backgroundTexture; // La textura de fondo de la pantalla.
 
     /**
-     * Constructor privado para implementar el patrón Singleton.
+     * Constructor privado para implementar el patron Singleton.
      */
     private NameInputState() {
         instance = this;
     }
 
     /**
-     * Inicializa el estado al entrar.
-     * @param owner Controlador del juego propietario
+     * Se llama una vez al entrar en este estado.
+     * Inicializa la UI, la musica, y el personaje animado.
+     * @param owner El GameController que gestiona la maquina de estados.
      */
     @Override
     public void enter(GameController owner) {
-        //this.owner = owner;
         this.batch = owner.batch;
         this.nameInputUI = new NameInputUI(batch, owner);
-        Gdx.input.setInputProcessor(nameInputUI);
+        Gdx.input.setInputProcessor(nameInputUI); // La UI manejara la entrada del teclado.
         backgroundTexture = new Texture("Fondos/NameInputBackground.png");
 
-        // Cargar animación del personaje para la pantalla de nombre
+        // Carga y configura la animacion del personaje que se muestra en esta pantalla.
         List<Sprite> playerIdleFrames = loadSpriteFrames("Player/PlayerIdle", 4);
         for (Sprite frame : playerIdleFrames) {
-            frame.setSize(frame.getWidth() * 6, frame.getHeight() * 6);
+            frame.setSize(frame.getWidth() * 6, frame.getHeight() * 6); // Escala el personaje para que se vea mas grande.
         }
 
         CharacterAnimator playerAnimator = new CharacterAnimator(
@@ -64,14 +65,18 @@ public class NameInputState implements IState<GameController> {
                 null, null, null, null, null, 
                 null, null, null
         );
+        // Centra el personaje en la pantalla.
         float charX = (Gdx.graphics.getWidth() / 2f) - (playerIdleFrames.get(0).getWidth() / 2f);
         float charY = (Gdx.graphics.getHeight() / 2f) - (playerIdleFrames.get(0).getHeight() / 2f);
         playerCharacter = new Character(0, playerAnimator, charX, charY);
+        
+        // Inicia la musica de fondo para esta pantalla.
         AudioManager.getInstance().playMusic("Audio/Soundtrack/ChillTheme.mp3", true, false);
     }
 
     /**
-     * Ejecuta la lógica del estado cada frame.
+     * Se llama en cada fotograma.
+     * Limpia la pantalla, dibuja el fondo y actualiza y dibuja la UI y el personaje.
      */
     @Override
     public void execute() {
@@ -82,9 +87,10 @@ public class NameInputState implements IState<GameController> {
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
+        // Actualiza la animacion del personaje.
         float deltaTime = Gdx.graphics.getDeltaTime();
         playerCharacter.update(deltaTime);
-        playerCharacter.onGround = true;
+        playerCharacter.onGround = true; // Asegura que la animacion de idle se reproduzca correctamente.
         playerCharacter.velocity.y = 0;
 
         if (nameInputUI != null) {
@@ -93,7 +99,8 @@ public class NameInputState implements IState<GameController> {
     }
 
     /**
-     * Limpia los recursos al salir del estado.
+     * Se llama una vez al salir de este estado.
+     * Libera los recursos y el procesador de entrada.
      */
     @Override
     public void exit() {
@@ -106,13 +113,19 @@ public class NameInputState implements IState<GameController> {
         Gdx.input.setInputProcessor(null);
     }
 
+    /**
+     * Se llama al reanudar este estado (no es comun para esta pantalla).
+     */
     @Override
     public void resume() {
         Gdx.input.setInputProcessor(nameInputUI);
     }
 
     /**
-     * Carga frames de animación desde archivos numerados.
+     * Metodo de utilidad para cargar una secuencia de fotogramas de animacion.
+     * @param basePath La ruta base de los archivos de imagen.
+     * @param frameCount El numero de fotogramas a cargar.
+     * @return Una lista de Sprites.
      */
     private List<Sprite> loadSpriteFrames(String basePath, int frameCount) {
         List<Sprite> frames = new ArrayList<>();
@@ -121,5 +134,4 @@ public class NameInputState implements IState<GameController> {
         }
         return frames;
     }
-    
 }

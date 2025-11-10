@@ -34,7 +34,7 @@ public class GameOverUI implements InputProcessor {
     /** Opciones disponibles en la pantalla de fin de juego */
     private String[] options = {"Reintentar", "Salir"};
 
-    /** Índice de la opción seleccionada actualmente */
+    /** Indice de la opcion seleccionada actualmente */
     private int selected = 0;
 
     /** Fuente para el texto de la interfaz */
@@ -66,7 +66,7 @@ public class GameOverUI implements InputProcessor {
 
     private List<String> deathMessages;
     private String randomDeathMessage;
-    private String[] confirmationOptions = {"Sí", "No"};
+    private String[] confirmationOptions = {"Si", "No"};
     private int confirmationSelected = 0;
     private boolean isExitConfirmationVisible = false;
     private int eliminatedSoundPlayed = 0;
@@ -76,8 +76,8 @@ public class GameOverUI implements InputProcessor {
     /**
      * Constructor de la interfaz de fin de juego.
      * @param batch SpriteBatch para renderizado
-     * @param gameController Controlador del juego para gestión de estados
-     * @param animator Animador del personaje para mostrar la animación de muerte
+     * @param gameController Controlador del juego para gestion de estados
+     * @param animator Animador del personaje para mostrar la animacion de muerte
      */
     public GameOverUI(SpriteBatch batch, GameController gameController, CharacterAnimator animator) {
         this.batch = batch;
@@ -94,6 +94,7 @@ public class GameOverUI implements InputProcessor {
 
     /**
      * Carga la fuente personalizada para la interfaz.
+     * Si falla la carga, se utiliza una fuente por defecto.
      */
     private void loadCustomBitmapFont() {
         try {
@@ -107,6 +108,7 @@ public class GameOverUI implements InputProcessor {
 
     /**
      * Carga los mensajes de muerte desde un archivo JSON.
+     * Si falla la carga, se utilizan mensajes por defecto.
      */
     private void loadDeathMessages() {
         deathMessages = new ArrayList<>();
@@ -125,6 +127,7 @@ public class GameOverUI implements InputProcessor {
 
     /**
      * Renderiza la interfaz de fin de juego.
+     * Dibuja la animacion del personaje, el texto "ELIMINADO", el mensaje de muerte y las opciones.
      */
     public void draw() {
         batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -180,7 +183,7 @@ public class GameOverUI implements InputProcessor {
     }
 
     /**
-     * Dibuja el texto "ELIMINADO" con animación de escritura.
+     * Dibuja el texto "ELIMINADO" con animacion de escritura y efecto de sacudida.
      */
     private void drawGameOverText() {
         String gameOverText = "ELIMINADO";
@@ -254,7 +257,7 @@ public class GameOverUI implements InputProcessor {
     }
 
     /**
-     * Dibuja el mensaje de muerte con animación de escritura.
+     * Dibuja el mensaje de muerte aleatorio con animacion de escritura.
      */
     private void drawDeathMessage() {
         if (randomDeathMessage == null) return;
@@ -289,7 +292,7 @@ public class GameOverUI implements InputProcessor {
      * Dibuja las opciones de reinicio/salida con resaltado de selección.
      */
     /**
-     * Dibuja las opciones de reinicio/salida con resaltado de selección.
+     * Dibuja las opciones de reinicio/salida con resaltado de seleccion.
      */
     private void drawOptions() {
         float startY = Gdx.graphics.getHeight() * 0.25f;
@@ -308,6 +311,9 @@ public class GameOverUI implements InputProcessor {
 
 
 
+    /**
+     * Dibuja la confirmacion de salida con opciones "Si" y "No".
+     */
     private void drawExitConfirmation() {
         String confirmationText = "¿Seguro que quieres salir?";
         GlyphLayout confirmationLayout = new GlyphLayout(font, confirmationText);
@@ -331,7 +337,8 @@ public class GameOverUI implements InputProcessor {
     }
     /**
      * Maneja la entrada del teclado para navegar y seleccionar opciones.
-     * @param keycode Código de la tecla presionada.
+     * @param keycode Codigo de la tecla presionada.
+     * @return true si el evento fue manejado, false en caso contrario.
      */
     @Override
     public boolean keyDown(int keycode) {
@@ -386,7 +393,7 @@ public class GameOverUI implements InputProcessor {
     }
 
     /**
-     * Establece el temporizador para la animación del texto de fin de juego.
+     * Establece el temporizador para la animacion del texto de fin de juego.
      * @param timer Nuevo valor del temporizador.
      */
     public void setGameOverTextTimer(float timer) {
@@ -394,7 +401,7 @@ public class GameOverUI implements InputProcessor {
     }
 
     /**
-     * Establece el temporizador para la animación del mensaje de muerte.
+     * Establece el temporizador para la animacion del mensaje de muerte.
      * @param timer Nuevo valor del temporizador.
      */
     public void setDialogueTimer(float timer) {
@@ -431,7 +438,7 @@ public class GameOverUI implements InputProcessor {
         }
     }
     
-    // === Métodos de InputProcessor no utilizados ===
+    // === Metodos de InputProcessor no utilizados ===
 
     @Override public boolean keyUp(int keycode) { return false; }
     @Override public boolean keyTyped(char character) { return false; }

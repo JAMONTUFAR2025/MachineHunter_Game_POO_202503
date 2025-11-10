@@ -9,25 +9,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controlador para personajes no jugables (NPC).
- * Maneja interacciones y comportamiento de los NPCs.
+ * Controlador especifico para Personajes No Jugables (NPCs).
+ * Esta clase gestiona el comportamiento basico de un NPC, que principalmente consiste
+ * en detectar si el jugador esta cerca para iniciar una interaccion (dialogo)
+ * y mirar hacia el jugador.
  * 
  * @author MachineHunterDev
  */
 public class NPCController extends CharacterController {
 
-    /* Radio de interacción */
+    // El radio alrededor del NPC en el que el jugador puede interactuar con el.
     private float interactionRadius;
-    /* Diálogos del NPC */
+    
+    // La lista de dialogos que este NPC puede mostrar.
     private List<Dialog> dialogues;
-    /* Estado de interacción */
+    
+    // Bandera que indica si el jugador esta actualmente dentro del radio de interaccion.
     private boolean inRange;
 
     /**
      * Constructor del controlador de NPC.
-     * @param character El personaje NPC asociado.
-     * @param interactionRadius Radio de interacción.
-     * @param dialogues Diálogos del NPC.
+     * @param character El objeto Character que representa al NPC.
+     * @param interactionRadius El radio de interaccion.
+     * @param dialogues La lista de dialogos asociados a este NPC.
      */
     public NPCController(Character character, float interactionRadius, List<Dialog> dialogues) {
         super(character);
@@ -37,26 +41,30 @@ public class NPCController extends CharacterController {
     }
 
     /**
-     * Actualiza el estado del NPC.
-     * @param delta Tiempo transcurrido desde la última actualización.
-     * @param solidObjects Objetos sólidos en el entorno.
-     * @param bullets Balas en el entorno.
-     * @param playerCharacter El personaje jugador.
+     * Actualiza el estado del NPC en cada fotograma.
+     * @param delta El tiempo transcurrido desde el ultimo fotograma.
+     * @param solidObjects La lista de objetos solidos para colisiones.
+     * @param bullets La lista de balas (generalmente ignoradas por los NPCs).
+     * @param playerCharacter La referencia al personaje del jugador.
+     * @param enemyCount El numero de enemigos en el nivel.
      */
     @Override
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter, int enemyCount) {
+        // Realiza comprobaciones de colisiones basicas si el NPC tiene un cuerpo fisico.
         if (character != null) {
             checkCollisions(solidObjects);
         }
 
+        // Si el jugador existe, comprueba la distancia para la interaccion.
         if (playerCharacter != null) {
+            // Comprueba si la distancia entre el NPC y el jugador es menor o igual al radio de interaccion.
             if (character.position.dst(playerCharacter.position) <= interactionRadius) {
                 inRange = true;
             } else {
                 inRange = false;
             }
 
-            // Hacer que el NPC mire hacia el jugador
+            // Hace que el NPC siempre mire hacia la direccion del jugador.
             if (playerCharacter.position.x > character.position.x) {
                 character.isSeeingRight = true;
             } else {
@@ -66,7 +74,7 @@ public class NPCController extends CharacterController {
     }
 
     /**
-     * Renderiza el NPC.
+     * Renderiza el personaje del NPC.
      * @param batch El SpriteBatch utilizado para dibujar.
      */
     public void render(SpriteBatch batch) {
@@ -76,16 +84,16 @@ public class NPCController extends CharacterController {
     }
 
     /**
-     * Verifica si el jugador está dentro del rango de interacción.
-     * @return true si el jugador está en rango, false en caso contrario.
+     * Comprueba si el jugador esta dentro del rango de interaccion del NPC.
+     * @return Verdadero si el jugador esta en rango, falso en caso contrario.
      */
     public boolean isInRange() {
         return inRange;
     }
 
     /**
-     * Obtiene los diálogos del NPC.
-     * @return Lista de diálogos del NPC.
+     * Obtiene la lista de dialogos asociados a este NPC.
+     * @return Una lista de objetos Dialog.
      */
     public List<Dialog> getDialogues() {
         return dialogues;

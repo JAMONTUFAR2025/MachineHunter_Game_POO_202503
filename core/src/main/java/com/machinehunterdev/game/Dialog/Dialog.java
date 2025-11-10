@@ -3,25 +3,31 @@ package com.machinehunterdev.game.Dialog;
 import java.util.List;
 
 /**
- * Representa un diálogo compuesto por múltiples líneas de texto.
+ * Representa una unidad de dialogo en el juego.
+ * Un dialogo es, en esencia, una coleccion de lineas de texto que se muestran
+ * de forma secuencial. Esta clase actua como un contenedor simple para esas lineas.
  * 
  * @author MachineHunterDev
  */
 public class Dialog {
-    /** Lista de líneas que componen el diálogo */
+    
+    /**
+     * La lista de cadenas de texto (String) que componen el dialogo completo.
+     * Cada elemento de la lista es una linea que se mostrara en el cuadro de dialogo.
+     */
     private List<String> lines;
 
     /**
-     * Constructor del diálogo.
-     * @param lines Lista de líneas de texto
+     * Constructor para crear un nuevo objeto Dialog.
+     * @param lines Una lista de cadenas de texto que seran las lineas del dialogo.
      */
     public Dialog(List<String> lines) {
         this.lines = lines;
     }
 
     /**
-     * Obtiene las líneas del diálogo.
-     * @return Lista de líneas de texto
+     * Obtiene la lista completa de lineas que componen este dialogo.
+     * @return Una lista de cadenas de texto.
      */
     public List<String> getLines() {
         return lines;

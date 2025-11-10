@@ -11,14 +11,14 @@ public interface IState<T>
 {
     /**
      * Se ejecuta una vez cuando se entra en el estado.
-     * Se utiliza para inicializar recursos y configurar el estadsessssssso.
-     * @param owner Objeto propietario que utiliza la máquina de estados
+     * Se utiliza para inicializar recursos y configurar el estado.
+     * @param owner Objeto propietario que utiliza la maquina de estados
      */
     void enter(T owner);
 
     /**
-     * Se ejecuta en cada frame mientras se está en el estado.
-     * Contiene la lógica principal del estado (actualización, renderizado, etc.).
+     * Se ejecuta en cada frame mientras se esta en el estado.
+     * Contiene la logica principal del estado (actualizacion, renderizado, etc.).
      */
     void execute();
 

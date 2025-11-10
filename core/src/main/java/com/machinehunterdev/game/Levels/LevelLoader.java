@@ -11,8 +11,10 @@ public class LevelLoader {
     
     /**
      * Carga un nivel desde un archivo JSON.
+     * Utiliza la libreria Gdx.files.internal para acceder al archivo.
+     * En caso de error, crea y devuelve un nivel por defecto.
      * @param levelFile Ruta del archivo JSON del nivel
-     * @return Datos del nivel cargado
+     * @return Datos del nivel cargado o un nivel por defecto si falla
      */
     public static LevelData loadLevel(String levelFile) {
         Json json = new Json();
@@ -26,7 +28,9 @@ public class LevelLoader {
     }
     
     /**
-     * Crea un nivel por defecto en caso de error.
+     * Crea un nivel por defecto con un suelo basico y un enemigo.
+     * Se utiliza como fallback si la carga de un nivel falla.
+     * @return Un objeto LevelData con configuracion basica.
      */
     private static LevelData createDefaultLevel() {
         LevelData defaultLevel = new LevelData();

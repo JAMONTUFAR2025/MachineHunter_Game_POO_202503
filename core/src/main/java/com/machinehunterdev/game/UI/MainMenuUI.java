@@ -24,30 +24,32 @@ import com.machinehunterdev.game.GameStates.OptionState;
  */
 public class MainMenuUI implements InputProcessor {
     
-    /** Opciones del menú principal */
-    private String[] options = {"Iniciar partida", "Opciones", "Créditos", "Salir"};
+    /** Opciones del menu principal */
+    private String[] options = {"Iniciar partida", "Opciones", "Creditos", "Salir"};
     
-    /** Índice de la opción seleccionada actualmente */
+    /** Indice de la opcion seleccionada actualmente */
     private int selected = 0;
     
-    /** Fuente para el texto del menú */
+    /** Fuente para el texto del menu */
     private BitmapFont font;
+    /** Fuente para el titulo del juego */
     private BitmapFont titleFont;
     
     /** SpriteBatch para renderizado */
     private SpriteBatch batch;
     
-    /** Controlador del juego para gestión de estados */
+    /** Controlador del juego para gestion de estados */
     private GameController gameController;
     
-    /** Textura del fondo del menú */
+    /** Textura del fondo del menu */
     private Texture texture;
     
     /** Textura blanca para elementos de interfaz */
     private Texture backgroundTexture;
 
     /**
-     * Constructor de la interfaz del menú principal.
+     * Constructor de la interfaz del menu principal.
+     * Inicializa los recursos graficos y de audio necesarios.
      * @param batch SpriteBatch para dibujar elementos
      * @param gameController Controlador del juego para manejar estados
      */
@@ -66,7 +68,8 @@ public class MainMenuUI implements InputProcessor {
     }
 
     /**
-     * Carga la fuente bitmap personalizada.
+     * Carga la fuente bitmap personalizada para el menu y el titulo.
+     * Si falla la carga, se utilizan fuentes por defecto.
      */
     private void loadCustomBitmapFont() {
         try {
@@ -81,7 +84,7 @@ public class MainMenuUI implements InputProcessor {
     }
 
     /**
-     * Dibuja las opciones del menú en pantalla.
+     * Dibuja las opciones del menu en pantalla, incluyendo el titulo y los controles.
      */
     public void drawMenu() {
         batch.begin();
@@ -116,7 +119,7 @@ public class MainMenuUI implements InputProcessor {
     }
 
     /**
-     * Dibuja las instrucciones de controles en la parte inferior.
+     * Dibuja las instrucciones de controles en la parte inferior de la pantalla.
      */
     private void drawControls() {
         String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + "-Seleccionar | " + Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + "/" + Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + "-Moverse";
@@ -145,8 +148,8 @@ public class MainMenuUI implements InputProcessor {
     }
 
     /**
-     * Maneja la entrada del teclado para navegación y selección.
-     * @param keycode Código de la tecla presionada
+     * Maneja la entrada del teclado para navegacion y seleccion.
+     * @param keycode Codigo de la tecla presionada
      */
     public void manejarEntrada(int keycode) {
         if (keycode == GlobalSettings.CONTROL_JUMP) {
@@ -170,7 +173,7 @@ public class MainMenuUI implements InputProcessor {
     }
 
     /**
-     * Inicia una nueva partida.
+     * Inicia una nueva partida, cambiando el estado del juego a NameInputState.
      */
     private void starGame() {
         Gdx.input.setInputProcessor(null);
@@ -178,7 +181,7 @@ public class MainMenuUI implements InputProcessor {
     }
 
     /**
-     * Sale del juego.
+     * Sale del juego, cerrando la aplicacion.
      */
     private void exitGame() {
         Gdx.app.exit();
@@ -186,6 +189,7 @@ public class MainMenuUI implements InputProcessor {
 
     /**
      * Libera los recursos utilizados por la interfaz.
+     * Se asegura de liberar la fuente si no es nula.
      */
     public void dispose() {
         if (font != null) {
@@ -194,7 +198,7 @@ public class MainMenuUI implements InputProcessor {
         // Nota: No se dispone 'texture' ni 'batch' aquí si son gestionados por otra clase
     }
 
-    // === Métodos de InputProcessor no utilizados ===
+    // === Metodos de InputProcessor no utilizados ===
     
     @Override public boolean keyTyped(char character) { return false; }
     @Override public boolean keyUp(int keycode) { return false; }

@@ -11,18 +11,19 @@ import java.util.Stack;
  */
 public class StateMachine<T>
 {
-    /** Estado actual de la máquina de estados */
+    /** Estado actual de la maquina de estados */
     public IState<T> currentState;
     
-    /** Pila de estados para permitir navegación hacia atrás */
+    /** Pila de estados para permitir navegacion hacia atras */
     public Stack<IState<T>> stateStack;
     
-    /** Objeto propietario que utiliza la máquina de estados */
+    /** Objeto propietario que utiliza la maquina de estados */
     public T owner;
 
     /**
-     * Constructor de la máquina de estados.
-     * @param owner Objeto propietario que utilizará la máquina de estados
+     * Constructor de la maquina de estados.
+     * Inicializa el objeto propietario y la pila de estados.
+     * @param owner Objeto propietario que utilizara la maquina de estados
      */
     public StateMachine(T owner)
     {
@@ -32,6 +33,7 @@ public class StateMachine<T>
 
     /**
      * Ejecuta el estado actual en cada frame.
+     * Si no hay un estado actual, no hace nada.
      */
     public void execute()
     {
@@ -40,8 +42,8 @@ public class StateMachine<T>
     }
 
     /**
-     * Coloca un nuevo estado en la pila y entra en él.
-     * El estado anterior permanece en la pila para poder regresar a él.
+     * Coloca un nuevo estado en la pila y entra en el.
+     * El estado anterior permanece en la pila para poder regresar a el.
      * @param newState Nuevo estado a agregar a la pila
      */
     public void push(IState<T> newState)
@@ -53,7 +55,7 @@ public class StateMachine<T>
 
     /**
      * Saca el estado actual de la pila y vuelve al estado anterior.
-     * Útil para implementar menús, pausas, o diálogos temporales.
+     * Util para implementar menus, pausas, o dialogos temporales.
      */
     public void pop()
     {
@@ -72,7 +74,7 @@ public class StateMachine<T>
     /**
      * Cambia el estado actual por uno nuevo.
      * Sale del estado actual y entra en el nuevo, reemplazando completamente el estado anterior.
-     * @param newState Nuevo estado que reemplazará al actual
+     * @param newState Nuevo estado que reemplazara al actual
      */
     public void changeState(IState<T> newState)
     {
@@ -89,7 +91,7 @@ public class StateMachine<T>
 
     /**
      * Devuelve el estado anterior sin sacarlo de la pila.
-     * @return Estado anterior en la pila
+     * @return Estado anterior en la pila o null si no hay un estado anterior.
      */
     public IState<T> getPreviousState()
     {

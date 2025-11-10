@@ -26,17 +26,17 @@ import com.badlogic.gdx.utils.Array;
 
 /**
  * Controlador principal del juego que implementa ApplicationAdapter.
- * Gestiona la máquina de estados, cámara, renderizado y entrada del usuario.
- * 
+ * Gestiona la maquina de estados, camara, renderizado y entrada del usuario.
+ *
  * @author MachineHunterDev
  */
-public class GameController extends ApplicationAdapter 
-{
-    /** Indica si hay un diálogo activo (para gestión de entrada) */
+public class GameController extends ApplicationAdapter{
+    /** Indica si hay un dialogo activo (para gestion de entrada) */
     public boolean isDialogActive = false;
+    /** Indica si la pantalla debe limpiarse en cada frame */
     public boolean clearScreen = true;
 
-    /** Máquina de estados para gestionar los diferentes estados del juego */
+    /** Maquina de estados para gestionar los diferentes estados del juego */
     public StateMachine<GameController> stateMachine;
 
     /** Instancia singleton del controlador del juego */
@@ -45,25 +45,25 @@ public class GameController extends ApplicationAdapter
     /** SpriteBatch para dibujar texturas */
     public SpriteBatch batch;
 
-    /** Cámara ortográfica del juego */
+    /** Camara ortografica del juego */
     public OrthographicCamera camera;
-    
-    /** Viewport para manejar diferentes tamaños de pantalla */
+
+    /** Viewport para manejar diferentes tamanos de pantalla */
     private Viewport viewport;
 
-    // === Componentes para depuración de estados ===
-    
-    /** Stage para manejar la UI de depuración */
+    // === Componentes para depuracion de estados ===
+
+    /** Stage para manejar la UI de depuracion */
     private Stage stage;
-    
-    /** Skin para los estilos de UI de depuración */
+
+    /** Skin para los estilos de UI de depuracion */
     private Skin skin;
-    
-    /** Tabla raíz para organizar los elementos de la UI de depuración */
+
+    /** Tabla raiz para organizar los elementos de la UI de depuracion */
     private Table rootTable;
 
     /**
-     * Método llamado al crear la aplicación.
+     * Metodo llamado al crear la aplicacion.
      * Inicializa todos los componentes del juego.
      */
     @Override
@@ -121,16 +121,24 @@ public class GameController extends ApplicationAdapter
         Gdx.input.setCursorCatched(true);
     }
 
+    /**
+     * Obtiene la instancia del AudioManager.
+     * @return La instancia del AudioManager.
+     */
     public AudioManager getAudioManager() {
         return AudioManager.getInstance();
     }
 
+    /**
+     * Obtiene la instancia del SpriteBatch.
+     * @return La instancia del SpriteBatch.
+     */
     public SpriteBatch getSpriteBatch() {
         return batch;
     }
 
     /**
-     * Método llamado en cada frame para renderizar el juego.
+     * Metodo llamado en cada frame para renderizar el juego.
      */
     @Override
     public void render() 
@@ -154,7 +162,7 @@ public class GameController extends ApplicationAdapter
     }
 
     /**
-     * Método llamado cuando se redimensiona la ventana.
+     * Metodo llamado cuando se redimensiona la ventana.
      * @param width Nuevo ancho de la ventana
      * @param height Nuevo alto de la ventana
      */
@@ -165,7 +173,7 @@ public class GameController extends ApplicationAdapter
     }
 
     /**
-     * Método llamado al cerrar la aplicación.
+     * Metodo llamado al cerrar la aplicacion.
      * Libera todos los recursos utilizados.
      */
     @Override
@@ -183,7 +191,7 @@ public class GameController extends ApplicationAdapter
     }
 
     /**
-     * Inicializa los componentes de la UI de depuración.
+     * Inicializa los componentes de la UI de depuracion.
      */
     private void initializeStateStackText()
     {
@@ -196,9 +204,9 @@ public class GameController extends ApplicationAdapter
     }
 
     /**
-     * Muestra la pila de estados en la pantalla para depuración.
+     * Muestra la pila de estados en la pantalla para depuracion.
      */
-    @SuppressWarnings("unchecked") // Para evitar la advertencia de conversión de Stack
+    @SuppressWarnings("unchecked") // Para evitar la advertencia de conversion de Stack
     private void showStateStack() 
     {
         rootTable.clear();

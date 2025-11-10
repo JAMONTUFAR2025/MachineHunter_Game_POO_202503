@@ -5,27 +5,18 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.machinehunterdev.game.DamageTriggers.WeaponType;
-import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.Character.Character;
-
-/**
- * Interfaz de usuario que se muestra durante el gameplay.
- * Muestra la barra de salud del jugador y su nombre.
- * 
- * @author MachineHunterDev
- */
 import com.machinehunterdev.game.Character.EnemyType;
+import com.machinehunterdev.game.DamageTriggers.WeaponType;
 
 public class GameplayUI {
 
     /** Renderizador de formas para la barra de salud */
     private ShapeRenderer shapeRenderer;
     
-    /** Cámara dedicada para la interfaz de usuario */
+    /** Camara dedicada para la interfaz de usuario */
     private OrthographicCamera uiCamera;
     
     /** Fuente para el texto de la interfaz */
@@ -34,12 +25,18 @@ public class GameplayUI {
     /** SpriteBatch compartido para renderizado */
     private SpriteBatch batch;
 
+    // Texturas para los iconos de armas
     private Texture laserIcon;
     private Texture ionIcon;
     private Texture railgunIcon;
+    // Texturas para los iconos de corazon de vida
     private Texture heartTexture;
     private Texture noHeartTexture;
+    // Textura para el icono de pausa
     private Texture pauseIcon;
+
+    // Barra de vida del jefe, si existe en el nivel actual
+    private BossHealthBar bossHealthBar;
 
     /**
      * Constructor de la interfaz de gameplay.
@@ -73,16 +70,24 @@ public class GameplayUI {
         }
     }
 
-    private BossHealthBar bossHealthBar;
+    
 
+    /**
+     * Establece el jefe actual para mostrar su barra de vida.
+     * @param boss El personaje jefe.
+     * @param bossName El nombre del jefe.
+     * @param enemyType El tipo de enemigo jefe.
+     */
     public void setBoss(Character boss, String bossName, EnemyType enemyType) {
         this.bossHealthBar = new BossHealthBar(boss, bossName, enemyType);
     }
 
     /**
      * Renderiza la interfaz de gameplay.
+     * Dibuja la barra de vida del jugador, los iconos de arma y la barra de vida del jefe si esta presente.
      * @param playerHealth Salud actual del jugador
      * @param currentWeapon Arma actual del jugador
+     * @param isPlayerInvulnerable Indica si el jugador es invulnerable (para efectos visuales)
      */
     public void draw(int playerHealth, WeaponType currentWeapon, boolean isPlayerInvulnerable) {
         // === Shape Drawing ===
@@ -162,6 +167,7 @@ public class GameplayUI {
 
     /**
      * Maneja el redimensionamiento de la ventana.
+     * Ajusta el viewport de la camara de la UI.
      * @param width Nuevo ancho de la ventana
      * @param height Nuevo alto de la ventana
      */
@@ -173,6 +179,7 @@ public class GameplayUI {
 
     /**
      * Libera los recursos utilizados por la interfaz.
+     * Incluye el ShapeRenderer, la fuente y las texturas.
      */
     public void dispose() {
         shapeRenderer.dispose();

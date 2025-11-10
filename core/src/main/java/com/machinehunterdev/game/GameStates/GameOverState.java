@@ -11,35 +11,40 @@ import com.machinehunterdev.game.Util.IState;
 
 /**
  * Estado del juego que se muestra cuando el jugador muere.
- * Gestiona la secuencia de animación de fin de juego.
+ * Gestiona la secuencia de "Game Over", incluyendo la animacion de muerte del jugador,
+ * la aparicion de texto y la presentacion de opciones como "Reintentar" o "Salir".
  * 
  * @author MachineHunterDev
  */
 public class GameOverState implements IState<GameController> {
 
-    /** Instancia singleton del estado */
+    /** Instancia unica de este estado (patron Singleton). */
     public static GameOverState instance = new GameOverState();
     
-    /** Componentes del estado */
-    //private GameController owner;
+    // === COMPONENTES DEL ESTADO ===
     private SpriteBatch batch;
-    private GameOverUI gameOverUI;
-    public static CharacterAnimator playerAnimator;
-    private Texture backgroundTexture;
+    private GameOverUI gameOverUI; // La interfaz de usuario para la pantalla de Game Over.
+    public static CharacterAnimator playerAnimator; // El animador del jugador para mostrar la animacion de muerte.
+    private Texture backgroundTexture; // La textura de fondo de la pantalla.
 
-    private float gameOverTextTimer;
-    private float dialogueTimer;
+    // === TEMPORIZADORES PARA LA SECUENCIA ===
+    private float gameOverTextTimer; // Temporizador para la aparicion del texto "Game Over".
+    private float dialogueTimer; // Temporizador para el mensaje de muerte.
 
-    private boolean isGameOverTextFinished;
-    private boolean isDialogueTypingFinished;
+    private boolean isGameOverTextFinished; // Indica si el texto "Game Over" ha terminado de aparecer.
+    private boolean isDialogueTypingFinished; // Indica si el mensaje de muerte ha terminado de escribirse.
 
     /**
-     * Constructor privado para implementar el patrón Singleton.
+     * Constructor privado para implementar el patron Singleton.
      */
     private GameOverState() {
         instance = this;
     }
 
+    /**
+     * Establece el animador del jugador para que este estado pueda reproducir la animacion de muerte.
+     * @param animator El animador del personaje del jugador.
+     */
     public static void setPlayerAnimator(CharacterAnimator animator) {
         playerAnimator = animator;
         if (playerAnimator != null) {
@@ -48,30 +53,30 @@ public class GameOverState implements IState<GameController> {
     }
 
     /**
-     * Inicializa el estado al entrar.
-     * @param owner Controlador del juego propietario
+     * Se llama una vez al entrar en este estado.
+     * Inicializa la UI, la musica y los temporizadores de la secuencia.
+     * @param owner El GameController que gestiona la maquina de estados.
      */
     @Override
     public void enter(GameController owner) {
-        //this.owner = owner;
         this.batch = owner.batch;
         this.gameOverUI = new GameOverUI(batch, owner, playerAnimator);
         Gdx.input.setInputProcessor(gameOverUI);
         backgroundTexture = new Texture("Fondos/GameOverBackground.png");
 
-        // Stop any playing music immediately
+        // Detiene cualquier musica que se este reproduciendo.
         AudioManager.getInstance().stopMusic(false);
 
-        // Inicializar temporizadores y estados
+        // Reinicia los temporizadores y las banderas de la secuencia.
         gameOverTextTimer = 0f;
         dialogueTimer = 0f;
-
         isGameOverTextFinished = false;
         isDialogueTypingFinished = false;
     }
 
     /**
-     * Ejecuta la lógica del estado cada frame.
+     * Se llama en cada fotograma.
+     * Dibuja el fondo y actualiza la secuencia de Game Over.
      */
     @Override
     public void execute() {
@@ -81,14 +86,16 @@ public class GameOverState implements IState<GameController> {
 
         float deltaTime = Gdx.graphics.getDeltaTime();
 
+        // Actualiza la animacion de muerte del jugador si existe.
         if (playerAnimator != null) {
             playerAnimator.update(deltaTime);
         }
 
+        // Comprueba si la animacion de muerte ha terminado.
         boolean deathAnimationFinished = playerAnimator == null || playerAnimator.isAnimationFinished(CharacterAnimator.AnimationState.DEAD);
         gameOverUI.setShowContent(deathAnimationFinished);
 
-        // Secuencia de fin de juego
+        // Si la animacion de muerte ha terminado, comienza la secuencia de texto.
         if (deathAnimationFinished) {
             updateGameOverSequence(deltaTime);
         }
@@ -97,8 +104,8 @@ public class GameOverState implements IState<GameController> {
     }
 
     /**
-     * Actualiza la secuencia de texto y diálogo de fin de juego.
-     * @param deltaTime Tiempo transcurrido desde el último frame
+     * Actualiza la secuencia de aparicion de texto y dialogos en la pantalla de Game Over.
+     * @param deltaTime El tiempo transcurrido desde el ultimo fotograma.
      */
     private void updateGameOverSequence(float deltaTime) {
         if (!isGameOverTextFinished) {
@@ -118,7 +125,8 @@ public class GameOverState implements IState<GameController> {
     }
 
     /**
-     * Limpia los recursos al salir del estado.
+     * Se llama una vez al salir de este estado.
+     * Libera todos los recursos utilizados.
      */
     @Override
     public void exit() {
@@ -135,6 +143,9 @@ public class GameOverState implements IState<GameController> {
         Gdx.input.setInputProcessor(null);
     }
 
+    /**
+     * Se llama al reanudar este estado.
+     */
     @Override
     public void resume() {
         Gdx.input.setInputProcessor(gameOverUI);

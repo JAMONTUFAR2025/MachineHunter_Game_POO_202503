@@ -6,7 +6,7 @@ import java.util.List;
 import com.machinehunterdev.game.GameController;
 import com.badlogic.gdx.Gdx;
 import com.machinehunterdev.game.GameStates.MainMenuState;
-import com.machinehunterdev.game.Gameplay.GlobalSettings; // Importar GlobalSettings
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -21,67 +21,55 @@ import com.machinehunterdev.game.Audio.AudioId;
 import com.machinehunterdev.game.Audio.AudioManager;
 
 /**
- * Gestor del sistema de diálogos del juego.
- * Maneja la visualización, animación de texto y paginación de diálogos.
+ * Gestor del sistema de dialogos del juego.
+ * Esta clase se encarga de renderizar los cuadros de dialogo, mostrar el texto
+ * con un efecto de escritura, manejar la paginacion de textos largos y controlar
+ * el flujo de la conversacion.
  * 
  * @author MachineHunterDev
  */
 public class DialogManager {
-    /** SpriteBatch para renderizar los diálogos */
-    private SpriteBatch batch;
     
-    /** Fuente para el texto de los diálogos */
-    private BitmapFont font;
-    
-    /** Diálogo actual que se está mostrando */
-    private Dialog currentDialog;
-    
-    /** Índice de la línea actual del diálogo */
-    private int currentLineIndex;
-    
-    /** Indica si hay un diálogo activo */
-    private boolean dialogActive;
+    // === ATRIBUTOS DE RENDERIZADO ===
+    private SpriteBatch batch; // El SpriteBatch para dibujar los elementos del dialogo.
+    private BitmapFont font; // La fuente utilizada para el texto del dialogo.
+    private GlyphLayout glyphLayout; // Utilidad para medir y formatear el texto.
+    private ScreenViewport uiViewport; // Viewport para asegurar que la UI se escale correctamente.
+    private Texture backgroundTexture; // Textura para el fondo del cuadro de dialogo.
+    private Texture borderTexture; // Textura para el borde del cuadro de dialogo.
+    private Texture skipIndicatorTexture; // Textura para el indicador de "continuar".
+    private Texture flashbackBackground; // Textura de fondo especial para flashbacks.
 
-    /** Dimensiones y posición del cuadro de diálogo */
+    // === ESTADO DEL DIALOGO ===
+    private Dialog currentDialog; // El dialogo que se esta mostrando actualmente.
+    private int currentLineIndex; // El indice de la linea actual dentro del dialogo.
+    private boolean dialogActive; // Bandera que indica si hay un dialogo activo.
+    private boolean isFlashback = false; // Bandera para saber si el dialogo es un flashback.
+
+    // === POSICION Y DIMENSIONES ===
     private float dialogBoxWidth;
     private float dialogBoxHeight = 200;
     private float dialogBoxX;
     private float dialogBoxY;
 
-    /** Viewport para la interfaz de usuario */
-    private ScreenViewport uiViewport;
+    // === EFECTO DE ESCRITURA Y PAGINACION ===
+    private String currentVisibleText = ""; // El texto que es visible en el cuadro en un momento dado.
+    private float textTimer = 0f; // Temporizador para controlar la velocidad de escritura.
+    private float textSpeed = 0.03f; // Velocidad a la que aparecen los caracteres.
+    private boolean textFullyVisible = false; // Bandera que indica si la linea actual ya se ha mostrado por completo.
+    private List<String> pages; // Lista de paginas para una linea de dialogo que no cabe en el cuadro.
+    private int currentPage; // La pagina actual que se esta mostrando.
 
-    /** Texto actualmente visible (para efecto de escritura) */
-    private String currentVisibleText = "";
-    private int previousTextLength = 0;
-    
-    /** Temporizadores para la animación de texto */
-    private float textTimer = 0f;
-    private float textSpeed = 0.03f;
-    private boolean textFullyVisible = false;
+    // === AUDIO ===
+    private Sound talkingSound; // Sonido que se reproduce mientras el texto aparece.
 
-    /** Sistema de paginación para textos largos */
-    private List<String> pages;
-    private int currentPage;
-
-    /** Layout para medir y formatear texto */
-    private GlyphLayout glyphLayout;
-
-    /** Texturas para el fondo y borde del cuadro de diálogo */
-    private Texture backgroundTexture;
-    private Texture borderTexture;
-    private Texture skipIndicatorTexture;
-    private Texture flashbackBackground;
-
-    private Sound talkingSound;
-
-    private boolean isFlashback = false;
-
-    private GameController owner;
+    // === REFERENCIAS EXTERNAS ===
+    private GameController owner; // Referencia al controlador principal del juego.
 
     /**
-     * Constructor del gestor de diálogos.
-     * @param batch SpriteBatch para renderizado
+     * Constructor del gestor de dialogos.
+     * @param owner El controlador principal del juego.
+     * @param batch El SpriteBatch para el renderizado.
      */
     public DialogManager(GameController owner, SpriteBatch batch) {
         this.owner = owner;
@@ -91,20 +79,21 @@ public class DialogManager {
         glyphLayout = new GlyphLayout();
         pages = new ArrayList<>();
 
-        // Crear textura de fondo semi-transparente
+        // Crea una textura de 1x1 pixel para el fondo semi-transparente.
         Pixmap bgPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         bgPixmap.setColor(0, 0, 0, 0.8f);
         bgPixmap.fill();
         backgroundTexture = new Texture(bgPixmap);
         bgPixmap.dispose();
 
-        // Crear textura de borde blanco
+        // Crea una textura de 1x1 pixel para el borde blanco.
         Pixmap borderPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         borderPixmap.setColor(Color.WHITE);
         borderPixmap.fill();
         borderTexture = new Texture(borderPixmap);
         borderPixmap.dispose();
 
+        // Crea una textura para el indicador de "saltar" o "continuar".
         Pixmap skipPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         skipPixmap.setColor(Color.WHITE);
         skipPixmap.fill();
@@ -121,7 +110,7 @@ public class DialogManager {
     }
 
     /**
-     * Actualiza la posición del cuadro de diálogo según el tamaño de la pantalla.
+     * Actualiza la posicion y el tamano del cuadro de dialogo, centrandolo en la pantalla.
      */
     private void updateDialogPosition() {
         if (isFlashback) {
@@ -136,8 +125,9 @@ public class DialogManager {
     }
 
     /**
-     * Muestra un nuevo diálogo.
-     * @param dialog Diálogo a mostrar
+     * Muestra un nuevo dialogo en la pantalla.
+     * @param dialog El dialogo a mostrar.
+     * @param isFlashback Verdadero si el dialogo es un flashback con un formato diferente.
      */
     public void showDialog(Dialog dialog, boolean isFlashback) {
         this.isFlashback = isFlashback;
@@ -149,12 +139,11 @@ public class DialogManager {
     }
 
     /**
-     * Inicia una nueva línea de diálogo con paginación automática.
+     * Prepara una nueva linea de dialogo, dividiendola en paginas si es necesario.
      */
     private void startNewLine() {
-        previousTextLength = 0;
         String fullText = currentDialog.getLines().get(currentLineIndex)
-            .replace("Roberto Julián", GlobalSettings.playerName);
+            .replace("Roberto Julián", GlobalSettings.playerName); // Reemplaza el placeholder con el nombre del jugador.
         pages.clear();
         currentPage = 0;
 
@@ -164,6 +153,7 @@ public class DialogManager {
         if (isFlashback) {
             pages.add(fullText);
         } else {
+            // Logica de paginacion: divide el texto en multiples paginas si no cabe en el cuadro.
             float targetHeight = dialogBoxHeight - 20;
             int start = 0;
             while (start < fullText.length()) {
@@ -175,9 +165,7 @@ public class DialogManager {
                         end = fullText.lastIndexOf(' ', end - 1);
                         if (end == -1 || end <= start) {
                             end = fullText.indexOf(' ', start);
-                            if (end == -1) {
-                                end = fullText.length();
-                            }
+                            if (end == -1) end = fullText.length();
                         }
                         break;
                     }
@@ -194,17 +182,17 @@ public class DialogManager {
     }
 
     /**
-     * Inicia una nueva página del diálogo actual.
+     * Inicia una nueva pagina del dialogo actual, reiniciando el efecto de escritura.
      */
     private void startPage() {
-        previousTextLength = 0;
         currentVisibleText = "";
         textTimer = 0f;
         textFullyVisible = false;
     }
 
     /**
-     * Avanza al siguiente elemento del diálogo (página, línea o cierra diálogo).
+     * Avanza al siguiente elemento del dialogo (siguiente pagina o siguiente linea).
+     * Si el texto no se ha mostrado completamente, lo muestra de inmediato.
      */
     public void nextLine() {
         if (textFullyVisible) {
@@ -216,29 +204,26 @@ public class DialogManager {
                     currentLineIndex++;
                     startNewLine();
                 } else {
-                    dialogActive = false;
+                    dialogActive = false; // Cierra el dialogo si no hay mas lineas.
                     if (talkingSound != null) {
                         talkingSound.stop();
                         talkingSound = null;
                     }
                 }
             }
-        }
-
-        else {
+        } else {
+            // Si el texto aun esta apareciendo, lo muestra por completo.
             currentVisibleText = pages.get(currentPage);
             textFullyVisible = true;
         }
     }
 
     /**
-     * Actualiza la animación de escritura del texto.
-     * @param dt Delta time desde el último frame
+     * Actualiza la animacion de escritura del texto.
+     * @param dt El tiempo delta desde el ultimo fotograma.
      */
     public void update(float dt) {
-        if (!dialogActive) return;
-
-        if (textFullyVisible) {
+        if (!dialogActive || textFullyVisible) {
             if (talkingSound != null) {
                 talkingSound.stop();
                 talkingSound = null;
@@ -246,6 +231,7 @@ public class DialogManager {
             return;
         }
 
+        // Inicia el sonido de "hablar" si no se esta reproduciendo.
         if (talkingSound == null) {
             talkingSound = AudioManager.getInstance().getSound(AudioId.Talking);
             if (talkingSound != null) {
@@ -256,6 +242,7 @@ public class DialogManager {
         textTimer += dt;
         String fullText = pages.get(currentPage);
 
+        // Calcula cuantos caracteres deben ser visibles segun el tiempo transcurrido.
         int charIndex = (int)(textTimer / textSpeed);
         if (charIndex < fullText.length()) {
             currentVisibleText = fullText.substring(0, charIndex + 1);
@@ -266,15 +253,15 @@ public class DialogManager {
     }
 
     /**
-     * Verifica si hay un diálogo activo.
-     * @return true si hay diálogo activo
+     * Comprueba si hay un dialogo activo.
+     * @return Verdadero si hay un dialogo activo.
      */
     public boolean isDialogActive() {
         return dialogActive;
     }
 
     /**
-     * Renderiza el cuadro de diálogo actual.
+     * Renderiza el cuadro de dialogo y su contenido.
      */
     public void render() {
         if (!dialogActive) return;
@@ -285,25 +272,25 @@ public class DialogManager {
         batch.begin();
 
         if (isFlashback) {
+            // Renderizado especial para flashbacks.
             batch.draw(flashbackBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             glyphLayout.setText(font, currentVisibleText, Color.WHITE, dialogBoxWidth - 20, Align.center, true);
             float textY = dialogBoxY + dialogBoxHeight / 2 + glyphLayout.height / 2;
             font.draw(batch, glyphLayout, dialogBoxX + 10, textY);
         } else {
-            // Dibujar fondo del cuadro de diálogo
+            // Renderizado normal del cuadro de dialogo.
             batch.draw(backgroundTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, dialogBoxHeight);
-
-            // Dibujar borde del cuadro de diálogo
-            batch.draw(borderTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, 1); // Superior
-            batch.draw(borderTexture, dialogBoxX, dialogBoxY + dialogBoxHeight - 1, dialogBoxWidth, 1); // Inferior
-            batch.draw(borderTexture, dialogBoxX, dialogBoxY, 1, dialogBoxHeight); // Izquierdo
-            batch.draw(borderTexture, dialogBoxX + dialogBoxWidth - 1, dialogBoxY, 1, dialogBoxHeight); // Derecho
+            batch.draw(borderTexture, dialogBoxX, dialogBoxY, dialogBoxWidth, 1); // Borde superior
+            batch.draw(borderTexture, dialogBoxX, dialogBoxY + dialogBoxHeight - 1, dialogBoxWidth, 1); // Borde inferior
+            batch.draw(borderTexture, dialogBoxX, dialogBoxY, 1, dialogBoxHeight); // Borde izquierdo
+            batch.draw(borderTexture, dialogBoxX + dialogBoxWidth - 1, dialogBoxY, 1, dialogBoxHeight); // Borde derecho
 
             glyphLayout.setText(font, currentVisibleText, Color.WHITE, dialogBoxWidth - 20, Align.left, true);
-            float textY = dialogBoxY + dialogBoxHeight - 20; // From the top
+            float textY = dialogBoxY + dialogBoxHeight - 20;
             font.draw(batch, glyphLayout, dialogBoxX + 10, textY);
         }
 
+        // Muestra un indicador para continuar cuando el texto esta completo en un flashback.
         if (textFullyVisible && isFlashback) {
             font.getData().setScale(0.5f);
             glyphLayout.setText(font, "Presiona E para continuar");
@@ -317,9 +304,9 @@ public class DialogManager {
     }
 
     /**
-     * Maneja el redimensionamiento de la ventana.
-     * @param width Nuevo ancho de la ventana
-     * @param height Nuevo alto de la ventana
+     * Maneja el redimensionamiento de la ventana para ajustar la UI.
+     * @param width El nuevo ancho de la ventana.
+     * @param height El nuevo alto de la ventana.
      */
     public void resize(int width, int height) {
         uiViewport.update(width, height, true);
@@ -327,7 +314,7 @@ public class DialogManager {
     }
 
     /**
-     * Libera los recursos utilizados por el gestor de diálogos.
+     * Libera los recursos utilizados por el gestor de dialogos para evitar fugas de memoria.
      */
     public void dispose() {
         if (talkingSound != null) {

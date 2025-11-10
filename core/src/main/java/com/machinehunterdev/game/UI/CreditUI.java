@@ -15,62 +15,83 @@ import com.machinehunterdev.game.GameStates.MainMenuState;
 
 public class CreditUI implements InputProcessor {
 
+    // Objeto para dibujar texturas y sprites
     private SpriteBatch batch;
+    // Referencia al controlador principal del juego
     private GameController gameController;
+    // Textura de fondo para la pantalla de creditos
     private Texture backgroundTexture;
+    // Fuente para renderizar el texto de los creditos
     private BitmapFont font;
+    // Array de cadenas que contiene el texto de los creditos
     private String[] credits = {
             "MACHINE HUNTER",
-            "Créditos",
+            "Creditos",
             "",
             "Clase",
-            "Programación Orientada a Objetos",
+            "Programacion Orientada a Objetos",
             "",
-            "Período 2025-3",
+            "Periodo 2025-3",
             "",
-            "Catedrático",
+            "Catedratico",
             "Luis Fernando Teruel Umanzor",
             "",
-            "Guión",
-            "Raúl Fernando Ramos Lara",
+            "Guion",
+            "Raul Fernando Ramos Lara",
             "",
             "Arte",
-            "Mariely Nicol Hiraeta Henríquez",
+            "Mariely Nicol Hiraeta Henriquez",
             "Ken Kato Castellanos",
             "",
             "Texturas",
-            "Explosión: A quien corresponda",
-            "Rayo: Pokémon Ruby & Sapphire",
+            "Explosion: A quien corresponda",
+            "Rayo: Pokemon Ruby & Sapphire",
             "",
-            "Programación",
-            "Josué Alejandro Montúfar Zúniga",
+            "Programacion",
+            "Josue Alejandro Montufar Zuniga",
             "Anner Alessandro Teruel Pineda",
             "Ken Kato Castellanos",
             "",
-            "Música y sonidos",
+            "Musica y sonidos",
             "Mario & Luigi: Superstar Saga",
-            "Pokémon Ruby & Sapphire",
+            "Pokemon Ruby & Sapphire",
             "",
             "",
             "",
             "¡Gracias por Jugar!",
-            "Ningún individuo sea guionista, artista o programador",
-            "fue sobreexplotado en la elaboración de este proyecto.",
-            "*guiño* *guiño*"
+            "Ningun individuo sea guionista, artista o programador",
+            "fue sobreexplotado en la elaboracion de este proyecto.",
+            "*guino* *guino*"
     };
 
+    // Posicion de desplazamiento vertical de los creditos
     private float scrollY;
+    // Velocidad de desplazamiento de los creditos
     private float scrollSpeed = 100f;
+    // Indica si los creditos han terminado de desplazarse
     private boolean creditsFinished = false;
+    // Temporizador para la transicion despues de que los creditos terminan
     private float finishedTimer = 0f;
+    // Indica si la opcion de omitir ya fue usada
     private boolean skipUsed = false;
 
+    // Temporizador para la funcion de omitir creditos
     private float skipTimer = 0f;
+    // Indica si el usuario esta intentando omitir los creditos
     private boolean isSkipping = false;
+    // Tiempo necesario para mantener ENTER y omitir los creditos
     private static final float TIME_TO_SKIP = 5f;
+    // Textura para el indicador visual de omitir
     private Texture skipIndicatorTexture;
+    // Indica si el avance rapido esta activado
     private boolean fastForward = false;
 
+    /**
+     * Constructor de CreditUI.
+     * Inicializa los recursos graficos y de audio necesarios para la pantalla de creditos.
+     * @param batch El SpriteBatch para dibujar.
+     * @param gameController El controlador principal del juego.
+     */
     public CreditUI(SpriteBatch batch, GameController gameController) {
         this.batch = batch;
         this.gameController = gameController;
@@ -85,6 +106,10 @@ public class CreditUI implements InputProcessor {
         skipPixmap.dispose();
     }
 
+    /**
+     * Actualiza la logica de la pantalla de creditos, incluyendo el temporizador de omitir.
+     * @param dt Delta time, el tiempo transcurrido desde el ultimo frame.
+     */
     public void update(float dt) {
         if (isSkipping) {
             skipTimer += dt;
@@ -94,6 +119,9 @@ public class CreditUI implements InputProcessor {
         }
     }
 
+    /**
+     * Dibuja la pantalla de creditos, incluyendo el fondo, el texto de los creditos y el indicador de omitir.
+     */
     public void draw() {
         update(Gdx.graphics.getDeltaTime());
 
@@ -168,6 +196,9 @@ public class CreditUI implements InputProcessor {
         batch.end();
     }
 
+    /**
+     * Libera los recursos utilizados por la pantalla de creditos.
+     */
     public void dispose() {
         if (font != null) {
             font.dispose();
@@ -180,6 +211,11 @@ public class CreditUI implements InputProcessor {
         }
     }
 
+    /**
+     * Maneja los eventos de teclado cuando una tecla es presionada.
+     * @param keycode El codigo de la tecla presionada.
+     * @return true si el evento fue manejado, false en caso contrario.
+     */
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ESCAPE) {
@@ -194,6 +230,11 @@ public class CreditUI implements InputProcessor {
         return true;
     }
 
+    /**
+     * Maneja los eventos de teclado cuando una tecla es liberada.
+     * @param keycode El codigo de la tecla liberada.
+     * @return true si el evento fue manejado, false en caso contrario.
+     */
     @Override
     public boolean keyUp(int keycode) {
         if (keycode == Input.Keys.ENTER) {
@@ -206,35 +247,83 @@ public class CreditUI implements InputProcessor {
         return false;
     }
 
+    /**
+     * Maneja los eventos de teclado cuando un caracter es tipeado.
+     * @param character El caracter tipeado.
+     * @return true si el evento fue manejado, false en caso contrario.
+     */
     @Override
     public boolean keyTyped(char character) {
         return false;
     }
 
+    /**
+     * Maneja los eventos de toque/clic cuando la pantalla es tocada o un boton del raton es presionado.
+     * @param screenX La coordenada X de la pantalla.
+     * @param screenY La coordenada Y de la pantalla.
+     * @param pointer El puntero para eventos multitouch.
+     * @param button El boton del raton presionado.
+     * @return true si el evento fue manejado, false en caso contrario.
+     */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         return false;
     }
 
+    /**
+     * Maneja los eventos de toque/clic cuando la pantalla es liberada o un boton del raton es soltado.
+     * @param screenX La coordenada X de la pantalla.
+     * @param screenY La coordenada Y de la pantalla.
+     * @param pointer El puntero para eventos multitouch.
+     * @param button El boton del raton soltado.
+     * @return true si el evento fue manejado, false en caso contrario.
+     */
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         return false;
     }
 
+    /**
+     * Maneja los eventos de toque/clic cuando se arrastra el dedo o el raton.
+     * @param screenX La coordenada X de la pantalla.
+     * @param screenY La coordenada Y de la pantalla.
+     * @param pointer El puntero para eventos multitouch.
+     * @return true si el evento fue manejado, false en caso contrario.
+     */
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         return false;
     }
 
+    /**
+     * Maneja los eventos de movimiento del raton sin presionar ningun boton.
+     * @param screenX La coordenada X de la pantalla.
+     * @param screenY La coordenada Y de la pantalla.
+     * @return true si el evento fue manejado, false en caso contrario.
+     */
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         return false;
     }
 
+    /**
+     * Maneja los eventos de la rueda del raton.
+     * @param amountX La cantidad de desplazamiento horizontal.
+     * @param amountY La cantidad de desplazamiento vertical.
+     * @return true si el evento fue manejado, false en caso contrario.
+     */
     @Override
     public boolean scrolled(float amountX, float amountY) {
         return false;
     }
+    /**
+     * Maneja los eventos de toque/clic cuando un evento de toque es cancelado.
+     * @param screenX La coordenada X de la pantalla.
+     * @param screenY La coordenada Y de la pantalla.
+     * @param pointer El puntero para eventos multitouch.
+     * @param button El boton del raton.
+     * @return true si el evento fue manejado, false en caso contrario.
+     */
      @Override
     public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
         return false;

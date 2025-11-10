@@ -36,19 +36,20 @@ public class NameInputUI implements InputProcessor {
     /** SpriteBatch para renderizado */
     private SpriteBatch batch;
     
-
-    
-    /** Controlador del juego para gestión de estados */
+    /** Controlador del juego para gestion de estados */
     private GameController gameController;
     
-    /** Nombre del jugador en construcción */
+    /** Nombre del jugador en construccion */
     private StringBuilder playerName;
+    // Fondo para la pantalla de confirmacion del tutorial
     private com.badlogic.gdx.graphics.Texture tutorialBackground;
 
     /**
      * Constructor de la interfaz de entrada de nombre.
+     * Inicializa el SpriteBatch, el GameController, el StringBuilder para el nombre del jugador
+     * y carga la fuente personalizada.
      * @param batch SpriteBatch para renderizado
-     * @param gameController Controlador del juego para gestión de estados
+     * @param gameController Controlador del juego para gestion de estados
      */
     public NameInputUI(SpriteBatch batch, GameController gameController) {
         this.batch = batch;
@@ -61,6 +62,7 @@ public class NameInputUI implements InputProcessor {
 
     /**
      * Carga la fuente personalizada para la interfaz.
+     * Si falla la carga, se utiliza una fuente por defecto.
      */
     private void loadCustomBitmapFont() {
         try {
@@ -73,8 +75,8 @@ public class NameInputUI implements InputProcessor {
     }
 
     /**
-     * Renderiza la interfaz de entrada de nombre.
-     * @param playerCharacter Personaje animado para mostrar en la pantalla
+     * Renderiza la interfaz de entrada de nombre o la confirmacion del tutorial.
+     * @param playerCharacter Personaje animado para mostrar en la pantalla de entrada de nombre.
      */
     public void draw(Character playerCharacter) {
         batch.begin();
@@ -131,6 +133,12 @@ public class NameInputUI implements InputProcessor {
         }
     }
 
+    /**
+     * Dibuja un dialogo generico con un titulo y opciones seleccionables.
+     * @param title El titulo del dialogo.
+     * @param options Las opciones a mostrar en el dialogo.
+     * @param selection El indice de la opcion actualmente seleccionada.
+     */
     private void drawDialog(String title, String[] options, int selection) {
         GlyphLayout layout = new GlyphLayout();
         font.getData().setScale(1.5f);
@@ -156,9 +164,9 @@ public class NameInputUI implements InputProcessor {
 
     // === Manejo de entrada ===
     /**
-     * Maneja la entrada del teclado para construir el nombre del jugador.
-     * @param keycode Código de la tecla presionada.
-     * @return true si la entrada fue procesada
+     * Maneja la entrada del teclado para construir el nombre del jugador o para la confirmacion del tutorial.
+     * @param keycode Codigo de la tecla presionada.
+     * @return true si la entrada fue procesada.
      */
     @Override
     public boolean keyDown(int keycode) {
@@ -214,7 +222,8 @@ public class NameInputUI implements InputProcessor {
 
     /**
      * Maneja la entrada de caracteres para construir el nombre del jugador.
-     * @param character Carácter ingresado por el usuario.
+     * Limita la longitud del nombre y solo permite caracteres alfanumericos y espacios.
+     * @param character Caracter ingresado por el usuario.
      * @return true si la entrada fue procesada.
      */
     @Override
@@ -241,6 +250,7 @@ public class NameInputUI implements InputProcessor {
 
     /**
      * Libera los recursos utilizados por la interfaz.
+     * Incluye la fuente y la textura de fondo del tutorial.
      */
     public void dispose() {
         if (font != null) {
@@ -250,7 +260,7 @@ public class NameInputUI implements InputProcessor {
 
     }
 
-    // === Métodos de InputProcessor no utilizados ===
+    // === Metodos de InputProcessor no utilizados ===
     
     @Override public boolean keyUp(int keycode) { return false; }
     @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) { return false; }

@@ -10,18 +10,34 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.machinehunterdev.game.GameController;
 
 public class OptionUI {
+    // Referencia al controlador principal del juego
     private final GameController gameController;
+    // SpriteBatch para dibujar elementos
     private final SpriteBatch spriteBatch;
+    // Fuente principal para texto general
     private final BitmapFont font;
+    // Objeto para calcular el tamano del texto
     private final GlyphLayout layout = new GlyphLayout();
+    // Renderizador de formas para dibujar barras de volumen
     private final ShapeRenderer shapeRenderer;
+    // Textura de fondo para la interfaz de opciones
     private final Texture backgroundTexture;
+    // Fuente para el titulo de la pantalla de opciones
     private final BitmapFont titleFont;
+    // Fuente para las opciones individuales
     private final BitmapFont optionFont;
+    // Indice de la opcion actualmente seleccionada
     private int currentSelection;
+    // Nivel de volumen de la musica
     private int musicVolume;
+    // Nivel de volumen de los efectos de sonido
     private int soundVolume;
 
+    /**
+     * Constructor de la interfaz de opciones.
+     * Inicializa los recursos graficos y de audio necesarios.
+     * @param gameController El controlador principal del juego.
+     */
     public OptionUI(GameController gameController) {
         this.gameController = gameController;
         this.spriteBatch = gameController.getSpriteBatch();
@@ -32,12 +48,23 @@ public class OptionUI {
         this.backgroundTexture = new Texture(Gdx.files.internal("Fondos/NameInputBackgroundShadowless.png"));
     }
 
+    /**
+     * Actualiza el estado interno de la interfaz de opciones.
+     * @param delta El tiempo transcurrido desde el ultimo frame.
+     * @param currentSelection La opcion actualmente seleccionada.
+     * @param musicVolume El volumen actual de la musica.
+     * @param soundVolume El volumen actual de los efectos de sonido.
+     */
     public void update(float delta, int currentSelection, int musicVolume, int soundVolume) {
         this.currentSelection = currentSelection;
         this.musicVolume = musicVolume;
         this.soundVolume = soundVolume;
     }
 
+    /**
+     * Renderiza la interfaz de opciones en pantalla.
+     * Dibuja el fondo, el titulo, las opciones de volumen y las instrucciones.
+     */
     public void render() {
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
@@ -81,6 +108,12 @@ public class OptionUI {
         drawVolumeBar(false, width, height);
     }
 
+    /**
+     * Dibuja una barra de volumen visual.
+     * @param isMusic Indica si la barra es para la musica (true) o para los sonidos (false).
+     * @param width Ancho de la pantalla.
+     * @param height Alto de la pantalla.
+     */
     private void drawVolumeBar(boolean isMusic, float width, float height) {
         float y = isMusic ? height * 0.7f - 40 : height * 0.5f - 40;
         int volume = isMusic ? musicVolume : soundVolume;
@@ -101,6 +134,10 @@ public class OptionUI {
         shapeRenderer.end();
     }
 
+    /**
+     * Libera los recursos utilizados por la interfaz de opciones.
+     * Incluye las fuentes, el ShapeRenderer y la textura de fondo.
+     */
     public void dispose() {
         font.dispose();
         titleFont.dispose();
