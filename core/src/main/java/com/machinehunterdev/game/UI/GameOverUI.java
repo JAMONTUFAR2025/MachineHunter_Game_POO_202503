@@ -324,7 +324,7 @@ public class GameOverUI implements InputProcessor {
         font.draw(batch, confirmationText, confirmationX, confirmationY);
 
         float startY = Gdx.graphics.getHeight() * 0.20f;
-        float lineHeight = 110f;
+        float lineHeight = 70f;
 
         for (int i = 0; i < confirmationOptions.length; i++) {
             String text = (i == confirmationSelected ? "> " : "  ") + confirmationOptions[i];

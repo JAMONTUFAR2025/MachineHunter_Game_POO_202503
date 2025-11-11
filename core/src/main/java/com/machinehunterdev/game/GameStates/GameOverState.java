@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.GameController;
+import com.machinehunterdev.game.Audio.AudioId;
 import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.UI.GameOverUI;
 import com.machinehunterdev.game.Util.IState;
@@ -72,6 +73,9 @@ public class GameOverState implements IState<GameController> {
         dialogueTimer = 0f;
         isGameOverTextFinished = false;
         isDialogueTypingFinished = false;
+
+        // Reproduce el sonido de Game Over.
+        AudioManager.getInstance().playSfx(AudioId.GameOverSound, null);
     }
 
     /**
