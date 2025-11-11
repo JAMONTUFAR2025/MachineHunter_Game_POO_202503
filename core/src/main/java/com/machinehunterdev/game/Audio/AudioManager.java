@@ -55,6 +55,7 @@ public class AudioManager {
         if (currentMusic != null && !isMusicPaused) {
             currentMusic.setVolume(musicVolume);
         }
+        isFading = false;
     }
 
     // Establece el volumen de los efectos de sonido.

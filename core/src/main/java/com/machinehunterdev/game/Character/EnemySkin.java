@@ -23,7 +23,7 @@ public enum EnemySkin {
      * Define las animaciones para estado de reposo, correr, morir, ser herido y atacar.
      * Tambien incluye una animacion para cuando detecta al jugador.
      */
-    SHOOTER("Enemy/Shooter/ShooterIdle", "Enemy/Shooter/ShooterRun", "Enemy/Explosion", "Enemy/Shooter/ShooterHurt", null, null, null, "Enemy/Shooter/ShooterAttack", new HitboxData(9, 0, 23, 35), null, null, null, "Enemy/Shooter/ShooterSpot"),
+    SHOOTER("Enemy/Shooter/ShooterIdle", "Enemy/Shooter/ShooterRun", "Enemy/Explosion", "Enemy/Shooter/ShooterHurt", null, null, null, "Enemy/Shooter/ShooterAttack", new HitboxData(9, 0, 23, 35), null, "Enemy/Shooter/ShooterSpot", null, null),
     
     /**
      * Skin del enemigo volador.

@@ -190,7 +190,7 @@ public class CreditUI implements InputProcessor {
         }
 
         font.getData().setScale(0.5f);
-        font.draw(batch, "Mantén ENTER para omitir", barX, barY + barHeight + 30, barWidth, Align.center, false);
+        font.draw(batch, "E - Avance rápido | Mantén Enter - Omitir", barX, barY + barHeight + 30, barWidth, Align.center, false);
         font.getData().setScale(1.0f);
 
         batch.end();

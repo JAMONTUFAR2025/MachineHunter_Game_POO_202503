@@ -1,6 +1,7 @@
 package com.machinehunterdev.game.UI;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.machinehunterdev.game.GameController;
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 public class OptionUI {
     // Referencia al controlador principal del juego
@@ -76,13 +78,13 @@ public class OptionUI {
         titleFont.draw(spriteBatch, "OPCIONES", (width - layout.width) / 2, height * 0.9f);
 
         // Music
-        layout.setText(optionFont, "Musica");
+        layout.setText(optionFont, "Música");
         float musicTextX = (width - layout.width) / 2 - 200;
         if (currentSelection == 0) {
             optionFont.setColor(Color.RED);
             optionFont.draw(spriteBatch, ">", musicTextX - 40, height * 0.7f);
         }
-        optionFont.draw(spriteBatch, "Musica", musicTextX, height * 0.7f);
+        optionFont.draw(spriteBatch, "Música", musicTextX, height * 0.7f);
         optionFont.setColor(Color.WHITE);
 
         // Sound
@@ -96,7 +98,9 @@ public class OptionUI {
         optionFont.setColor(Color.WHITE);
 
         // Instructions
-        String instructions = "W/S - Cambiar Opcion | A/D - Ajustar Volumen | Q - Retroceder";
+        String instructions = Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + " / " + Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + " - Cambiar opción | " 
+        + Input.Keys.toString(GlobalSettings.CONTROL_MOVE_LEFT) + " / " + Input.Keys.toString(GlobalSettings.CONTROL_MOVE_RIGHT) + " - Ajustar volumen | " 
+        + Input.Keys.toString(GlobalSettings.CONTROL_CANCEL) + " - Retroceder";
         layout.setText(font, instructions);
         font.draw(spriteBatch, instructions, (width - layout.width) / 2, height * 0.2f);
 

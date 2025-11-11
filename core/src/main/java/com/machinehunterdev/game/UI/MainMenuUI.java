@@ -25,7 +25,7 @@ import com.machinehunterdev.game.GameStates.OptionState;
 public class MainMenuUI implements InputProcessor {
     
     /** Opciones del menu principal */
-    private String[] options = {"Iniciar partida", "Opciones", "Creditos", "Salir"};
+    private String[] options = {"Iniciar partida", "Opciones", "Créditos", "Salir"};
     
     /** Indice de la opcion seleccionada actualmente */
     private int selected = 0;
@@ -122,7 +122,7 @@ public class MainMenuUI implements InputProcessor {
      * Dibuja las instrucciones de controles en la parte inferior de la pantalla.
      */
     private void drawControls() {
-        String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + "-Seleccionar | " + Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + "/" + Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + "-Moverse";
+        String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + " - Seleccionar | " + Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + " / " + Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + " - Cambiar opción";
         GlyphLayout layout = new GlyphLayout(font, controlsText);
 
         float boxWidth = layout.width + 40;

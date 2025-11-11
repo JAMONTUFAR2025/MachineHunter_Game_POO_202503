@@ -94,7 +94,7 @@ public class NextLevelUI implements InputProcessor {
      * Muestra la tecla de interaccion para seleccionar opciones.
      */
     private void drawControls() {
-        String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + "-Seleccionar";
+        String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + " - Seleccionar";
         GlyphLayout layout = new GlyphLayout(font, controlsText);
 
         font.setColor(Color.WHITE);
@@ -110,7 +110,21 @@ public class NextLevelUI implements InputProcessor {
      * @param startY Posicion Y inicial para dibujar las opciones.
      */
     private void drawMenu(String[] options, float startY) {
-        drawText("¡Nivel completado!", Gdx.graphics.getHeight() / 2f + 160, false);
+        switch (GlobalSettings.currentLevelFile) {
+            case "Levels/Level 0.json":
+                drawText("¡Completaste el tutorial!", Gdx.graphics.getHeight() / 2f + 160, false);
+                break;
+            case "Levels/Level 3.json":
+                drawText("¡Derrotaste a GEMINI.EXE!", Gdx.graphics.getHeight() / 2f + 160, false);
+                break;
+            case "Levels/Level 5.json":
+                drawText("¡Derrotaste a CHATGPT.EXE!", Gdx.graphics.getHeight() / 2f + 160, false);
+                break;
+            default:
+                drawText("¡Nivel completado!", Gdx.graphics.getHeight() / 2f + 160, false);
+                break;
+        }
+
         for (int i = 0; i < options.length; i++) {
             drawText(options[i], startY - (i * 80), i == selectedOption);
         }

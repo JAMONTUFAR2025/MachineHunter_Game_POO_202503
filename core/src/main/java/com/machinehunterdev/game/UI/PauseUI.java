@@ -105,7 +105,7 @@ public class PauseUI implements InputProcessor {
      * Dibuja las instrucciones de control en la parte inferior de la pantalla.
      */
     private void drawControls() {
-        String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_CANCEL) + "-Retroceder | " + Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + "-Seleccionar | " + Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + "/" + Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + "-Moverse";
+        String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_CANCEL) + " - Retroceder | " + Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + " - Seleccionar | " + Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + " / " + Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + " - Moverse";
         GlyphLayout layout = new GlyphLayout(font, controlsText);
 
         font.setColor(Color.WHITE);
@@ -130,7 +130,7 @@ public class PauseUI implements InputProcessor {
      */
     private void drawConfirmationMenu() {
         float startY = Gdx.graphics.getHeight() / 2f + 80;
-        drawText("¿Esta seguro?", startY, false);
+        drawText("¿Estás seguro que quieres salir?", startY, false);
         for (int i = 0; i < confirmOptions.length; i++) {
             float optionY = startY - ((i + 1) * 80);
             drawText(confirmOptions[i], optionY, i == selectedOption);
@@ -142,7 +142,7 @@ public class PauseUI implements InputProcessor {
      */
     private void drawRetryConfirmationMenu() {
         float startY = Gdx.graphics.getHeight() / 2f + 80;
-        drawText("¿Desea reintentar?", startY, false);
+        drawText("¿Estás seguro que quieres reintentar?", startY, false);
         for (int i = 0; i < confirmOptions.length; i++) {
             float optionY = startY - ((i + 1) * 80);
             drawText(confirmOptions[i], optionY, i == selectedOption);

@@ -176,6 +176,7 @@ public class GameOverUI implements InputProcessor {
                 } else {
                     drawOptions();
                 }
+                drawControls();
             }
         }
 
@@ -315,7 +316,7 @@ public class GameOverUI implements InputProcessor {
      * Dibuja la confirmacion de salida con opciones "Si" y "No".
      */
     private void drawExitConfirmation() {
-        String confirmationText = "¿Seguro que quieres salir?";
+        String confirmationText = "¿Estás seguro que quieres salir?";
         GlyphLayout confirmationLayout = new GlyphLayout(font, confirmationText);
         float confirmationX = (Gdx.graphics.getWidth() - confirmationLayout.width) / 2f;
         float confirmationY = Gdx.graphics.getHeight() * 0.30f;
@@ -335,6 +336,20 @@ public class GameOverUI implements InputProcessor {
             font.draw(batch, text, x, y);
         }
     }
+
+    /**
+     * Dibuja las instrucciones de control en la parte inferior de la pantalla.
+     */
+    private void drawControls() {
+        String controlsText = com.badlogic.gdx.Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + " / " + com.badlogic.gdx.Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + " - Moverse | " + com.badlogic.gdx.Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + " - Seleccionar";
+        GlyphLayout layout = new GlyphLayout(font, controlsText);
+
+        font.setColor(Color.WHITE);
+        float textX = (Gdx.graphics.getWidth() - layout.width) / 2f;
+        float textY = 10 + layout.height + 20;
+        font.draw(batch, controlsText, textX, textY);
+    }
+    
     /**
      * Maneja la entrada del teclado para navegar y seleccionar opciones.
      * @param keycode Codigo de la tecla presionada.

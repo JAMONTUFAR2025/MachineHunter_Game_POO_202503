@@ -26,6 +26,7 @@ import com.machinehunterdev.game.Character.CharacterAnimator;
 import com.machinehunterdev.game.Character.EnemyManager;
 import com.machinehunterdev.game.Character.EnemySkin;
 import com.machinehunterdev.game.Character.EnemyType;
+import com.machinehunterdev.game.Character.IEnemy;
 import com.machinehunterdev.game.Character.NPCController;
 import com.machinehunterdev.game.Character.PlayerController;
 import com.machinehunterdev.game.DamageTriggers.Bullet;
@@ -360,7 +361,7 @@ public class GameplayState implements IState<GameController> {
                 attack2Frames = loadSpriteFrames(skin.attack2Frames, 8); 
                 summonFrames = loadSpriteFrames(skin.summonFrames, 8); 
             } else if (enemyData.type == EnemyType.SHOOTER) {
-                summonFrames = loadSpriteFrames(skin.summonFrames, 3);
+                attack1Frames = loadSpriteFrames(skin.attack1Frames, 3);
             }
 
             // Crea el animador del personaje enemigo.
@@ -415,7 +416,7 @@ public class GameplayState implements IState<GameController> {
             }
 
             // Agrega el enemigo al administrador de enemigos.
-            enemyManager.addEnemy(enemyData.type, enemy, enemyData.patrolPoints, enemyData.waitTime, enemyData.shootInterval, enemyData.shootTime);
+            enemyManager.addEnemy(enemyData.type, enemy, enemyData.patrolPoints, enemyData.waitTime, enemyData.shootInterval, enemyData.shootTime, false);
 
             // Si es un jefe, lo establece en la interfaz de usuario.
             if (enemyData.type == EnemyType.BOSS_GEMINI || enemyData.type == EnemyType.BOSS_CHATGPT) {
@@ -510,6 +511,11 @@ public class GameplayState implements IState<GameController> {
 
     // Bandera para controlar la transicion a la pantalla de "Game Over".
     private boolean transitioningToGameOver = false;
+    // Bandera para controlar la animacion de derrota del jefe.
+    private boolean isBossDefeatedAndAnimationFinished = false;
+    // Textura y sprite para el frame final del jefe.
+    private Texture bossFinalFrameTexture;
+    private Sprite bossFinalFrameSprite;
 
     /**
      * Metodo principal de actualizacion del estado del juego.
@@ -519,6 +525,11 @@ public class GameplayState implements IState<GameController> {
     public void execute() {
         // Actualiza el administrador de audio.
         AudioManager.getInstance().update(Gdx.graphics.getDeltaTime());
+
+        // Codigo de depuracion: Mata a todos los enemigos al presionar F9.
+        if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F9)) {
+            killAllEnemies();
+        }
 
         // Maneja la entrada para pausar el juego.
         if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_PAUSE) && !levelCompleted && !isDialogActive) {
@@ -652,6 +663,20 @@ public class GameplayState implements IState<GameController> {
         for (int i = enemies.size() - 1; i >= 0; i--) {
             com.machinehunterdev.game.Character.IEnemy enemy = enemies.get(i);
             if (!enemy.getCharacter().isAlive() && enemy.getCharacter().isReadyForRemoval()) {
+                if (enemy.getType() == EnemyType.BOSS_GEMINI || enemy.getType() == EnemyType.BOSS_CHATGPT) {
+                    // Guarda el frame final del jefe para mostrarlo despues
+                    if (!isBossDefeatedAndAnimationFinished) {
+                        isBossDefeatedAndAnimationFinished = true;
+                        // Mismo frame para GEMINI y CHATGPT
+                        bossFinalFrameTexture = new Texture("Enemy/GeminiEXE/GeminiEXEDeath9.png");
+                        bossFinalFrameSprite = new Sprite(bossFinalFrameTexture);
+
+                        // Necesita posicionarlo correctamente antes de deshechar el jefe
+                        Character bossCharacter = enemy.getCharacter();
+                        // Se ajusta la posicion X para centrar el sprite
+                        bossFinalFrameSprite.setPosition(bossCharacter.position.x - 10, bossCharacter.position.y);
+                    }
+                }
                 enemy.getCharacter().dispose();
                 enemies.remove(i);
             }
@@ -680,11 +705,11 @@ public class GameplayState implements IState<GameController> {
         List<Sprite> enemyFallFrames = loadSpriteFrames(skin.fallFrames, 1);
         List<Sprite> enemyHurtFrames = loadSpriteFrames(skin.hurtFrames, 1);
         List<Sprite> enemyAttackFrames = loadSpriteFrames(skin.attackFrames, 2);
-        List<Sprite> summonFrames = null;
+        List<Sprite> attack1Frames = null;
 
         if (type == EnemyType.SHOOTER)
         {
-            summonFrames = loadSpriteFrames(skin.summonFrames, 3);
+            attack1Frames = loadSpriteFrames(skin.attack1Frames, 3);
         }
 
         // Crea dos animadores para los dos enemigos invocados.
@@ -692,14 +717,14 @@ public class GameplayState implements IState<GameController> {
             enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
             enemyJumpFrames, enemyFallFrames, enemyAttackFrames,
             null, null, null,
-            enemyHurtFrames, null, null, null, null, null, summonFrames
+            enemyHurtFrames, null, null, null, attack1Frames, null, null
         );
 
         CharacterAnimator enemyAnimator2 = new CharacterAnimator(
             enemyIdleFrames, enemyRunFrames, enemyDeadFrames,
             enemyJumpFrames, enemyFallFrames, enemyAttackFrames,
             null, null, null,
-            enemyHurtFrames, null, null, null, null, null, summonFrames
+            enemyHurtFrames, null, null, null, attack1Frames, null, null
         );
 
         // Establece la salud de los enemigos invocados.
@@ -782,8 +807,8 @@ public class GameplayState implements IState<GameController> {
         }
 
         // Agrega los enemigos invocados al administrador de enemigos.
-        enemyManager.addEnemy(type, enemy1, patrolPoints1, waitTime, shootInterval, shootTime);
-        enemyManager.addEnemy(type, enemy2, patrolPoints2, waitTime, shootInterval, shootTime);
+        enemyManager.addEnemy(type, enemy1, patrolPoints1, waitTime, shootInterval, shootTime, true);
+        enemyManager.addEnemy(type, enemy2, patrolPoints2, waitTime, shootInterval, shootTime, true);
     }
 
     /**
@@ -927,6 +952,11 @@ public class GameplayState implements IState<GameController> {
                     gameBatch.draw(summonWarningTexture, 352, 32, 40, 448);
                 }
             }
+        }
+
+        // Dibuja el frame final del jefe si ha sido derrotado.
+        if (isBossDefeatedAndAnimationFinished && bossFinalFrameSprite != null) {
+            bossFinalFrameSprite.draw(gameBatch);
         }
 
         gameBatch.end();
@@ -1093,7 +1123,7 @@ public class GameplayState implements IState<GameController> {
                                 enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
                                 if (enemyCharacter.isAlive()) {
                                     if (!enemiesHitThisFrame.contains(enemyCharacter)) {
-                                        AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter, GlobalSettings.ANNOYING_VOLUME / 2f);
+                                        AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter, GlobalSettings.ANNOYING_VOLUME);
                                         enemiesHitThisFrame.add(enemyCharacter);
                                     }
                                 } else {
@@ -1106,7 +1136,7 @@ public class GameplayState implements IState<GameController> {
                             enemyCharacter.takeDamageWithoutVulnerability(bullet.getDamage());
                             if (enemyCharacter.isAlive()) {
                                 if (!enemiesHitThisFrame.contains(enemyCharacter)) {
-                                    AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter, 0.5f);
+                                    AudioManager.getInstance().playSfx(AudioId.EnemyHurt, enemyCharacter, GlobalSettings.ANNOYING_VOLUME);
                                     enemiesHitThisFrame.add(enemyCharacter);
                                 }
                             } else {
@@ -1125,6 +1155,7 @@ public class GameplayState implements IState<GameController> {
 
     private void handleEnemyDeath(com.machinehunterdev.game.Character.IEnemy enemy, Character enemyCharacter) {
         if (enemy.getType() == EnemyType.BOSS_GEMINI || enemy.getType() == EnemyType.BOSS_CHATGPT) {
+            enemyCharacter.isPerformingSpecialAttack = false;
             AudioManager.getInstance().playSfx(AudioId.BossDeath, enemyCharacter, GlobalSettings.ANNOYING_VOLUME * 6f);
 
             // Eliminar a todos los enemigos restantes al morir el jefe
@@ -1152,6 +1183,13 @@ public class GameplayState implements IState<GameController> {
                     bullet.dispose();
                 }
             }
+        }
+    }
+
+    /* PARA DEPURACION, DESTRUIR TODOS LOS ENEMIGOS */
+    private void killAllEnemies() {
+        for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+            enemy.getCharacter().takeDamageWithoutVulnerability(enemy.getCharacter().getHealth());
         }
     }
 
@@ -1243,6 +1281,7 @@ public class GameplayState implements IState<GameController> {
         // Libera las texturas de advertencia y animaciones de ataques.
         disposeTexture(thunderWarningTexture);
         disposeTexture(summonWarningTexture);
+        disposeTexture(bossFinalFrameTexture);
         if (thunderAttackFrames != null) {
             for (Sprite frame : thunderAttackFrames) {
                 frame.getTexture().dispose(); // Libera la textura de cada frame de la animacion de trueno.
