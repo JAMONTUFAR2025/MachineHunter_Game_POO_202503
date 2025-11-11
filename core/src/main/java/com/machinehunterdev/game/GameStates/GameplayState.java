@@ -337,7 +337,7 @@ public class GameplayState implements IState<GameController> {
             List<Sprite> enemyRunFrames = loadSpriteFrames(skin.runFrames, 4);
             List<Sprite> enemyDeadFrames;
             if (enemyData.type == EnemyType.BOSS_GEMINI || enemyData.type == EnemyType.BOSS_CHATGPT) {
-                enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 15);
+                enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 9);
             } else {
                 enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 4);
             }

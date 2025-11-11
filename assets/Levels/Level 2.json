@@ -1,7 +1,7 @@
 {
-  "backgroundTexture": "Fondos/FondoJuego.png",
+  "backgroundTexture": "Fondos/x.png",
   "groundTexture": "Environment/FloorRed320.png",
-  "levelWidth": 3500,
+  "levelWidth": 2000,
   "playerStartX": 50,
   "playerStartY": 100,
   "nextLevel": "Levels/Level 3.json",

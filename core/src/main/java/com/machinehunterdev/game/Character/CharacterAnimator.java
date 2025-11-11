@@ -173,15 +173,19 @@ public class CharacterAnimator {
         if (currentAnimator != null) {
             Sprite currentSprite = currentAnimator.getCurrentSprite();
             if (currentSprite != null) {
-                currentSprite.setPosition(x, y);
+                float drawX = x;
+                if (currentState == AnimationState.DEAD) {
+                    drawX -= 10f; // Ajuste para centrar la animación de muerte (100px) en el cuerpo de 80px
+                }
+                currentSprite.setPosition(drawX, y);
                 
                 // Voltea el sprite horizontalmente si el personaje no mira a la derecha.
                 if (!facingRight) {
                     currentSprite.setScale(-1, 1);
-                    currentSprite.setPosition(x, y);
+                    currentSprite.setPosition(drawX, y);
                 } else {
                     currentSprite.setScale(1, 1);
-                    currentSprite.setPosition(x, y);
+                    currentSprite.setPosition(drawX, y);
                 }
                 
                 currentAnimator.draw(spriteBatch);

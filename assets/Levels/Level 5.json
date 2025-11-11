@@ -1,5 +1,5 @@
 {
-  "backgroundTexture": "Fondos/FondoJuego.png",
+  "backgroundTexture": "Fondos/FondoJefePlaceHolder.png",
   "groundTexture": "Environment/FloorGreen320.png",
   "levelWidth": 480,
   "playerStartX": 50,
