@@ -61,7 +61,7 @@ public class CreditUI implements InputProcessor {
             "¡Gracias por Jugar!",
             "Ningun individuo sea guionista, artista o programador",
             "fue sobreexplotado en la elaboración de este proyecto.",
-            "*guino* *guino*"
+            "*guiño* *guiño*"
     };
 
     // Posicion de desplazamiento vertical de los creditos
@@ -80,7 +80,7 @@ public class CreditUI implements InputProcessor {
     // Indica si el usuario esta intentando omitir los creditos
     private boolean isSkipping = false;
     // Tiempo necesario para mantener ENTER y omitir los creditos
-    private static final float TIME_TO_SKIP = 5f;
+    private static final float TIME_TO_SKIP = 3f;
     // Textura para el indicador visual de omitir
     private Texture skipIndicatorTexture;
     // Indica si el avance rapido esta activado
@@ -190,7 +190,7 @@ public class CreditUI implements InputProcessor {
         }
 
         font.getData().setScale(0.5f);
-        font.draw(batch, "E - Avance rápido | Mantén Enter - Omitir", barX, barY + barHeight + 30, barWidth, Align.center, false);
+        font.draw(batch, "E - Avance rápido\nMantén Enter - Omitir", barX, barY + barHeight + 70, barWidth, Align.center, false);
         font.getData().setScale(1.0f);
 
         batch.end();

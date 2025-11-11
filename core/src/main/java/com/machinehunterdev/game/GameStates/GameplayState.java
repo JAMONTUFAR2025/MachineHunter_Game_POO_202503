@@ -36,6 +36,8 @@ import com.machinehunterdev.game.Dialog.Dialog;
 import com.machinehunterdev.game.Dialog.DialogManager;
 import com.machinehunterdev.game.Environment.SolidObject;
 import com.machinehunterdev.game.FX.ImpactEffectManager;
+import com.machinehunterdev.game.FX.LandingEffectManager;
+import com.machinehunterdev.game.FX.LandingEffectManager.EffectType;
 import com.machinehunterdev.game.GameController;
 import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.Levels.LevelData;
@@ -103,6 +105,7 @@ public class GameplayState implements IState<GameController> {
     private ArrayList<Bullet> bullets;
     // Administrador de efectos de impacto.
     private ImpactEffectManager impactEffectManager;
+    private LandingEffectManager landingEffectManager;
     // Renderizador de formas para depuracion o elementos simples.
     private ShapeRenderer shapeRenderer;
     // Textura para la advertencia de ataque de trueno.
@@ -228,6 +231,8 @@ public class GameplayState implements IState<GameController> {
         interactionFont = new BitmapFont(Gdx.files.internal("fonts/OrangeKid32.fnt"));
         // Inicializa el administrador de efectos de impacto.
         impactEffectManager = new ImpactEffectManager(0.1f);
+        // Inicializa el administrador de efectos de aterrizaje.
+        landingEffectManager = new LandingEffectManager(0.1f);
         // Carga la textura del suelo.
         groundTexture = new Texture(currentLevel.groundTexture);
         // Carga las texturas de advertencia para ataques de jefes.
@@ -616,6 +621,11 @@ public class GameplayState implements IState<GameController> {
             // El resto de la logica del juego solo se ejecuta si no hay dialogo.
             playerController.update(deltaTime, solidObjects, bullets, playerCharacter, enemyManager.getEnemies().size());
             updateEnemies(deltaTime);
+            
+            // Se manejan los efectos de aterrizaje.
+            landingEffectManager.update(deltaTime);
+            handleLandingEffects();
+
             checkLevelCompletion();
             updateNPC(deltaTime);
 
@@ -924,9 +934,10 @@ public class GameplayState implements IState<GameController> {
             }
         }
 
-        // Dibuja las balas y los efectos de impacto.
+        // Dibuja las balas y los efectos de impacto y aterrizaje.
         drawBullets();
         impactEffectManager.draw(gameBatch);
+        landingEffectManager.draw(gameBatch);
 
         // Dibuja las advertencias y animaciones de ataques de jefes.
         for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
@@ -1277,6 +1288,7 @@ public class GameplayState implements IState<GameController> {
         if (gameplayUI != null) gameplayUI.dispose();
         if (nextLevelUI != null) nextLevelUI.dispose();
         if (impactEffectManager != null) impactEffectManager.dispose();
+        if (landingEffectManager != null) landingEffectManager.dispose();
 
         // Libera las texturas de advertencia y animaciones de ataques.
         disposeTexture(thunderWarningTexture);
@@ -1352,6 +1364,22 @@ public class GameplayState implements IState<GameController> {
             }
         }
         return closestGroundY; // Devuelve la coordenada Y del suelo mas alto encontrado.
+    }
+
+    private void handleLandingEffects() {
+        if (playerCharacter.justLanded) {
+            landingEffectManager.createEffect(playerCharacter.position.x + (playerCharacter.getWidth() / 2), playerCharacter.position.y, EffectType.SMOKE);
+            playerCharacter.justLanded = false;
+        }
+
+        if (enemyManager != null) {
+            for (com.machinehunterdev.game.Character.IEnemy enemy : enemyManager.getEnemies()) {
+                if (enemy.getCharacter().justLanded) {
+                    landingEffectManager.createEffect(enemy.getCharacter().position.x + (enemy.getCharacter().getWidth() / 2), enemy.getCharacter().position.y, EffectType.SPARK);
+                    enemy.getCharacter().justLanded = false;
+                }
+            }
+        }
     }
 
     /**
