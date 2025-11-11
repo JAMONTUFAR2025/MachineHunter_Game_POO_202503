@@ -198,7 +198,7 @@ public class NameInputUI implements InputProcessor {
                     AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                     if (tutorialConfirmSelection == 0) { // Sí
                         // Cargar nivel 0 (tutorial)
-                        GameplayState tutorial = GameplayState.createForLevel("Levels/Level 2.json");
+                        GameplayState tutorial = GameplayState.createForLevel("Levels/Level 3.json");
                         gameController.stateMachine.changeState(tutorial);
                     } else { // No
                         // Cargar nivel 1
