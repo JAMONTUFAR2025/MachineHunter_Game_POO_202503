@@ -39,8 +39,8 @@ public class LandingEffectManager {
         this.frameDuration = frameDuration;
         this.effectFrames = new EnumMap<>(EffectType.class);
 
-        effectFrames.put(EffectType.SMOKE, loadSpriteFrames("FX/Cloud", 4));
-        effectFrames.put(EffectType.SPARK, loadSpriteFrames("FX/Spark", 4));
+        effectFrames.put(EffectType.SMOKE, loadSpriteFrames("FX/Cloud", 5));
+        effectFrames.put(EffectType.SPARK, loadSpriteFrames("FX/Spark", 5));
     }
 
     /**

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -66,7 +67,7 @@ public class GameOverUI implements InputProcessor {
 
     private List<String> deathMessages;
     private String randomDeathMessage;
-    private String[] confirmationOptions = {"Si", "No"};
+    private String[] confirmationOptions = {"Sí", "No"};
     private int confirmationSelected = 0;
     private boolean isExitConfirmationVisible = false;
     private int eliminatedSoundPlayed = 0;
@@ -341,7 +342,10 @@ public class GameOverUI implements InputProcessor {
      * Dibuja las instrucciones de control en la parte inferior de la pantalla.
      */
     private void drawControls() {
-        String controlsText = com.badlogic.gdx.Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + " / " + com.badlogic.gdx.Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + " - Moverse | " + com.badlogic.gdx.Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + " - Seleccionar";
+        String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + " / " 
+        + Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + " - Cambiar opción | " 
+        + Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + " - Seleccionar";
+        
         GlyphLayout layout = new GlyphLayout(font, controlsText);
 
         font.setColor(Color.WHITE);

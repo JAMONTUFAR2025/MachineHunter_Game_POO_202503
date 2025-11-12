@@ -44,7 +44,7 @@ public enum EnemySkin {
      * Define animaciones para sus diferentes comportamientos, incluyendo un modo de furia.
      * Incluye animaciones para reposo, muerte, ser herido, ataques normales y en modo furia, e invocacion.
      */
-    BOSS_CHATGPT("Enemy/ChatGPTEXE/ChatGPTEXEIdle", null, "Enemy/ChatGPTEXE/ChatGPTEXEDeath", "Enemy/ChatGPTEXE/ChatGPTEXEHurt", "Enemy/ChatGPTEXE/ChatGPTEXEHurtRage", null, null, null, new HitboxData(0, 0, 80, 100), "Enemy/ChatGPTEXE/ChatGPTEXEIdleRage", "Enemy/ChatGPTEXE/ChatGPTEXEAttack", "Enemy/ChatGPTEXE/ChatGPTEXEAttackRage", "Enemy/ChatGPTEXE/ChatGPTEXESummon");
+    BOSS_CHATGPT("Enemy/ChatGPTEXE/ChatGPTEXEIdle", null, "Enemy/ChatGPTEXE/ChatGPTEXEDeath", "Enemy/ChatGPTEXE/ChatGPTEXEHurt", "Enemy/ChatGPTEXE/ChatGPTEXEHurtRage", null, null, null, new HitboxData(0, 0, 80, 100), "Enemy/ChatGPTEXE/ChatGPTEXEIdleRage", "Enemy/ChatGPTEXE/ChatGPTEXEAttackThunder", "Enemy/ChatGPTEXE/ChatGPTEXEAttackBalls", "Enemy/ChatGPTEXE/ChatGPTEXESummon");
 
     // Rutas a los archivos de frames de animacion.
     public final String idleFrames; // Animacion de reposo.

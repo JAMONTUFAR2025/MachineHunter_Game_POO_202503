@@ -52,7 +52,7 @@ public class AudioManager {
     // Establece el volumen de la musica.
     public void setMusicVolume(float volume) {
         this.musicVolume = volume;
-        if (currentMusic != null && !isMusicPaused) {
+        if (currentMusic != null) {
             currentMusic.setVolume(musicVolume);
         }
         isFading = false;

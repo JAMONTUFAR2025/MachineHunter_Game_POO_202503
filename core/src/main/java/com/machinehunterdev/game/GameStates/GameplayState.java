@@ -45,6 +45,7 @@ import com.machinehunterdev.game.Levels.LevelLoader;
 import com.machinehunterdev.game.UI.GameplayUI;
 import com.machinehunterdev.game.UI.NextLevelUI;
 import com.machinehunterdev.game.Util.IState;
+import com.machinehunterdev.game.Util.SpriteAnimator;
 
 /**
  * Representa el estado principal del juego donde ocurre la accion.
@@ -112,10 +113,9 @@ public class GameplayState implements IState<GameController> {
     private Texture thunderWarningTexture;
     // Textura para la advertencia de invocacion de enemigos.
     private Texture summonWarningTexture;
-    // Frames de animacion para el ataque de trueno.
-    private List<Sprite> thunderAttackFrames;
-    // Tiempo transcurrido para la animacion del trueno.
-    private float thunderAnimationTime = 0;
+    // Animacion para el ataque de trueno.
+    private SpriteAnimator thunderAttackAnimator;
+    private boolean wasBossStriking = false;
 
     // === CONTROL DE ESTADO ===
     // Referencia al controlador principal del juego.
@@ -235,11 +235,14 @@ public class GameplayState implements IState<GameController> {
         landingEffectManager = new LandingEffectManager(0.1f);
         // Carga la textura del suelo.
         groundTexture = new Texture(currentLevel.groundTexture);
+        // Inicializa el renderizador de formas para la depuracion.
+        shapeRenderer = new ShapeRenderer();
         // Carga las texturas de advertencia para ataques de jefes.
         thunderWarningTexture = new Texture("FX/ThunderWarning.png");
         summonWarningTexture = new Texture("FX/SummonWarning.png");
         // Carga los frames de animacion para el ataque de trueno.
-        thunderAttackFrames = loadSpriteFrames("FX/ThunderAttack", 5);
+        List<Sprite> thunderFrames = loadSpriteFrames("FX/ThunderAttack", 5);
+        thunderAttackAnimator = new SpriteAnimator(thunderFrames, 0.1f, false);
 
         // Crea una textura de un pixel negro semitransparente para superposiciones.
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -343,7 +346,7 @@ public class GameplayState implements IState<GameController> {
             List<Sprite> enemyRunFrames = loadSpriteFrames(skin.runFrames, 4);
             List<Sprite> enemyDeadFrames;
             if (enemyData.type == EnemyType.BOSS_GEMINI || enemyData.type == EnemyType.BOSS_CHATGPT) {
-                enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 9);
+                enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 10);
             } else {
                 enemyDeadFrames = loadSpriteFrames(skin.deadFrames, 4);
             }
@@ -678,7 +681,7 @@ public class GameplayState implements IState<GameController> {
                     if (!isBossDefeatedAndAnimationFinished) {
                         isBossDefeatedAndAnimationFinished = true;
                         // Mismo frame para GEMINI y CHATGPT
-                        bossFinalFrameTexture = new Texture("Enemy/GeminiEXE/GeminiEXEDeath9.png");
+                        bossFinalFrameTexture = new Texture("Enemy/GeminiEXE/GeminiEXEDeath10.png");
                         bossFinalFrameSprite = new Sprite(bossFinalFrameTexture);
 
                         // Necesita posicionarlo correctamente antes de deshechar el jefe
@@ -947,14 +950,20 @@ public class GameplayState implements IState<GameController> {
                     if (controller.isLightningWarning()) {
                         float x = controller.getLightningPlayerX();
                         gameBatch.draw(thunderWarningTexture, x, 32, 40, 448);
+                        wasBossStriking = false; // Resetea para el proximo golpe
                     } else if (controller.isLightningStriking()) {
-                        thunderAnimationTime += Gdx.graphics.getDeltaTime();
-                        int frameIndex = (int) ((thunderAnimationTime / 0.5f) * thunderAttackFrames.size()) % thunderAttackFrames.size();
-                        Sprite frame = thunderAttackFrames.get(frameIndex);
-                        float x = controller.getLightningPlayerX();
-                        frame.setPosition(x, 32);
-                        frame.setSize(40, 448);
-                        frame.draw(gameBatch);
+                        if (!wasBossStriking) {
+                            thunderAttackAnimator.start();
+                            wasBossStriking = true;
+                        }
+                        thunderAttackAnimator.handleUpdate(Gdx.graphics.getDeltaTime());
+                        Sprite frame = thunderAttackAnimator.getCurrentSprite();
+                        if (frame != null) {
+                            float x = controller.getLightningPlayerX();
+                            frame.setPosition(x, 32);
+                            frame.setSize(40, 448);
+                            frame.draw(gameBatch);
+                        }
                     }
                 }
 
@@ -1209,12 +1218,14 @@ public class GameplayState implements IState<GameController> {
             if (enemy instanceof com.machinehunterdev.game.Character.BossEnemy) {
                 BossEnemyController controller = (BossEnemyController) ((BaseEnemy) enemy).getController();
                 if (controller.isLightningStriking()) {
-                    Rectangle lightningBounds = new Rectangle(controller.getLightningPlayerX(), 32, 40, 448);
-                                            if (DamageSystem.canTakeDamage(playerCharacter) && playerCharacter.isAlive() && lightningBounds.overlaps(playerCharacter.getBounds())) {
-                                                AudioManager.getInstance().playSfx(AudioId.PlayerHurt, playerCharacter);
-                                                DamageSystem.applyContactDamage(playerCharacter, enemy.getCharacter(), 1);
-                                                impactEffectManager.createImpact(playerCharacter.position.x + playerCharacter.getWidth() / 2, playerCharacter.position.y + playerCharacter.getHeight() / 2, WeaponType.PATROLLER);
-                                            }                }
+                    // + 10 para centrar la hitbox
+                    Rectangle lightningBounds = new Rectangle(controller.getLightningPlayerX() + 10, 32, 20, 448);
+                    if (DamageSystem.canTakeDamage(playerCharacter) && playerCharacter.isAlive() && lightningBounds.overlaps(playerCharacter.getBounds())) {
+                        AudioManager.getInstance().playSfx(AudioId.PlayerHurt, playerCharacter);
+                        DamageSystem.applyContactDamage(playerCharacter, enemy.getCharacter(), 1);
+                        impactEffectManager.createImpact(playerCharacter.position.x + playerCharacter.getWidth() / 2, playerCharacter.position.y + playerCharacter.getHeight() / 2, WeaponType.PATROLLER);
+                    }
+                }
             }
         }
     }
@@ -1289,15 +1300,14 @@ public class GameplayState implements IState<GameController> {
         if (nextLevelUI != null) nextLevelUI.dispose();
         if (impactEffectManager != null) impactEffectManager.dispose();
         if (landingEffectManager != null) landingEffectManager.dispose();
+        if (shapeRenderer != null) shapeRenderer.dispose();
 
         // Libera las texturas de advertencia y animaciones de ataques.
         disposeTexture(thunderWarningTexture);
         disposeTexture(summonWarningTexture);
         disposeTexture(bossFinalFrameTexture);
-        if (thunderAttackFrames != null) {
-            for (Sprite frame : thunderAttackFrames) {
-                frame.getTexture().dispose(); // Libera la textura de cada frame de la animacion de trueno.
-            }
+        if (thunderAttackAnimator != null) {
+            thunderAttackAnimator.dispose();
         }
         
         // Libera los recursos de todas las balas activas.
