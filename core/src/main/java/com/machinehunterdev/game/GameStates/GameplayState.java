@@ -1091,6 +1091,10 @@ public class GameplayState implements IState<GameController> {
                             case FLYING:
                                 impactEffectManager.createImpact(impactX, impactY, WeaponType.FLYING);
                                 break;
+                            case BOSS_GEMINI:
+                            case BOSS_CHATGPT:
+                                impactEffectManager.createImpact(impactX, impactY, WeaponType.SHOOTER);
+                                break;
                             default:
                         }
                     }
