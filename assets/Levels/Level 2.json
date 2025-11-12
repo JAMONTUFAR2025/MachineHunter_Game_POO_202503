@@ -36,7 +36,7 @@
 
 
     { "type":"Chain_Red_Type4", "x": 910, "y": 96, "walkable": false },
-    { "type":"Chain_Red_Type2", "x": 998, "y": 96, "walkable": false },
+    { "type":"Chain_Red_Type3", "x": 998, "y": 96, "walkable": false },
     { "type":"Chain_Red_Type3", "x": 1086, "y": 96, "walkable": false },
     { "type":"Chain_Red_Type4", "x": 1174, "y": 96, "walkable": false },
 

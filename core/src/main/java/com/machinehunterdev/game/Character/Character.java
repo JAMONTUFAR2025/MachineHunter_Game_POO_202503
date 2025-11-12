@@ -77,6 +77,7 @@ public class Character
     public boolean isCrouching;                 // Esta agachado
     public boolean isPerformingSpecialAttack = false; // Esta ejecutando un ataque especial (jefe)
     public boolean isFallingThroughPlatform = false; // Puede atravesar plataformas temporalmente
+    public boolean justLanded = false; // Acaba de aterrizar
     public boolean readyForGameOverTransition = false; // Listo para transicion de Game Over (jugador)
     public boolean isPlayer = false;            // Indica si es el jugador
     public boolean isPaused = false;            // Indica si el personaje esta en pausa
@@ -527,9 +528,14 @@ public class Character
         if(isPlayer) AudioManager.getInstance().playSfx(AudioId.PlayerLand, this);
         else AudioManager.getInstance().playSfx(AudioId.EnemyLand, this);
 
-        onGround = true;
-        onPlatform = (groundY != GlobalSettings.GROUND_LEVEL);
-
+            onGround = true;
+        
+            // Solo activa el efecto de aterrizaje si no esta cayendo a traves de una plataforma.
+            if (!(isPlayer && isFallingThroughPlatform)) {
+                justLanded = true;
+            }
+            
+            onPlatform = (groundY != GlobalSettings.GROUND_LEVEL);
         if (!isAlive) {
             readyForGameOverTransition = true;
         }
@@ -585,6 +591,9 @@ public class Character
     // Permite caer a traves de plataformas si esta sobre una.
     public void fallThroughPlatform() {
         if (onGround && onPlatform) {
+            /* No es buena practica, pero este es una solucion temporal. Reproduce sonido de aterrizaje para los enemigos que caen de plataformas.*/
+            if(!isPlayer) AudioManager.getInstance().playSfx(AudioId.EnemyLand, this);
+
             isFallingThroughPlatform = true;
             fallThroughTimer = 0.2f;
             onGround = false;

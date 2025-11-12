@@ -87,7 +87,7 @@ public class NameInputUI implements InputProcessor {
                 playerCharacter.draw(batch);
 
                 GlyphLayout layout = new GlyphLayout();
-                String prompt = "Ingresa tu nombre";
+                String prompt = "INGRESA TU NOMBRE";
                 font.getData().setScale(2);
                 layout.setText(font, prompt);
                 float promptX = (Gdx.graphics.getWidth() - layout.width) / 2f;
@@ -105,7 +105,7 @@ public class NameInputUI implements InputProcessor {
                 float nameY = Gdx.graphics.getHeight() / 4f;
                 font.draw(batch, nameText, centeredStartX, nameY);
 
-                String controls = "Teclado: Escribir nombre | Enter: Aceptar";
+                String controls = "Teclado - Escribir nombre | Enter - Aceptar";
                 font.getData().setScale(1);
                 layout.setText(font, controls);
                 float controlsX = (Gdx.graphics.getWidth() - layout.width) / 2f;
@@ -123,7 +123,7 @@ public class NameInputUI implements InputProcessor {
         }
 
         if (currentState != State.NAME_INPUT) {
-            String dialogControls = "E: Aceptar | Q: Retroceder | W/S: Cambiar selección.";
+            String dialogControls = "E - Aceptar | Q - Retroceder | W / S - Cambiar selección";
             GlyphLayout layout = new GlyphLayout();
             font.getData().setScale(1);
             layout.setText(font, dialogControls);
@@ -198,7 +198,7 @@ public class NameInputUI implements InputProcessor {
                     AudioManager.getInstance().playSfx(AudioId.UIAccept, null);
                     if (tutorialConfirmSelection == 0) { // Sí
                         // Cargar nivel 0 (tutorial)
-                        GameplayState tutorial = GameplayState.createForLevel("Levels/Level 2.json");
+                        GameplayState tutorial = GameplayState.createForLevel("Levels/Level 0.json");
                         gameController.stateMachine.changeState(tutorial);
                     } else { // No
                         // Cargar nivel 1

@@ -23,6 +23,9 @@ public class ShooterEnemyController extends CharacterController {
     private float shootCooldown; // Tiempo de enfriamiento entre disparos.
     private float shootInterval; // Intervalo de tiempo entre rafagas de disparos.
     
+    // Banderin para verificar si el enemigo fue invocado.
+    private boolean wasSummoned;
+
     // Variable para controlar la animacion de disparo.
     private int previousFrameIndex = -1;
     
@@ -39,11 +42,12 @@ public class ShooterEnemyController extends CharacterController {
      * @param shootInterval El intervalo de tiempo entre disparos.
      * @param shootTime La duracion del ataque.
      */
-    public ShooterEnemyController(Character character, float shootInterval, float shootTime) {
+    public ShooterEnemyController(Character character, float shootInterval, float shootTime, boolean wasSummoned) {
         super(character);
         this.shootInterval = shootInterval;
         this.shootTime = shootTime;
         this.shootCooldown = this.shootInterval; // El enfriamiento inicial es igual al intervalo.
+        this.wasSummoned = wasSummoned;
     }
 
     /**
@@ -71,7 +75,7 @@ public class ShooterEnemyController extends CharacterController {
                 if (distanceX <= visionRange) {
                     currentState = State.DETECTING;
                     character.isPerformingSpecialAttack = true;
-                    character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.SUMMON);
+                    character.characterAnimator.setCurrentAnimation(CharacterAnimator.AnimationState.ATTACK1);
                     AudioManager.getInstance().playSfx(AudioId.Exclamation, null);
                 }
                 break;
@@ -86,11 +90,19 @@ public class ShooterEnemyController extends CharacterController {
                 }
 
                 // Cuando termina la animacion de deteccion, pasa al estado de disparo.
-                if (character.characterAnimator.isAnimationFinished(CharacterAnimator.AnimationState.SUMMON)) {
+                if (character.characterAnimator.isAnimationFinished(CharacterAnimator.AnimationState.ATTACK1)) {
                     character.isPerformingSpecialAttack = false;
-                    currentState = State.SHOOTING;
-                    shootDuration = shootTime;
-                    character.attack();
+                    
+                    /* NERFEO */
+                    // Si el enemigo fue invocado, no dispara inmediatamente.
+                    if(wasSummoned) {   
+                        currentState = State.READY;
+                    // Si no fue invocado, dispara inmediatamente.
+                    } else {
+                        currentState = State.SHOOTING;
+                        shootDuration = shootTime;
+                        character.attack();
+                    }
                 }
                 break;
 

@@ -84,6 +84,7 @@ public class GameController extends ApplicationAdapter{
         sfxList.add(new AudioData(AudioId.IonAttack, "Audio/Sfx/IonAttack.wav"));
         sfxList.add(new AudioData(AudioId.RailgunAttack, "Audio/Sfx/RailgunAttack.wav"));
         sfxList.add(new AudioData(AudioId.PlayerLand, "Audio/Sfx/PlayerLand.wav"));
+        sfxList.add(new AudioData(AudioId.GameOverSound, "Audio/Sfx/GameOverSound.wav"));
         sfxList.add(new AudioData(AudioId.EnemyJump, "Audio/Sfx/EnemyJump.wav"));
         sfxList.add(new AudioData(AudioId.EnemyHurt, "Audio/Sfx/EnemyHurt.wav"));
         sfxList.add(new AudioData(AudioId.Explosion, "Audio/Sfx/Explosion.wav"));

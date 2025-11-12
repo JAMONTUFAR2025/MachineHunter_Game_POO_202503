@@ -40,7 +40,7 @@ public class EnemyManager {
      * @param shootInterval El intervalo de disparo para enemigos que atacan a distancia.
      * @param shootTime La duracion del ataque para enemigos que disparan.
      */
-    public void addEnemy(EnemyType type, Character character, java.util.List<com.machinehunterdev.game.Levels.LevelData.Point> patrolPoints, float waitTime, float shootInterval, float shootTime) {
+    public void addEnemy(EnemyType type, Character character, java.util.List<com.machinehunterdev.game.Levels.LevelData.Point> patrolPoints, float waitTime, float shootInterval, float shootTime, boolean wasSummoned) {
         character.setEnemyType(type); // Asigna el tipo de enemigo al objeto Character.
         
         // Un switch para crear la instancia correcta del enemigo segun su tipo.
@@ -49,7 +49,7 @@ public class EnemyManager {
                 enemies.add(new PatrollerEnemy(character, (java.util.ArrayList<com.machinehunterdev.game.Levels.LevelData.Point>) patrolPoints, waitTime, type));
                 break;
             case SHOOTER:
-                enemies.add(new ShooterEnemy(character, shootInterval, shootTime, type));
+                enemies.add(new ShooterEnemy(character, shootInterval, shootTime, type, wasSummoned));
                 break;
             case FLYING:
                 // Convierte los puntos de patrullaje a un formato adecuado para enemigos voladores.
@@ -77,11 +77,14 @@ public class EnemyManager {
      */
     public void update(float delta, ArrayList<SolidObject> solidObjects, ArrayList<Bullet> bullets, Character playerCharacter) {
         for (IEnemy enemy : enemies) {
-            // Los jefes pueden tener una logica de actualizacion mas compleja que necesita la lista de otros enemigos.
-            if (enemy instanceof BossEnemy) {
-                ((BossEnemy) enemy).getController().update(delta, solidObjects, bullets, playerCharacter, enemies.size(), enemies);
-            } else {
-                ((BaseEnemy) enemy).getController().update(delta, solidObjects, bullets, playerCharacter, enemies.size());
+            if (enemy.getCharacter().isAlive()) {
+                // Los jefes solo invocan enemigos al estar vivos.
+                // Los jefes pueden tener una logica de actualizacion mas compleja que necesita la lista de otros enemigos.
+                if (enemy instanceof BossEnemy) {
+                    ((BossEnemy) enemy).getController().update(delta, solidObjects, bullets, playerCharacter, enemies.size(), enemies);
+                } else {
+                    ((BaseEnemy) enemy).getController().update(delta, solidObjects, bullets, playerCharacter, enemies.size());
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -66,7 +67,7 @@ public class GameOverUI implements InputProcessor {
 
     private List<String> deathMessages;
     private String randomDeathMessage;
-    private String[] confirmationOptions = {"Si", "No"};
+    private String[] confirmationOptions = {"Sí", "No"};
     private int confirmationSelected = 0;
     private boolean isExitConfirmationVisible = false;
     private int eliminatedSoundPlayed = 0;
@@ -176,6 +177,7 @@ public class GameOverUI implements InputProcessor {
                 } else {
                     drawOptions();
                 }
+                drawControls();
             }
         }
 
@@ -315,7 +317,7 @@ public class GameOverUI implements InputProcessor {
      * Dibuja la confirmacion de salida con opciones "Si" y "No".
      */
     private void drawExitConfirmation() {
-        String confirmationText = "¿Seguro que quieres salir?";
+        String confirmationText = "¿Estás seguro que quieres salir?";
         GlyphLayout confirmationLayout = new GlyphLayout(font, confirmationText);
         float confirmationX = (Gdx.graphics.getWidth() - confirmationLayout.width) / 2f;
         float confirmationY = Gdx.graphics.getHeight() * 0.30f;
@@ -323,7 +325,7 @@ public class GameOverUI implements InputProcessor {
         font.draw(batch, confirmationText, confirmationX, confirmationY);
 
         float startY = Gdx.graphics.getHeight() * 0.20f;
-        float lineHeight = 110f;
+        float lineHeight = 70f;
 
         for (int i = 0; i < confirmationOptions.length; i++) {
             String text = (i == confirmationSelected ? "> " : "  ") + confirmationOptions[i];
@@ -335,6 +337,23 @@ public class GameOverUI implements InputProcessor {
             font.draw(batch, text, x, y);
         }
     }
+
+    /**
+     * Dibuja las instrucciones de control en la parte inferior de la pantalla.
+     */
+    private void drawControls() {
+        String controlsText = Input.Keys.toString(GlobalSettings.CONTROL_JUMP) + " / " 
+        + Input.Keys.toString(GlobalSettings.CONTROL_CROUCH) + " - Cambiar opción | " 
+        + Input.Keys.toString(GlobalSettings.CONTROL_INTERACT) + " - Seleccionar";
+        
+        GlyphLayout layout = new GlyphLayout(font, controlsText);
+
+        font.setColor(Color.WHITE);
+        float textX = (Gdx.graphics.getWidth() - layout.width) / 2f;
+        float textY = 10 + layout.height + 20;
+        font.draw(batch, controlsText, textX, textY);
+    }
+    
     /**
      * Maneja la entrada del teclado para navegar y seleccionar opciones.
      * @param keycode Codigo de la tecla presionada.

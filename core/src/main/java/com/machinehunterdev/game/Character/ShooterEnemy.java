@@ -15,9 +15,9 @@ public class ShooterEnemy extends BaseEnemy {
      * @param shootTime La duracion del estado de ataque.
      * @param type El tipo de enemigo, que en este caso sera SHOOTER.
      */
-    public ShooterEnemy(Character character, float shootInterval, float shootTime, EnemyType type) {
+    public ShooterEnemy(Character character, float shootInterval, float shootTime, EnemyType type, boolean wasSummoned) {
         // Llama al constructor de la clase base (BaseEnemy) para inicializar el enemigo.
         // Le pasa el personaje y un nuevo controlador especifico para enemigos tiradores.
-        super(character, new ShooterEnemyController(character, shootInterval, shootTime), type);
+        super(character, new ShooterEnemyController(character, shootInterval, shootTime, wasSummoned), type);
     }
 }
