@@ -763,8 +763,8 @@ public class GameplayState implements IState<GameController> {
 
         // Ajusta la posicion Y de los enemigos invocados.
         if (type == EnemyType.FLYING) {
-            enemy1.position.y = 200; 
-            enemy2.position.y = 200;
+            enemy1.position.y = 342; 
+            enemy2.position.y = 270;
         } else {
             float adjustedY1 = findGroundY(enemy1.position.x, 480, enemy1.getWidth());
             enemy1.position.y = adjustedY1;
