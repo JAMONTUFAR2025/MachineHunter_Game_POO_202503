@@ -75,7 +75,7 @@ public class GameOverState implements IState<GameController> {
         isDialogueTypingFinished = false;
 
         // Reproduce el sonido de Game Over.
-        AudioManager.getInstance().playSfx(AudioId.GameOverSound, null);
+        AudioManager.getInstance().playSfx(AudioId.GameOverSound, null, 2.5f);
     }
 
     /**

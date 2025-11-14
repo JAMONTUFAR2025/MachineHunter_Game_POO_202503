@@ -539,6 +539,11 @@ public class GameplayState implements IState<GameController> {
             killAllEnemies();
         }
 
+        // Codigo de depuracion: Mata al jugador al presionar F8
+        if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F8)) {
+            DamageSystem.applyContactDamage(playerCharacter, playerCharacter, 3);
+        }
+
         // Maneja la entrada para pausar el juego.
         if (Gdx.input.isKeyJustPressed(GlobalSettings.CONTROL_PAUSE) && !levelCompleted && !isDialogActive) {
             owner.stateMachine.push(new PauseState(this));
