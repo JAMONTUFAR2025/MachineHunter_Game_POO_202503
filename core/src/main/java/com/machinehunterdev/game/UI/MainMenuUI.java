@@ -12,9 +12,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.machinehunterdev.game.Audio.AudioId;
 import com.machinehunterdev.game.Audio.AudioManager;
 import com.machinehunterdev.game.GameController;
-import com.machinehunterdev.game.Gameplay.GlobalSettings;
 import com.machinehunterdev.game.GameStates.CreditState;
-import com.machinehunterdev.game.GameStates.OptionState;
+import com.machinehunterdev.game.Gameplay.GlobalSettings;
 
 /**
  * Interfaz de usuario para el menú principal del juego.

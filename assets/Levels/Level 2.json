@@ -84,7 +84,23 @@
     {"type": "SHOOTER", "x": 636, "y": 32 },
 
     {"type": "FLYING", "x": 810, "y": 116, "patrolPoints": [{"x": 810, "y": 224}, {"x": 810, "y": 156}, {"x": 810, "y": 96}, {"x": 810, "y": 156}], "waitTime": 1.0},
-    {"type": "FLYING", "x": 860, "y": 244, "patrolPoints": [{"x": 860, "y": 96}, {"x": 860, "y": 164}, {"x": 860, "y": 224}, {"x": 860, "y": 156}], "waitTime": 1.0}
+    {"type": "FLYING", "x": 860, "y": 244, "patrolPoints": [{"x": 860, "y": 96}, {"x": 860, "y": 164}, {"x": 860, "y": 224}, {"x": 860, "y": 156}], "waitTime": 1.0},
+
+    {"type": "PATROLLER", "x": 910, "y": 72, "patrolPoints": [{"x": 910, "y": 72}, {"x": 1174, "y": 72}]},
+    {"type": "SHOOTER", "x": 1050, "y": 160 },
+    {"type": "SHOOTER", "x": 1150, "y": 244 },
+    {"type": "SHOOTER", "x": 1150, "y": 96 },
+
+    {"type": "PATROLLER", "x": 1230, "y": 96, "patrolPoints": [{"x": 1410, "y": 96, "action": "Jump"}, {"x": 1230, "y": 160, "action": "Jump"}, {"x": 1410, "y": 224, "action": "Fall"}, {"x": 1230, "y": 160, "action": "Fall"}], "waitTime": 1.0},
+
+    {"type": "FLYING", "x": 1506, "y": 244, "patrolPoints": [{"x": 1506, "y": 160}, {"x": 1710, "y": 160}, {"x": 1506, "y": 160}, {"x": 1710, "y": 160}], "waitTime": 1.0},
+    {"type": "FLYING", "x": 1506, "y": 244, "patrolPoints": [{"x": 1506, "y": 100}, {"x": 1710, "y": 100}, {"x": 1506, "y": 100}, {"x": 1710, "y": 100}], "waitTime": 1.0},
+    {"type": "SHOOTER", "x": 1910, "y": 160 },
+    {"type": "SHOOTER", "x": 1910, "y": 244 },
+    {"type": "SHOOTER", "x": 1910, "y": 32},
+    {"type": "SHOOTER", "x": 1792, "y": 32 }
+
+
   ],
   "npcs": [
     {"idleFrames": "NPC/Doctor/DoctorIdle", "x": 100, "y": 100, "dialogues": ["Diálogo 1 – Científico", "Diálogo 2 – Científico", "Diálogo 3 – Científico", "Diálogo 4 – Científico"]}
