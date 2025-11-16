@@ -43,10 +43,6 @@ public class CreditUI implements InputProcessor {
             "Mariely Nicol Hiraeta Henrriquez",
             "Ken Kato Castellanos",
             "",
-            "Texturas",
-            "Explosión: A quien corresponda",
-            "Rayo: Pokémon Ruby & Sapphire",
-            "",
             "Programación",
             "Josué Alejandro Montúfar Zúniga",
             "Anner Alessandro Teruel Pineda",
@@ -146,7 +142,6 @@ public class CreditUI implements InputProcessor {
                         line.equals("Catedrático") ||
                         line.equals("Guión") ||
                         line.equals("Arte") ||
-                        line.equals("Texturas") ||
                         line.equals("Programación") ||
                         line.equals("Música y sonidos") ||
                         line.equals("¡Gracias por Jugar!")) {
