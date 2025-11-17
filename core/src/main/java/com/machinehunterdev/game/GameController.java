@@ -159,7 +159,7 @@ public class GameController extends ApplicationAdapter{
         stateMachine.execute();
 
         // Mostrar depuración de estados
-        showStateStack();
+        //showStateStack();
     }
 
     /**

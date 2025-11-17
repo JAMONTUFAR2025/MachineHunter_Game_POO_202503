@@ -2,8 +2,8 @@
   "backgroundTexture": "Fondos/FondoJefePlaceHolder.png",
   "groundTexture": "Environment/FloorBlue320.png",
   "levelWidth": 480,
-  "playerStartX": 50,
-  "playerStartY": 100,
+  "playerStartX": 32,
+  "playerStartY": 32,
   "nextLevel": "Levels/Level 4.json",
   "flashbackDialogueSection": "Flashback3",
   "solidObjectsData": [

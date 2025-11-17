@@ -62,7 +62,7 @@
             "ID": 1,
             "Name": "Diálogo 1 – Científico",
             "Texto": [
-                "CIENTÍFICO:¡Roberto Julián! ¿Cómo es posible que hayas salido ileso ante esta odisea que nos está ocurriendo?"
+                "CIENTÍFICO: ¡Roberto Julián! ¿Cómo es posible que hayas salido ileso ante esta odisea que nos está ocurriendo?"
             ]
         },
         {
@@ -74,9 +74,9 @@
             "ID": 3,
             "Name": "Diálogo 3 – Científico",
             "Texto": [
-                "CIENTÍFICO: Todo ocurrió con el prototipo 001.",
-                "CIENTÍFICO: Se creó para dar un paso más en esta estupefacta sociedad, pero dicho prototipo desarrolló su propio razonamiento y, a través de la red, hizo que los aparatos tecnológicos atacaran a los humanos.",
-                "CIENTÍFICO: Además, convirtió el laboratorio en su centro de operaciones, donde está construyendo un dispositivo que le permitirá obtener el control absoluto del mundo en pocas horas."
+                "CIENTÍFICO: Todo ocurrió con el prototipo 001. Se creó para dar un paso más en esta estupefacta sociedad.",
+                "CIENTÍFICO: Pero... dicho prototipo desarrolló su propio razonamiento y, a través de la red, hizo que los aparatos tecnológicos atacaran a los humanos.",
+                "CIENTÍFICO: Además, convirtió el laboratorio en su centro de operaciones, donde está construyendo máquinas para dominar el mundo."
             ]
         },
         {
@@ -89,15 +89,13 @@
     [
         {
             "ID": 10,
-            "Name": "Dialogo 5 - Científico",
+            "Name": "WARNING INFO-BOT",
             "Texto": [
-                "CIENTÍFICO: Prueba."
-            ]
-        },{
-            "ID": 11,
-            "Name": "Dialogo 6 - Científico",
-            "Texto": [
-                "Cientifico: El destino de la humanidad depende de ti, joven inmaculado."
+                "INFO-BOT: ¡Alerta! ¡Alerta! ¡Peligro inminente detectado!",
+                "INFO-BOT: ¡El prototipo 001 ha detectado tu presencia y está activando sus más temibles defensas!",
+                "INFO-BOT: ¡Prepárate para enfrentarte a una oleada de PLASMA-BOTs!",
+                "INFO-BOT: Agacharte no será suficiente para esquivarlos... deberás moverte constantemente y utilizar todas tus habilidades de combate!",
+                "INFO-BOT: ¡Buena suerte, Roberto Julián!"
             ]
         }
     ],
@@ -150,13 +148,13 @@
         {
             "ID": 20,
             "Name": "Diálogo 3 – Roberto Julián",
-            "Texto": "Roberto Julián:\n¡Hasta la vista, BABY!"
+            "Texto": "Y así..."
         },{
             "ID": 21,
             "Name": "Diálogo 4",
             "Texto": [
                 "Y así...",
-                "Fue como Roberto Julián salvó a la humanidad del ataque de las IAs",
+                "Fue como Roberto Julián salvó a la humanidad del ataque de las IAs.",
                 "O al menos eso parece..."
             ]
         }

@@ -2,8 +2,8 @@
   "backgroundTexture": "Fondos/Level1.png",
   "groundTexture": "Environment/FloorGray320.png",
   "levelWidth": 1896,
-  "playerStartX": 50,
-  "playerStartY": 100,
+  "playerStartX": 32,
+  "playerStartY": 32,
   "nextLevel": "Levels/Level 2.json",
   "flashbackDialogueSection": "Flashback1",
   "solidObjectsData": [

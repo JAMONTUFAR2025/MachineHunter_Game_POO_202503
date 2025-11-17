@@ -11,17 +11,17 @@ public enum WeaponType {
     /**
      * Arma laser: un disparo rapido y de largo alcance.
      */
-    LASER(20),
+    LASER(25),
     
     /**
      * Arma de iones: un disparo de corto alcance que se dispersa, similar a una escopeta.
      */
-    ION(10),
+    ION(15),
     
     /**
      * Canon de riel: un disparo potente que puede atravesar a multiples enemigos.
      */
-    RAILGUN(15),
+    RAILGUN(20),
     
     /**
      * El ataque del enemigo 'Shooter'.
