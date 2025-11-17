@@ -71,7 +71,13 @@ public class ImpactEffectManager {
     public void createImpact(float x, float y, WeaponType weaponType) {
         List<Sprite> frames = impactFrames.get(weaponType);
         if (frames != null && !frames.isEmpty()) {
-            activeEffects.add(new ImpactEffect(x, y, frames, frameDuration));
+            float scale = 1.0f; // Default scale
+            if (weaponType == WeaponType.SHOOTER || 
+                weaponType == WeaponType.PATROLLER || 
+                weaponType == WeaponType.FLYING) {
+                scale = 3.0f; // Triple size for these types
+            }
+            activeEffects.add(new ImpactEffect(x, y, frames, frameDuration, scale));
         }
     }
 

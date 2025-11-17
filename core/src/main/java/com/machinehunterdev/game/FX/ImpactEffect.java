@@ -24,6 +24,7 @@ public class ImpactEffect {
     
     // Bandera que indica si la animacion del efecto ha terminado.
     private boolean isFinished;
+    private float scale;
 
     /**
      * Constructor para crear un nuevo efecto de impacto.
@@ -31,13 +32,15 @@ public class ImpactEffect {
      * @param y La posicion inicial en el eje Y.
      * @param frames La lista de sprites que componen la animacion del efecto.
      * @param frameDuration La duracion de cada fotograma en la animacion.
+     * @param scale El factor de escala para el tamano del efecto.
      */
-    public ImpactEffect(float x, float y, List<Sprite> frames, float frameDuration) {
+    public ImpactEffect(float x, float y, List<Sprite> frames, float frameDuration, float scale) {
         this.position = new Vector2(x, y);
         // Se crea un animador que no se repite (isLooping = false).
         this.animator = new SpriteAnimator(frames, frameDuration, false);
         this.animator.start();
         this.isFinished = false;
+        this.scale = scale;
     }
 
     /**
@@ -60,7 +63,8 @@ public class ImpactEffect {
         if (!isFinished) {
             Sprite currentSprite = animator.getCurrentSprite();
             if (currentSprite != null) {
-                currentSprite.setPosition(position.x, position.y);
+                currentSprite.setScale(scale);
+                currentSprite.setCenter(position.x, position.y);
                 animator.draw(batch);
             }
         }
