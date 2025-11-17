@@ -1,5 +1,5 @@
 {
-  "backgroundTexture": "Fondos/FondoTutorial.png",
+  "backgroundTexture": "Fondos/Tutorial.png",
   "dialogueFile": "Dialogos/Dialogos_personajes.json",
   "groundTexture": "Environment/FloorWhite320.png",
   "levelWidth": 2800,
