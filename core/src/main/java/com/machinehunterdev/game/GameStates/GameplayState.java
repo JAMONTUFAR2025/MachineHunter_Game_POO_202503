@@ -928,9 +928,8 @@ public class GameplayState implements IState<GameController> {
             obj.render(gameBatch);
         }
 
-        // Dibuja los enemigos y al jugador.
+        // Dibuja los enemigos y NPCs.
         enemyManager.draw(gameBatch);
-        playerCharacter.draw(gameBatch);
 
         // Dibuja los NPCs y el prompt de interaccion si estan en rango.
         if (npcControllers != null) {
@@ -941,6 +940,9 @@ public class GameplayState implements IState<GameController> {
                 }
             }
         }
+
+        // Dibuja al jugador por encima de los NPCs
+        playerCharacter.draw(gameBatch);
 
         // Dibuja las balas y los efectos de impacto y aterrizaje.
         drawBullets();

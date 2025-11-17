@@ -72,8 +72,8 @@ public class PlayerController extends CharacterController {
         // Logica de ataque: se ejecuta al mantener presionada la tecla de ataque mientras se esta en el suelo.
         if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_ATTACK) && character.onGround) {
 
-            // Si el jugador esta agachado sobre una plataforma, intenta caer a traves de ella.
-            if (character.isCrouching && character.onPlatform) {
+            // Si el jugador esta agachado sobre una plataforma y no en el suelo, intenta caer a traves de ella.
+            if (character.isCrouching && character.onPlatform && character.getY() > GlobalSettings.GROUND_LEVEL) {
                 character.fallThroughPlatform();
             }
             
@@ -81,14 +81,19 @@ public class PlayerController extends CharacterController {
             if(!character.isInvulnerable())
             {
                 character.shoot(bullets);
-                character.stopMoving(); // El jugador no puede moverse mientras dispara.
+            }
+            else
+            {
+                character.stopAttacking();
+            }
 
-                // Permite al jugador cambiar de direccion mientras ataca.
-                if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_LEFT)) {
-                    character.setSeeingRight(false);
-                } else if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_RIGHT)) {
-                    character.setSeeingRight(true);
-                }
+            character.stopMoving(); // El jugador no puede moverse mientras dispara.
+
+            // Permite al jugador cambiar de direccion mientras ataca.
+            if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_LEFT)) {
+                character.setSeeingRight(false);
+            } else if (Gdx.input.isKeyPressed(GlobalSettings.CONTROL_MOVE_RIGHT)) {
+                character.setSeeingRight(true);
             }
         } else {
             character.stopAttacking(); // Si no se presiona la tecla de ataque, se detiene el ataque.
