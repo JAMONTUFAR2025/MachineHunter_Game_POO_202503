@@ -534,10 +534,10 @@ public class GameplayState implements IState<GameController> {
         // Actualiza el administrador de audio.
         AudioManager.getInstance().update(Gdx.graphics.getDeltaTime());
 
-        // // Codigo de depuracion: Mata a todos los enemigos al presionar F9.
-        // if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F9)) {
-        //     killAllEnemies();
-        // }
+        // Codigo de depuracion: Mata a todos los enemigos al presionar F9.
+        if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F9)) {
+            killAllEnemies();
+        }
 
         // // Codigo de depuracion: Mata al jugador al presionar F8
         // if(Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F8)) {

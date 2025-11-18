@@ -71,7 +71,7 @@ public class ImpactEffectManager {
     public void createImpact(float x, float y, WeaponType weaponType) {
         List<Sprite> frames = impactFrames.get(weaponType);
         if (frames != null && !frames.isEmpty()) {
-            float scale = 3.0f; // Default scale
+            float scale = 2.0f; // Default scale
             activeEffects.add(new ImpactEffect(x, y, frames, frameDuration, scale));
         }
     }
