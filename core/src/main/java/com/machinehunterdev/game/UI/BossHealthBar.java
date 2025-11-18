@@ -94,7 +94,7 @@ public class BossHealthBar {
         float x = (viewportWidth - barWidth) / 2;
         float y = viewportHeight - barHeight - 20;
 
-        font.setColor(Color.WHITE);
+        font.setColor(Color.BLACK);
         GlyphLayout layout = new GlyphLayout(font, bossName);
         float fontX = x + (barWidth - layout.width) / 2;
         float fontY = y + barHeight + layout.height - 30;
