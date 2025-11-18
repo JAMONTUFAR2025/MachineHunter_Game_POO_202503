@@ -148,11 +148,17 @@
         {
             "ID": 20,
             "Name": "Diálogo 3 – Roberto Julián",
-            "Texto": "Y así..."
+            "Texto": 
+            [
+                "Roberto Julián:\n Seguramente ya te diste cuenta...",
+                "Roberto Julián:\n Pero yo soy...",
+                "Roberto Julián:\n ¡El MACHINE HUNTER carajo!"
+            ]
         },{
             "ID": 21,
             "Name": "Diálogo 4",
             "Texto": [
+                "Y así...",
                 "Fue como Roberto Julián salvó a la humanidad del ataque de las IAs.",
                 "O al menos eso parece..."
             ]
